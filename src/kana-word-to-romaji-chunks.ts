@@ -1,5 +1,4 @@
 import {kanaPartToRomaji} from './kana-part-to-romaji';
-import {kanaRomajiTable} from './kana-romaji-table';
 import {RomajiCandidate} from './romaji-candidate';
 
 type RomajiChunk = {
@@ -44,7 +43,7 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
         if (partsResult.length) {
           const appendedPartsResult = [];
           for (const j of partsResult) {
-            for (const i of [j[0]].concat(kanaRomajiTable['っ'])) {
+            for (const i of [j[0]].concat(kanaPartToRomaji('っ'))) {
               appendedPartsResult.push(`${i}${j}`);
             }
           }
