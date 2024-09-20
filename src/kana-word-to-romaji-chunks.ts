@@ -1,8 +1,15 @@
 import {kanaPartToRomaji} from './kana-part-to-romaji';
 import {kanaRomajiTable} from './kana-romaji-table';
 
-export function kanaWordToRomajiChunks(word: string) {
-  const result = [];
+type RomajiCandidate = string;
+
+type RomajiChunk = {
+  chunk: string;
+  candidates: RomajiCandidate[];
+};
+
+export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
+  const result: RomajiChunk[] = [];
   let cursor = 0;
   while (cursor < word.length) {
     const part2 = word.substr(cursor, 2);
