@@ -36,6 +36,39 @@ describe('kanaWordToRomajiChunks', () => {
       },
     ]);
 
+    expect(kanaWordToRomajiChunks('さっ')).toEqual([
+      {
+        chunk: 'さ',
+        candidates: ['sa'],
+      },
+      {
+        chunk: 'っ',
+        candidates: ['xtu', 'ltu'],
+      },
+    ]);
+
+    expect(kanaWordToRomajiChunks('ん')).toEqual([
+      {
+        chunk: 'ん',
+        candidates: ['nn'],
+      },
+    ]);
+
+    expect(kanaWordToRomajiChunks('かんな')).toEqual([
+      {
+        chunk: 'か',
+        candidates: ['ka', 'ca'],
+      },
+      {
+        chunk: 'ん',
+        candidates: ['nn'],
+      },
+      {
+        chunk: 'な',
+        candidates: ['na'],
+      },
+    ]);
+
     expect(kanaWordToRomajiChunks('ひんと')).toEqual([
       {
         chunk: 'ひ',
