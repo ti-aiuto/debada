@@ -6,14 +6,11 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "npm.cmd run compile",
-    "pretest": "npm.cmd run compile",
-    "posttest": "npm.cmd run lint"
+    "fix": "gts fix"
   },
   "author": "",
   "license": "ISC",

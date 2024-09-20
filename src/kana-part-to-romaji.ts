@@ -1,6 +1,7 @@
 import {kanaRomajiTable} from './kana-romaji-table';
+import {RomajiCandidate} from './romaji-candidate';
 
-export function kanaPartToRomaji(part: string) {
+export function kanaPartToRomaji(part: string): RomajiCandidate[] {
   const romajis = kanaRomajiTable[part];
   if (romajis) {
     const partCharProduct = [];

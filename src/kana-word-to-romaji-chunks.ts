@@ -1,7 +1,6 @@
 import {kanaPartToRomaji} from './kana-part-to-romaji';
 import {kanaRomajiTable} from './kana-romaji-table';
-
-type RomajiCandidate = string;
+import {RomajiCandidate} from './romaji-candidate';
 
 type RomajiChunk = {
   chunk: string;
