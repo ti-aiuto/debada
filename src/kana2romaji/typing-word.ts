@@ -83,7 +83,7 @@ export class TypingWord {
       return true;
     } else {
       // 不正解
-      this._wrongCount = 0;
+      this._wrongCount += 1;
       this._renzokuCorrectCount = 0;
 
       return false;
