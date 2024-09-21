@@ -47,39 +47,6 @@ describe('kanaWordToRomajiChunks', () => {
       },
     ]);
 
-    expect(kanaWordToRomajiChunks('ん')).toEqual([
-      {
-        chunk: 'ん',
-        candidates: ['nn'],
-      },
-    ]);
-
-    expect(kanaWordToRomajiChunks('かんな')).toEqual([
-      {
-        chunk: 'か',
-        candidates: ['ka', 'ca'],
-      },
-      {
-        chunk: 'ん',
-        candidates: ['nn'],
-      },
-      {
-        chunk: 'な',
-        candidates: ['na'],
-      },
-    ]);
-
-    expect(kanaWordToRomajiChunks('ひんと')).toEqual([
-      {
-        chunk: 'ひ',
-        candidates: ['hi'],
-      },
-      {
-        chunk: 'んと',
-        candidates: ['nto', 'nnto'],
-      },
-    ]);
-
     expect(kanaWordToRomajiChunks('いしゃ')).toEqual([
       {
         chunk: 'い',
@@ -114,5 +81,59 @@ describe('kanaWordToRomajiChunks', () => {
         ],
       },
     ]);
+  });
+
+  describe('「ん」', () => {
+    test('「ん」一文字はnを2回', () => {
+      expect(kanaWordToRomajiChunks('ん')).toEqual([
+        {
+          chunk: 'ん',
+          candidates: ['nn'],
+        },
+      ]);
+    });
+
+    test('「ん」で終わる場合はnを2回', () => {
+      expect(kanaWordToRomajiChunks('ぺん')).toEqual([
+        {
+          chunk: 'ぺ',
+          candidates: ['pe'],
+        },
+        {
+          chunk: 'ん',
+          candidates: ['nn'],
+        },
+      ]);
+    });
+
+    test('「ん」＋な行の場合はnを2回', () => {
+      expect(kanaWordToRomajiChunks('かんな')).toEqual([
+        {
+          chunk: 'か',
+          candidates: ['ka', 'ca'],
+        },
+        {
+          chunk: 'ん',
+          candidates: ['nn'],
+        },
+        {
+          chunk: 'な',
+          candidates: ['na'],
+        },
+      ]);
+    });
+
+    test('「ん」＋な行以外の場合はnを1回でも可', () => {
+      expect(kanaWordToRomajiChunks('ひんと')).toEqual([
+        {
+          chunk: 'ひ',
+          candidates: ['hi'],
+        },
+        {
+          chunk: 'んと',
+          candidates: ['nto', 'nnto'],
+        },
+      ]);
+    });
   });
 });
