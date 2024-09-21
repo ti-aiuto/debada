@@ -18,9 +18,19 @@ export class TypingWord {
   // 現在のchunkの中で何文字目まで入力したか
   private cursorInChunk = 0;
 
-  constructor(private kanaWord: string) {
+  private _correctCount = 0;
+  private _wrongCount = 0;
+  private _renzokuCorrectCount = 0;
+
+  private onWordCompletedCallback: Function | undefined;
+
+  constructor(kanaWord: string) {
     this.romajiChunks = kanaWordToRomajiChunks(kanaWord);
     this.prepareNextChunk();
+  }
+
+  setOnWordCompletedCallback(callback: Function) {
+    this.onWordCompletedCallback = callback;
   }
 
   prepareNextChunk(): boolean {
@@ -45,11 +55,7 @@ export class TypingWord {
   // 文字入力
   // 戻り値は成否
   typeKey(uttaMoji: string): boolean {
-    const uttaRomajiInChunk = this.selectedChunkRomajiCandidate.slice(
-      0,
-      this.cursorInChunk
-    );
-    const chunkRomajiAndUttamoji = `${uttaRomajiInChunk}${uttaMoji}`; // 現在のchunkで今打った文字も含めて打った文字
+    const chunkRomajiAndUttamoji = `${this.koremadeUttaRomajiInChunk()}${uttaMoji.toLowerCase()}`; // 現在のchunkで今打った文字も含めて打った文字
 
     // 画面に表示されているのとは違った入力方法があるためこの時点では正解・不正解はまだ決まっていない
     const nextChunkRomajiCandidate = this.currentChunkRomajiCandidates.find(
@@ -60,15 +66,61 @@ export class TypingWord {
 
     if (nextChunkRomajiCandidate) {
       // 正解
+      this._correctCount += 1;
+      this._renzokuCorrectCount += 1;
+
       if (this.cursorInChunk + 1 === nextChunkRomajiCandidate.length) {
-        // 全部打ち終わったとき
+        // chunkを全部打ち終わったとき
+        if (!this.prepareNextChunk()) {
+          this.onWordCompletedCallback && this.onWordCompletedCallback();
+        }
       } else {
         // まだ入力中
+        this.selectedChunkRomajiCandidate = nextChunkRomajiCandidate;
+        this.cursorInChunk += 1;
       }
+
+      return true;
     } else {
       // 不正解
-    }
+      this._wrongCount = 0;
+      this._renzokuCorrectCount = 0;
 
-    return false;
+      return false;
+    }
+  }
+
+  koremadeUttaRomajiInChunk(): string {
+    return this.selectedChunkRomajiCandidate.slice(0, this.cursorInChunk);
+  }
+
+  koremadeUttaRoamji(): string {
+    return `${this.uttaChunkRomajiAll}${this.koremadeUttaRomajiInChunk()}`;
+  }
+
+  nokoriRomaji(): string {
+    return (
+      this.selectedChunkRomajiCandidate.slice(
+        this.cursorInChunk,
+        this.selectedChunkRomajiCandidate.length
+      ) +
+      this.romajiChunks
+        .slice(this.chunkCursor + 1)
+        .map(chunk => chunk.candidates[0])
+        .join('')
+        .toUpperCase()
+    );
+  }
+
+  correctCount() {
+    return this._correctCount;
+  }
+
+  wrongCount() {
+    return this._wrongCount;
+  }
+
+  renzokuCorrectCount() {
+    return this._renzokuCorrectCount;
   }
 }
