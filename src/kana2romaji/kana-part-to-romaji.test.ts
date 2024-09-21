@@ -13,4 +13,8 @@ describe('kanaPartToRomaji', () => {
       'fula',
     ]);
   });
+
+  test('対応表にない文字は空', () => {
+    expect(kanaPartToRomaji('無')).toEqual([]);
+  });
 });
