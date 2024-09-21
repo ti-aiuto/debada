@@ -10,7 +10,7 @@ export class TypingWord {
   private chunkCursor = -1;
 
   private currentChunkRomajiCandidates: RomajiCandidate[] = [];
-  private selectedChunkRomajiCandidate: RomajiCandidate = '';
+  private selectedChunkRomajiCandidate: RomajiCandidate | undefined;
 
   // これまでに打ったchunkの文字全部
   private uttaChunkRomajiAll = '';
@@ -34,14 +34,14 @@ export class TypingWord {
       this.uttaChunkRomajiAll += this.selectedChunkRomajiCandidate;
     }
 
-    // 「chunk内の文字を全部打ったら空にする」で挙動を統一するため
-    this.cursorInChunk = 0;
-
     const currentChunk = this.romajiChunks[this.chunkCursor];
     if (!currentChunk) {
+      this.selectedChunkRomajiCandidate = undefined;
       // 全chunkの入力完了
       return false;
     }
+
+    this.cursorInChunk = 0;
 
     this.currentChunkRomajiCandidates = currentChunk.candidates;
     const nextChunkRomajiCandidate = this.currentChunkRomajiCandidates[0];
@@ -91,6 +91,10 @@ export class TypingWord {
   }
 
   koremadeUttaRomajiInChunk(): string {
+    if (!this.selectedChunkRomajiCandidate) {
+      return '';
+    }
+
     return this.selectedChunkRomajiCandidate.slice(0, this.cursorInChunk);
   }
 
@@ -100,14 +104,22 @@ export class TypingWord {
 
   nokoriRomaji(): string {
     return (
-      this.selectedChunkRomajiCandidate.slice(
-        this.cursorInChunk,
-        this.selectedChunkRomajiCandidate.length
-      ) +
+      this.currentChunkNokoriRomaji() +
       this.romajiChunks
         .slice(this.chunkCursor + 1)
         .map(chunk => chunk.candidates[0])
         .join('')
+    );
+  }
+
+  private currentChunkNokoriRomaji(): string {
+    if (!this.selectedChunkRomajiCandidate) {
+      return '';
+    }
+
+    return this.selectedChunkRomajiCandidate.slice(
+      this.cursorInChunk,
+      this.selectedChunkRomajiCandidate.length
     );
   }
 
