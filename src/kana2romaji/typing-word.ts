@@ -7,7 +7,7 @@ export class TypingWord {
   private romajiChunks: RomajiChunk[];
 
   // 現在何個目のchunkを入力しているか
-  private chunkCursor = 0;
+  private chunkCursor = -1;
 
   private currentChunkRomajiCandidates: RomajiCandidate[] = [];
   private selectedChunkRomajiCandidate: RomajiCandidate = '';
@@ -22,33 +22,34 @@ export class TypingWord {
   private _wrongCount = 0;
   private _renzokuCorrectCount = 0;
 
-  private onWordCompletedCallback: Function | undefined;
-
   constructor(kanaWord: string) {
     this.romajiChunks = kanaWordToRomajiChunks(kanaWord);
     this.prepareNextChunk();
   }
 
-  setOnWordCompletedCallback(callback: Function) {
-    this.onWordCompletedCallback = callback;
-  }
+  private prepareNextChunk(): boolean {
+    this.chunkCursor += 1;
 
-  prepareNextChunk(): boolean {
-    // TODO: 最後まで行ったかチェック
+    if (this.selectedChunkRomajiCandidate) {
+      this.uttaChunkRomajiAll += this.selectedChunkRomajiCandidate;
+    }
+
+    // 「chunk内の文字を全部打ったら空にする」で挙動を統一するため
+    this.cursorInChunk = 0;
+
     const currentChunk = this.romajiChunks[this.chunkCursor];
     if (!currentChunk) {
+      // 全chunkの入力完了
       return false;
     }
 
-    this.cursorInChunk = 0;
     this.currentChunkRomajiCandidates = currentChunk.candidates;
-
     const nextChunkRomajiCandidate = this.currentChunkRomajiCandidates[0];
     if (!nextChunkRomajiCandidate) {
       throw new Error('候補が見つかりません');
     }
-
     this.selectedChunkRomajiCandidate = nextChunkRomajiCandidate;
+
     return true;
   }
 
@@ -70,14 +71,13 @@ export class TypingWord {
       this._renzokuCorrectCount += 1;
 
       if (this.cursorInChunk + 1 === nextChunkRomajiCandidate.length) {
+        this.cursorInChunk += 1;
         // chunkを全部打ち終わったとき
-        if (!this.prepareNextChunk()) {
-          this.onWordCompletedCallback && this.onWordCompletedCallback();
-        }
+        this.prepareNextChunk();
       } else {
+        this.cursorInChunk += 1;
         // まだ入力中
         this.selectedChunkRomajiCandidate = nextChunkRomajiCandidate;
-        this.cursorInChunk += 1;
       }
 
       return true;
@@ -108,7 +108,6 @@ export class TypingWord {
         .slice(this.chunkCursor + 1)
         .map(chunk => chunk.candidates[0])
         .join('')
-        .toUpperCase()
     );
   }
 
@@ -122,5 +121,9 @@ export class TypingWord {
 
   renzokuCorrectCount() {
     return this._renzokuCorrectCount;
+  }
+
+  hasCompleted(): boolean {
+    return this.chunkCursor === this.romajiChunks.length;
   }
 }
