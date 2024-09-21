@@ -1,10 +1,5 @@
 import {kanaPartToRomaji} from './kana-part-to-romaji';
-import {RomajiCandidate} from './romaji-candidate';
-
-type RomajiChunk = {
-  chunk: string;
-  candidates: RomajiCandidate[];
-};
+import {RomajiChunk} from './romaji-chunk';
 
 export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
   const result: RomajiChunk[] = [];
