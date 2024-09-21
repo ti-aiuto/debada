@@ -24,63 +24,6 @@ describe('kanaWordToRomajiChunks', () => {
         candidates: ['mi'],
       },
     ]);
-
-    expect(kanaWordToRomajiChunks('きっと')).toEqual([
-      {
-        chunk: 'き',
-        candidates: ['ki'],
-      },
-      {
-        chunk: 'っと',
-        candidates: ['tto', 'xtuto', 'ltuto'],
-      },
-    ]);
-
-    expect(kanaWordToRomajiChunks('さっ')).toEqual([
-      {
-        chunk: 'さ',
-        candidates: ['sa'],
-      },
-      {
-        chunk: 'っ',
-        candidates: ['xtu', 'ltu'],
-      },
-    ]);
-
-    expect(kanaWordToRomajiChunks('いしゃ')).toEqual([
-      {
-        chunk: 'い',
-        candidates: ['i'],
-      },
-      {
-        chunk: 'しゃ',
-        candidates: ['sya', 'sha', 'sixya', 'silya', 'shixya', 'shilya'],
-      },
-    ]);
-
-    expect(kanaWordToRomajiChunks('でんしゃ')).toEqual([
-      {
-        chunk: 'で',
-        candidates: ['de'],
-      },
-      {
-        chunk: 'んしゃ',
-        candidates: [
-          'nsya',
-          'nsha',
-          'nsixya',
-          'nsilya',
-          'nshixya',
-          'nshilya',
-          'nnsya',
-          'nnsha',
-          'nnsixya',
-          'nnsilya',
-          'nnshixya',
-          'nnshilya',
-        ],
-      },
-    ]);
   });
 
   describe('「ん」', () => {
@@ -135,5 +78,102 @@ describe('kanaWordToRomajiChunks', () => {
         },
       ]);
     });
+  });
+
+  describe('「っ」', () => {
+    test('「っ」で終わる場合は一文字単体で入力', () => {
+      expect(kanaWordToRomajiChunks('さっ')).toEqual([
+        {
+          chunk: 'さ',
+          candidates: ['sa'],
+        },
+        {
+          chunk: 'っ',
+          candidates: ['xtu', 'ltu'],
+        },
+      ]);
+    });
+
+    test('促音の場合は次の文字の一文字を重ねて入力も可', () => {
+      expect(kanaWordToRomajiChunks('きっと')).toEqual([
+        {
+          chunk: 'き',
+          candidates: ['ki'],
+        },
+        {
+          chunk: 'っと',
+          candidates: ['tto', 'xtuto', 'ltuto'],
+        },
+      ]);
+    });
+  });
+
+  test('撥音+拗音の変換', () => {
+    expect(kanaWordToRomajiChunks('いしゃ')).toEqual([
+      {
+        chunk: 'い',
+        candidates: ['i'],
+      },
+      {
+        chunk: 'しゃ',
+        candidates: ['sya', 'sha', 'sixya', 'silya', 'shixya', 'shilya'],
+      },
+    ]);
+
+    expect(kanaWordToRomajiChunks('でんしゃ')).toEqual([
+      {
+        chunk: 'で',
+        candidates: ['de'],
+      },
+      {
+        chunk: 'んしゃ',
+        candidates: [
+          'nsya',
+          'nsha',
+          'nsixya',
+          'nsilya',
+          'nshixya',
+          'nshilya',
+          'nnsya',
+          'nnsha',
+          'nnsixya',
+          'nnsilya',
+          'nnshixya',
+          'nnshilya',
+        ],
+      },
+    ]);
+
+    expect(kanaWordToRomajiChunks('てんにょ')).toEqual([
+      {
+        chunk: 'て',
+        candidates: ['te'],
+      },
+      {
+        chunk: 'ん',
+        candidates: ['nn'],
+      },
+      {
+        chunk: 'にょ',
+        candidates: ['nyo', 'nixyo', 'nilyo'],
+      },
+    ]);
+  });
+
+  test('長音の変換', () => {
+    expect(kanaWordToRomajiChunks('おーい')).toEqual([
+      {
+        chunk: 'お',
+        candidates: ['o'],
+      },
+      {
+        chunk: 'ー',
+        candidates: ['-'],
+      },
+      {
+        chunk: 'い',
+        candidates: ['i'],
+      },
+    ]);
   });
 });
