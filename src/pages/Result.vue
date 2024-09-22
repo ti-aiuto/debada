@@ -1,8 +1,12 @@
 <template>
   <div>
-    結果画面
+    <img :src="bgImageUrl" class="bg-image">
     <div>
       <RouterLink to="/">TOPへ</RouterLink>
     </div>
 </div>
 </template>
+
+<script setup lang="ts">
+import bgImageUrl from '../assets/result-screen.svg';
+</script>
