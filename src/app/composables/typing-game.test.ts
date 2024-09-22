@@ -146,8 +146,8 @@ describe('typingGame', () => {
     expect(correctCount.value).toEqual(7);
     expect(wrongCount.value).toEqual(3);
     expect(renzokuCorrectCount.value).toEqual(1);
-    expect(hasCompletedWord.value).toEqual(false);
-    expect(koremadeUttaRoamji.value).toEqual('');
+    expect(hasCompletedWord.value).toEqual(true);
+    expect(koremadeUttaRoamji.value).toEqual('ki');
     expect(nokoriRomaji.value).toEqual('');
     expect(currentQuestionIndex.value).toEqual(2);
   });

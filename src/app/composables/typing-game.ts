@@ -34,9 +34,7 @@ export function typingGame(initialQunestions: string[]) {
 
   function proceedToNextQuestion(): boolean {
     if (currentQuestionIndex.value + 1 >= questions.value.length) {
-      koremadeUttaRoamji.value = '';
-      nokoriRomaji.value = '';
-      hasCompletedWord.value = false;
+      // 最後の問題の終了後は最後の問題が終わったときの状態を維持する
       return false;
     }
 
