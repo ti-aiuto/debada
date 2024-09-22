@@ -17,6 +17,8 @@ const router = useRouter()
 function keyDownListener(event: KeyboardEvent) {
   if ([' ', 'Enter'].includes(event.key)) {
     router.push('/play');
+  } else if (event.key === 'Escape') {
+    router.push('/');
   }
 }
 
