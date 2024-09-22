@@ -1,5 +1,5 @@
 import {ref} from 'vue';
-import {TypingWord} from '../../kana2romaji/typing-word';
+import {TypingWord} from '../kana2romaji/typing-word';
 
 export function typingGame(initialQunestions: string[]) {
   const questions = ref(structuredClone(initialQunestions));
