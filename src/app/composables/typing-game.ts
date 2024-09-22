@@ -1,8 +1,9 @@
 import {ref} from 'vue';
 import {TypingWord} from '../../kana2romaji/typing-word';
 
-export function typingGame(words: string[]) {
-  const currenWordIndex = ref(-1);
+export function typingGame(initialQunestions: string[]) {
+  const questions = ref(initialQunestions);
+  const currentQuestionIndex = ref(-1);
   const correctCount = ref(0);
   const wrongCount = ref(0);
   const renzokuCorrectCount = ref(0);
@@ -32,10 +33,13 @@ export function typingGame(words: string[]) {
   };
 
   function prepareNextQuestion(): boolean {
-    currenWordIndex.value += 1;
+    currentQuestionIndex.value += 1;
 
-    const nextWord = words[currenWordIndex.value];
+    const nextWord = questions.value[currentQuestionIndex.value];
     if (!nextWord) {
+      koremadeUttaRoamji.value = '';
+      nokoriRomaji.value = '';
+      hasCompletedWord.value = false;
       return false;
     }
 
@@ -64,6 +68,7 @@ export function typingGame(words: string[]) {
     hasCompletedWord,
     koremadeUttaRoamji,
     nokoriRomaji,
-    currenWordIndex,
+    currentQuestionIndex,
+    questions,
   };
 }
