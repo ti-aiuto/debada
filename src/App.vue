@@ -10,5 +10,6 @@
   width: 640px;
   height: 480px;
   margin: auto;
+  position: relative;
 }
 </style>

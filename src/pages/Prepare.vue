@@ -1,7 +1,7 @@
 <template>
   <div>
-    準備画面
     <div>
+      <img :src="bgImageUrl" class="bg-image">
       スペースキーまたはエンターキーを押下で開始
     </div>
   </div>
@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import bgImageUrl from '../assets/prepare-screen.svg';
 
 const router = useRouter()
 
