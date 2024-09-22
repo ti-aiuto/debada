@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import bgImageUrl from '../assets/play-screen.svg';
+import bgImageUrl from '../assets/background/play-screen.svg';
 import { typingGame } from '../composables/typing-game'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'

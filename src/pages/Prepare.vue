@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import bgImageUrl from '../assets/prepare-screen.svg';
+import bgImageUrl from '../assets/background/prepare-screen.svg';
 
 const router = useRouter()
 

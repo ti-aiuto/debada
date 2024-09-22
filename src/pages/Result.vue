@@ -8,5 +8,5 @@
 </template>
 
 <script setup lang="ts">
-import bgImageUrl from '../assets/result-screen.svg';
+import bgImageUrl from '../assets/background/result-screen.svg';
 </script>
