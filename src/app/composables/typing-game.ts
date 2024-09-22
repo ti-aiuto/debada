@@ -2,7 +2,7 @@ import {ref} from 'vue';
 import {TypingWord} from '../../kana2romaji/typing-word';
 
 export function typingGame(initialQunestions: string[]) {
-  const questions = ref(initialQunestions);
+  const questions = ref(structuredClone(initialQunestions));
   const currentQuestionIndex = ref(-1);
   const correctCount = ref(0);
   const wrongCount = ref(0);
