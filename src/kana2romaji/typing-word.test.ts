@@ -122,6 +122,14 @@ describe('TypingWord', () => {
     expect(typingWord.koremadeUttaRomajiInChunk()).toEqual('');
     expect(typingWord.nokoriRomaji()).toEqual('');
     expect(typingWord.hasCompleted()).toBe(true);
+
+    // 入力完了後に何か打った場合
+    expect(typingWord.typeKey('n')).toBe(false);
+
+    expect(typingWord.koremadeUttaRoamji()).toEqual('doteni');
+    expect(typingWord.koremadeUttaRomajiInChunk()).toEqual('');
+    expect(typingWord.nokoriRomaji()).toEqual('');
+    expect(typingWord.hasCompleted()).toBe(true);
   });
 
   test('途中で表示と違う方法に変えながら間違いなく入力した場合', () => {

@@ -52,6 +52,10 @@ export class TypingWord {
   // 文字入力
   // 戻り値は成否
   typeKey(uttaMoji: string): boolean {
+    if (this.hasCompleted()) {
+      return false;
+    }
+
     const chunkRomajiAndUttamoji = `${this.koremadeUttaRomajiInChunk()}${uttaMoji.toLowerCase()}`; // 現在のchunkで今打った文字も含めて打った文字
 
     // 画面に表示されているのとは違った入力方法があるためこの時点では正解・不正解はまだ決まっていない
