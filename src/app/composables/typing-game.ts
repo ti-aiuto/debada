@@ -32,15 +32,18 @@ export function typingGame(initialQunestions: string[]) {
     return result;
   };
 
-  function prepareNextQuestion(): boolean {
-    currentQuestionIndex.value += 1;
-
-    const nextWord = questions.value[currentQuestionIndex.value];
-    if (!nextWord) {
+  function proceedToNextQuestion(): boolean {
+    if (currentQuestionIndex.value + 1 >= questions.value.length) {
       koremadeUttaRoamji.value = '';
       nokoriRomaji.value = '';
       hasCompletedWord.value = false;
       return false;
+    }
+
+    currentQuestionIndex.value += 1;
+    const nextWord = questions.value[currentQuestionIndex.value];
+    if (!nextWord) {
+      throw new Error('indexの範囲外');
     }
 
     currentTypingWord = new TypingWord(nextWord);
@@ -59,12 +62,14 @@ export function typingGame(initialQunestions: string[]) {
     hasCompletedWord.value = currentTypingWord.hasCompleted();
   }
 
+  proceedToNextQuestion();
+
   return {
     correctCount,
     wrongCount,
     renzokuCorrectCount,
     typeKey,
-    prepareNextQuestion,
+    proceedToNextQuestion,
     hasCompletedWord,
     koremadeUttaRoamji,
     nokoriRomaji,
