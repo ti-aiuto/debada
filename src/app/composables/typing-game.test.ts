@@ -7,7 +7,7 @@ describe('typingGame', () => {
       wrongCount,
       renzokuCorrectCount,
       typeKey,
-      prepareNextQuestion,
+      proceedToNextQuestion,
       hasCompletedWord,
       koremadeUttaRoamji,
       nokoriRomaji,
@@ -16,16 +16,6 @@ describe('typingGame', () => {
     } = typingGame(['あか', 'あお', 'き']);
 
     expect(questions.value).toEqual(['あか', 'あお', 'き']);
-
-    expect(correctCount.value).toEqual(0);
-    expect(wrongCount.value).toEqual(0);
-    expect(renzokuCorrectCount.value).toEqual(0);
-    expect(hasCompletedWord.value).toEqual(false);
-    expect(koremadeUttaRoamji.value).toEqual('');
-    expect(nokoriRomaji.value).toEqual('');
-    expect(currentQuestionIndex.value).toEqual(-1);
-
-    expect(prepareNextQuestion()).toBe(true);
 
     expect(correctCount.value).toEqual(0);
     expect(wrongCount.value).toEqual(0);
@@ -78,7 +68,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('aka');
     expect(nokoriRomaji.value).toEqual('');
 
-    expect(prepareNextQuestion()).toBe(true);
+    expect(proceedToNextQuestion()).toBe(true);
 
     expect(correctCount.value).toEqual(3);
     expect(wrongCount.value).toEqual(1);
@@ -115,7 +105,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('ao');
     expect(nokoriRomaji.value).toEqual('');
 
-    expect(prepareNextQuestion()).toBe(true);
+    expect(proceedToNextQuestion()).toBe(true);
 
     expect(correctCount.value).toEqual(5);
     expect(wrongCount.value).toEqual(2);
@@ -151,7 +141,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('ki');
     expect(nokoriRomaji.value).toEqual('');
 
-    expect(prepareNextQuestion()).toBe(false);
+    expect(proceedToNextQuestion()).toBe(false);
 
     expect(correctCount.value).toEqual(7);
     expect(wrongCount.value).toEqual(3);
@@ -159,6 +149,6 @@ describe('typingGame', () => {
     expect(hasCompletedWord.value).toEqual(false);
     expect(koremadeUttaRoamji.value).toEqual('');
     expect(nokoriRomaji.value).toEqual('');
-    expect(currentQuestionIndex.value).toEqual(3);
+    expect(currentQuestionIndex.value).toEqual(2);
   });
 });
