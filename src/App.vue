@@ -32,10 +32,10 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 <template>
   <div class="screen">
     <div>
-      <div class="m-plus-rounded-1c-regular">
+      <div class="m-plus-rounded-1c-light">
         正解タイプ数：{{ correctCount }}、連続正解タイプ数：{{ renzokuCorrectCount }}、間違いタイプ数：{{ wrongCount }}
       </div>
-      <div class="m-plus-rounded-1c-regular">
+      <div class="m-plus-rounded-1c-light">
         {{ currentQuestionIndex + 1 }} / {{ questions.length }}問
       </div>
       <div v-if="hasCompletedGame">

@@ -246,6 +246,12 @@ progress {
   cursor: default
 }
 
+.m-plus-rounded-1c-light {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
 .m-plus-rounded-1c-regular {
   font-family: "M PLUS Rounded 1c", sans-serif;
   font-weight: 400;
