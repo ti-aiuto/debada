@@ -20,7 +20,15 @@ const {
   currentQuestionIndex,
 } = typingGame(questions);
 
+function abortGame() {
+  router.push('/');
+}
+
 function keyDownListener(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    return abortGame();
+  }
+
   typeKey(event.key);
   if (hasCompletedWord.value) {
     if (!proceedToNextQuestion()) {
