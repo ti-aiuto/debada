@@ -2,8 +2,8 @@
   <div>
     <img :src="bgImageUrl" class="bg-image">
     <div>
-      <RouterLink to="/prepare">
-        <img :src="startButton" class="image-button start-button">
+      <RouterLink to="/prepare" class="start-button">
+        <img :src="startButton" class="image-button">
       </RouterLink>
     </div>
   </div>
@@ -18,5 +18,9 @@ import startButton from '../assets/buttons/start-button.svg';
 
 .start-button {
   width: 300px;
+  display: block;
+  position: relative;
+  top: 300px;
+  left: calc(320px - 150px);
 }
 </style>
