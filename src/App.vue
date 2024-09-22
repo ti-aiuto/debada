@@ -1,30 +1,49 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { typingGame } from './composables/typing-game'
+import { onMounted, onUnmounted } from 'vue'
+
+const questions = ['あか', 'あお', 'き'];
+
+const {
+  correctCount,
+  wrongCount,
+  renzokuCorrectCount,
+  typeKey,
+  proceedToNextQuestion,
+  hasCompletedWord,
+  koremadeUttaRoamji,
+  nokoriRomaji,
+  currentQuestionIndex,
+} = typingGame(questions);
+
+function keyDownListener(event: KeyboardEvent) {
+  typeKey(event.key);
+  if (hasCompletedWord.value) {
+    // proceedToNextQuestion();
+  }
+}
+
+onMounted(() => document.addEventListener('keydown', keyDownListener))
+onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="screen">
+    <div>
+      <div>
+        正解タイプ数：{{ correctCount }}、連続正解タイプ数：{{ renzokuCorrectCount }}、間違いタイプ数：{{ wrongCount }}
+      </div>
+      <div>
+        {{ currentQuestionIndex + 1 }} / {{ questions.length }}問
+      </div>
+    </div>
+    <strong>{{ koremadeUttaRoamji }}</strong>{{ nokoriRomaji }}
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.screen {
+  border: 2px solid #000;
 }
 </style>
