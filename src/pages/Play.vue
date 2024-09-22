@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import bgImageUrl from '../assets/play-screen.svg';
 import { typingGame } from '../composables/typing-game'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -42,7 +43,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 </script>
 
 <template>
-  <div class="screen">
+  <div>
+    <img :src="bgImageUrl" class="bg-image">
     <div>
       <div class="m-plus-rounded-1c-light">
         正解タイプ数：{{ correctCount }}、連続正解タイプ数：{{ renzokuCorrectCount }}、間違いタイプ数：{{ wrongCount }}
