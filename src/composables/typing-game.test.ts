@@ -9,6 +9,7 @@ describe('typingGame', () => {
       typeKey,
       proceedToNextQuestion,
       hasCompletedWord,
+      hasCompletedGame,
       koremadeUttaRoamji,
       nokoriRomaji,
       currentQuestionIndex,
@@ -24,6 +25,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('');
     expect(nokoriRomaji.value).toEqual('aka');
     expect(currentQuestionIndex.value).toEqual(0);
+    expect(hasCompletedGame.value).toEqual(false);
 
     expect(correctCount.value).toEqual(0);
     expect(wrongCount.value).toEqual(0);
@@ -69,6 +71,7 @@ describe('typingGame', () => {
     expect(nokoriRomaji.value).toEqual('');
 
     expect(proceedToNextQuestion()).toBe(true);
+    expect(hasCompletedGame.value).toEqual(false);
 
     expect(correctCount.value).toEqual(3);
     expect(wrongCount.value).toEqual(1);
@@ -106,6 +109,7 @@ describe('typingGame', () => {
     expect(nokoriRomaji.value).toEqual('');
 
     expect(proceedToNextQuestion()).toBe(true);
+    expect(hasCompletedGame.value).toEqual(false);
 
     expect(correctCount.value).toEqual(5);
     expect(wrongCount.value).toEqual(2);
@@ -142,6 +146,18 @@ describe('typingGame', () => {
     expect(nokoriRomaji.value).toEqual('');
 
     expect(proceedToNextQuestion()).toBe(false);
+    expect(hasCompletedGame.value).toEqual(true);
+
+    expect(correctCount.value).toEqual(7);
+    expect(wrongCount.value).toEqual(3);
+    expect(renzokuCorrectCount.value).toEqual(1);
+    expect(hasCompletedWord.value).toEqual(true);
+    expect(koremadeUttaRoamji.value).toEqual('ki');
+    expect(nokoriRomaji.value).toEqual('');
+    expect(currentQuestionIndex.value).toEqual(2);
+
+    // 完了後に何かキーを入力した場合
+    expect(typeKey('i')).toBe(false);
 
     expect(correctCount.value).toEqual(7);
     expect(wrongCount.value).toEqual(3);

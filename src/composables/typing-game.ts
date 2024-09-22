@@ -10,12 +10,17 @@ export function typingGame(initialQunestions: string[]) {
   const koremadeUttaRoamji = ref('');
   const nokoriRomaji = ref('');
   const hasCompletedWord = ref(false);
+  const hasCompletedGame = ref(false);
 
   let currentTypingWord: TypingWord | undefined = undefined;
 
   const typeKey = function (key: string): boolean {
     if (!currentTypingWord) {
       throw new Error('currentTypingWordが未定義');
+    }
+
+    if (hasCompletedGame.value) {
+      return false;
     }
 
     const result = currentTypingWord.typeKey(key);
@@ -35,6 +40,7 @@ export function typingGame(initialQunestions: string[]) {
   function proceedToNextQuestion(): boolean {
     if (currentQuestionIndex.value + 1 >= questions.value.length) {
       // 最後の問題の終了後は最後の問題が終わったときの状態を維持する
+      hasCompletedGame.value = true;
       return false;
     }
 
@@ -69,6 +75,7 @@ export function typingGame(initialQunestions: string[]) {
     typeKey,
     proceedToNextQuestion,
     hasCompletedWord,
+    hasCompletedGame,
     koremadeUttaRoamji,
     nokoriRomaji,
     currentQuestionIndex,
