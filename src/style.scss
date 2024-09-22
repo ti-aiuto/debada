@@ -265,6 +265,14 @@ progress {
   z-index: -1;
 }
 
+.image-button {
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 * {
   user-select: none;
 }
