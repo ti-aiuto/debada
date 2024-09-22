@@ -2,7 +2,6 @@
   <div>
     <div>
       <img :src="bgImageUrl" class="bg-image">
-      スペースキーまたはエンターキーを押下で開始
     </div>
   </div>
 </template>

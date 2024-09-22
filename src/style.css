@@ -264,3 +264,7 @@ progress {
   position: absolute;
   z-index: -1;
 }
+
+* {
+  user-select: none;
+}
