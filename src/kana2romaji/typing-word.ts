@@ -18,10 +18,6 @@ export class TypingWord {
   // 現在のchunkの中で何文字目まで入力したか
   private cursorInChunk = 0;
 
-  private _correctCount = 0;
-  private _wrongCount = 0;
-  private _renzokuCorrectCount = 0;
-
   constructor(kanaWord: string) {
     this.romajiChunks = kanaWordToRomajiChunks(kanaWord);
     this.prepareNextChunk();
@@ -67,9 +63,6 @@ export class TypingWord {
 
     if (nextChunkRomajiCandidate) {
       // 正解
-      this._correctCount += 1;
-      this._renzokuCorrectCount += 1;
-
       if (this.cursorInChunk + 1 === nextChunkRomajiCandidate.length) {
         this.cursorInChunk += 1;
         // chunkを全部打ち終わったとき
@@ -83,9 +76,6 @@ export class TypingWord {
       return true;
     } else {
       // 不正解
-      this._wrongCount += 1;
-      this._renzokuCorrectCount = 0;
-
       return false;
     }
   }
@@ -121,18 +111,6 @@ export class TypingWord {
       this.cursorInChunk,
       this.selectedChunkRomajiCandidate.length
     );
-  }
-
-  correctCount() {
-    return this._correctCount;
-  }
-
-  wrongCount() {
-    return this._wrongCount;
-  }
-
-  renzokuCorrectCount() {
-    return this._renzokuCorrectCount;
   }
 
   hasCompleted(): boolean {
