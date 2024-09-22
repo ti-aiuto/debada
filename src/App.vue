@@ -43,7 +43,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       </div>
     </div>
     <div class="question-area m-plus-rounded-1c-regular">
-      <strong>{{ koremadeUttaRoamji.toUpperCase() }}</strong>{{ nokoriRomaji.toUpperCase() }}
+      <span>{{ koremadeUttaRoamji.toUpperCase() }}</span><span style="color: #aaa;">{{ nokoriRomaji.toUpperCase() }}</span>
     </div>
   </div>
 </template>
