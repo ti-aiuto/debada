@@ -9,7 +9,6 @@ export function typingGame(words: string[]) {
   const koremadeUttaRoamji = ref('');
   const nokoriRomaji = ref('');
   const hasCompletedWord = ref(false);
-  const hasCompletedGame = ref(false);
 
   let currentTypingWord: TypingWord | undefined = undefined;
 
@@ -37,7 +36,6 @@ export function typingGame(words: string[]) {
 
     const nextWord = words[currenWordIndex.value];
     if (!nextWord) {
-      hasCompletedGame.value = true;
       return false;
     }
 
@@ -64,6 +62,5 @@ export function typingGame(words: string[]) {
     typeKey,
     prepareNextQuestion,
     hasCompletedWord,
-    hasCompletedGame,
   };
 }
