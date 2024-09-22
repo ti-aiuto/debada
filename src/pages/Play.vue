@@ -31,7 +31,6 @@ function keyDownListener(event: KeyboardEvent) {
 
 onMounted(() => document.addEventListener('keydown', keyDownListener))
 onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
-
 </script>
 
 <template>
