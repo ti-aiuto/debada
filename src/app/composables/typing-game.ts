@@ -62,5 +62,8 @@ export function typingGame(words: string[]) {
     typeKey,
     prepareNextQuestion,
     hasCompletedWord,
+    koremadeUttaRoamji,
+    nokoriRomaji,
+    currenWordIndex,
   };
 }
