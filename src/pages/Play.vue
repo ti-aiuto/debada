@@ -1,12 +1,30 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
 import { typingGame } from '../composables/typing-game'
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const questions = ['れいとれすぽんす', 'にゅーあぎゅめんと', 'どろーひてい'];
+type Question = {
+  kana: string;
+  label: string;
+}
+
+const questions: Question[] = [
+  {
+    kana: 'れいとれすぽんす',
+    label: 'レイトレスポンス',
+  },
+  {
+    kana: 'にゅーあぎゅめんと',
+    label: 'ニューアーギュメント',
+  },
+  {
+    kana: 'どろーひてい',
+    label: 'ドロー否定',
+  },
+];
 
 const {
   correctCount,
@@ -15,11 +33,14 @@ const {
   typeKey,
   proceedToNextQuestion,
   hasCompletedWord,
-  hasCompletedGame,
   koremadeUttaRoamji,
   nokoriRomaji,
   currentQuestionIndex,
-} = typingGame(questions);
+} = typingGame(questions.map(item => item.kana));
+
+const currentQuestion = computed(() => {
+  return questions[currentQuestionIndex.value];
+});
 
 function abortGame() {
   router.push('/');
@@ -33,6 +54,12 @@ function keyDownListener(event: KeyboardEvent) {
   typeKey(event.key);
   if (hasCompletedWord.value) {
     if (!proceedToNextQuestion()) {
+      // TODO: この結果をどこかで覚える
+      console.log({
+        correctCount: correctCount.value, 
+        wrongCount: wrongCount.value, 
+        renzokuCorrectCount: renzokuCorrectCount.value, 
+      });
       router.push('/result');
     }
   }
@@ -45,26 +72,50 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 <template>
   <div>
     <img :src="bgImageUrl" class="bg-image">
-    <div>
-      <div class="m-plus-rounded-1c-light">
-        正解タイプ数：{{ correctCount }}、連続正解タイプ数：{{ renzokuCorrectCount }}、間違いタイプ数：{{ wrongCount }}
+
+    <div class="wrapper">
+      <div class="question-label-area m-plus-rounded-1c-regular">
+        <span class="question-label">{{ currentQuestion.label }}</span>
       </div>
-      <div class="m-plus-rounded-1c-light">
-        {{ currentQuestionIndex + 1 }} / {{ questions.length }}問
+
+      <div class="question-kana-area m-plus-rounded-1c-regular">
+        <span class="chars-before-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-after-type">{{
+          nokoriRomaji.toUpperCase() }}</span>
       </div>
-      <div v-if="hasCompletedGame">
-        おわり
-      </div>
-    </div>
-    <div class="question-area m-plus-rounded-1c-regular">
-      <span>{{ koremadeUttaRoamji.toUpperCase() }}</span><span style="color: #aaa;">{{ nokoriRomaji.toUpperCase() }}</span>
     </div>
   </div>
 </template>
 
 <style scoped>
-.question-area {
+.wrapper {
+  position: relative;
+}
+
+.question-kana-area {
+  width: 100%;
   text-align: center;
-  font-size: 30px;
+  font-size: 20px;
+  position: absolute;
+  top: 120px;
+}
+
+.question-label-area {
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  position: absolute;
+  top: 40px;
+}
+
+.question-label {
+  color: #fff;
+}
+
+.chars-before-type {
+  color: #fff;
+}
+
+.chars-after-type {
+  color: #999;
 }
 </style>
