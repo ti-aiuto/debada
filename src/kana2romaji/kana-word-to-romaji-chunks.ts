@@ -10,7 +10,8 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
     if (
       part2.match(/^ん/) &&
       !part2.match(/^ん$/) &&
-      !part2.match(/^ん[なにぬねの]/)
+      !part2.match(/^ん[なにぬねの]/) &&
+      !part2.match(/^ん[やゆよ]/)
     ) {
       // 「ん」でnが1回でも良いパターン
       const innerPart2 = word.substr(cursor + 1, 2);
