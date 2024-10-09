@@ -78,6 +78,27 @@ describe('kanaWordToRomajiChunks', () => {
         },
       ]);
     });
+
+    test('「ん」＋「やゆよ」行の場合はnが2回必要', () => {
+      expect(kanaWordToRomajiChunks('いんよう')).toEqual([
+        {
+          chunk: 'い',
+          candidates: ['i'],
+        },
+        {
+          chunk: 'ん',
+          candidates: ['nn'],
+        },
+        {
+          chunk: 'よ',
+          candidates: ['yo'],
+        },
+        {
+          chunk: 'う',
+          candidates: ['u', 'wu', 'whu'],
+        },
+      ]);
+    });
   });
 
   describe('「っ」', () => {
