@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
 import judge1Image from '../assets/sprites/judge1.png';
+import gauge3Image from '../assets/sprites/gauge3.png';
+import gauge4Image from '../assets/sprites/gauge4.png';
+import gauge5Image from '../assets/sprites/gauge5.png';
 
 import { typingGame } from '../composables/typing-game'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -40,7 +43,18 @@ const {
   currentQuestionIndex,
 } = typingGame(questions.map(item => item.kana));
 
+const currentCommPoint = ref(3);
 const judgeImagesClass = ref('');
+
+const gaugeImageUrl = computed(() => {
+  if (currentCommPoint.value === 5) {
+    return gauge5Image;
+  } else if (currentCommPoint.value === 4) {
+    return gauge4Image;
+  } else {
+    return gauge3Image;
+  }
+})
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
@@ -57,7 +71,18 @@ function keyDownListener(event: KeyboardEvent) {
     return abortGame();
   }
 
-  typeKey(event.key);
+  if (!typeKey(event.key)) {
+    // タイプミス効果音
+  }
+
+  if (renzokuCorrectCount.value >= 30) {
+    currentCommPoint.value = 5;
+  } else if (renzokuCorrectCount.value >= 15) {
+    currentCommPoint.value = 4;
+  } else {
+    currentCommPoint.value = 3;
+  }
+
   if (hasCompletedWord.value) {
     judgeImagesClass.value = 'judges-image-nodding';
 
@@ -95,6 +120,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
         <span class="chars-before-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-after-type">{{
           nokoriRomaji.toUpperCase() }}</span>
       </div>
+
+      <img :src="gaugeImageUrl" class="gauge">
 
       <div class="judges-area">
         <img :src="judge1Image" class="judges-image" :class="judgeImagesClass">
@@ -177,5 +204,13 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   animation-name: start-nodding;
   animation-duration: 0.5s;
   animation-iteration-count: 1;
+}
+
+.gauge {
+  position: absolute;
+  width: 380px;
+  height: 22px;
+  left: 130px;
+  top: 440px;
 }
 </style>
