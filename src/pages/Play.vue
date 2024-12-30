@@ -11,28 +11,10 @@ import pointFantastic from '../assets/sprites/point_fantastic.png';
 import { typingGame } from '../composables/typing-game'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { findEasyQuestions } from '../questions/easy';
 
-const router = useRouter()
-
-type Question = {
-  kana: string;
-  label: string;
-}
-
-const questions: Question[] = [
-  {
-    kana: 'れいとれすぽんす',
-    label: 'レイトレスポンス',
-  },
-  {
-    kana: 'にゅーあぎゅめんと',
-    label: 'ニューアーギュメント',
-  },
-  {
-    kana: 'どろーひてい',
-    label: 'ドロー否定',
-  },
-];
+const router = useRouter();
+const questions = findEasyQuestions();
 
 const {
   correctCount,
