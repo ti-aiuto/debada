@@ -4,6 +4,9 @@ import judge1Image from '../assets/sprites/judge1.png';
 import gauge3Image from '../assets/sprites/gauge3.png';
 import gauge4Image from '../assets/sprites/gauge4.png';
 import gauge5Image from '../assets/sprites/gauge5.png';
+import pointGood from '../assets/sprites/point_good.png';
+import pointGreat from '../assets/sprites/point_great.png';
+import pointFantastic from '../assets/sprites/point_fantastic.png';
 
 import { typingGame } from '../composables/typing-game'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -43,8 +46,11 @@ const {
   currentQuestionIndex,
 } = typingGame(questions.map(item => item.kana));
 
+const currentScore = ref(0);
+const currentShinpanCount = ref(1);
 const currentCommPoint = ref(3);
 const judgeImagesClass = ref('');
+const pointImageClass = ref('');
 
 const gaugeImageUrl = computed(() => {
   if (currentCommPoint.value === 5) {
@@ -53,6 +59,16 @@ const gaugeImageUrl = computed(() => {
     return gauge4Image;
   } else {
     return gauge3Image;
+  }
+})
+
+const pointImageUrl = computed(() => {
+  if (currentCommPoint.value === 5) {
+    return pointFantastic;
+  } else if (currentCommPoint.value === 4) {
+    return pointGreat;
+  } else {
+    return pointGood;
   }
 })
 
@@ -65,6 +81,7 @@ function abortGame() {
 }
 
 let noddingTimer: any = null;
+let pointImageTimer: any = null;
 
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -91,12 +108,21 @@ function keyDownListener(event: KeyboardEvent) {
       judgeImagesClass.value = '';
     }, 1000);
 
+    pointImageClass.value = 'point-image-visible';
+    clearTimeout(pointImageTimer);
+    pointImageTimer = setTimeout(() => {
+      pointImageClass.value = '';
+    }, 1000);
+
+    currentScore.value += currentShinpanCount.value * currentCommPoint.value;
+
     if (!proceedToNextQuestion()) {
       // TODO: この結果をどこかで覚える
       console.log({
         correctCount: correctCount.value,
         wrongCount: wrongCount.value,
         renzokuCorrectCount: renzokuCorrectCount.value,
+        score: currentScore.value,
       });
       router.push('/result');
     }
@@ -122,6 +148,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       </div>
 
       <img :src="gaugeImageUrl" class="gauge">
+      <img :src="pointImageUrl" class="point-image" :class="pointImageClass">
 
       <div class="judges-area">
         <img :src="judge1Image" class="judges-image" :class="judgeImagesClass">
@@ -194,6 +221,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   position: absolute;
   display: flex;
   justify-content: center;
+  z-index: 100;
 }
 
 .judges-image {
@@ -212,5 +240,44 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   height: 22px;
   left: 130px;
   top: 440px;
+  z-index: 110;
+}
+
+.point-image {
+  position: absolute;
+  left: 170px;
+  top: 270px;
+  width: 300px;
+  height: 74px;
+  opacity: 0;
+  z-index: 120;
+}
+
+@keyframes point-image-animate {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  75% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+.point-image-visible {
+  animation-name: point-image-animate;
+  animation-duration: 0.75s;
+  animation-iteration-count: 1;
 }
 </style>
