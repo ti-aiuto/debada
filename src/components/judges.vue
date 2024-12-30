@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import judge1Image from '../assets/sprites/judge1.png';
+import judge3Image from '../assets/sprites/judge3.png';
+import judge5Image from '../assets/sprites/judge5.png';
 
 import { computed, ref } from 'vue'
 
@@ -12,9 +14,9 @@ const { judgesCount } = defineProps({
 
 const judgesImageUrl = computed(() => {
   if (judgesCount === 5) {
-    return judge1Image;
+    return judge5Image;
   } else if (judgesCount === 3) {
-    return judge1Image;
+    return judge3Image;
   } else {
     return judge1Image;
   }
@@ -69,6 +71,7 @@ defineExpose({ nod });
 
 .judges-image {
   position: absolute;
+  height: 181px;
 }
 
 .judges-image-nodding {
