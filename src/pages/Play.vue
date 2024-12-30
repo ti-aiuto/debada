@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
+import judge1Image from '../assets/sprites/judge1.png';
+
 import { typingGame } from '../composables/typing-game'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -38,6 +40,8 @@ const {
   currentQuestionIndex,
 } = typingGame(questions.map(item => item.kana));
 
+const judgeImagesClass = ref('');
+
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
@@ -46,6 +50,8 @@ function abortGame() {
   router.push('/');
 }
 
+let noddingTimer: any = null;
+
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     return abortGame();
@@ -53,12 +59,19 @@ function keyDownListener(event: KeyboardEvent) {
 
   typeKey(event.key);
   if (hasCompletedWord.value) {
+    judgeImagesClass.value = 'judges-image-nodding';
+
+    clearTimeout(noddingTimer);
+    noddingTimer = setTimeout(() => {
+      judgeImagesClass.value = '';
+    }, 1000);
+
     if (!proceedToNextQuestion()) {
       // TODO: この結果をどこかで覚える
       console.log({
-        correctCount: correctCount.value, 
-        wrongCount: wrongCount.value, 
-        renzokuCorrectCount: renzokuCorrectCount.value, 
+        correctCount: correctCount.value,
+        wrongCount: wrongCount.value,
+        renzokuCorrectCount: renzokuCorrectCount.value,
       });
       router.push('/result');
     }
@@ -71,9 +84,9 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 <template>
   <div>
-    <img :src="bgImageUrl" class="bg-image">
-
     <div class="wrapper">
+      <img :src="bgImageUrl" class="bg-image">
+
       <div class="question-label-area m-plus-rounded-1c-regular">
         <span class="question-label">{{ currentQuestion.label }}</span>
       </div>
@@ -82,6 +95,10 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
         <span class="chars-before-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-after-type">{{
           nokoriRomaji.toUpperCase() }}</span>
       </div>
+
+      <div class="judges-area">
+        <img :src="judge1Image" class="judges-image" :class="judgeImagesClass">
+      </div>
     </div>
   </div>
 </template>
@@ -89,6 +106,9 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 <style scoped>
 .wrapper {
   position: relative;
+  overflow: hidden;
+  width: 640px;
+  height: 480px;
 }
 
 .question-kana-area {
@@ -117,5 +137,45 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .chars-after-type {
   color: #999;
+}
+
+@keyframes start-nodding {
+  0% {
+    top: 0;
+  }
+
+  25% {
+    top: 8px;
+  }
+
+  50% {
+    top: 0;
+  }
+
+  75% {
+    top: 8px;
+  }
+
+  100% {
+    top: 0;
+  }
+}
+
+.judges-area {
+  top: 325px;
+  width: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+
+.judges-image {
+  position: absolute;
+}
+
+.judges-image-nodding {
+  animation-name: start-nodding;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
 }
 </style>
