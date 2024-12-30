@@ -23,12 +23,13 @@ const judgesImageUrl = computed(() => {
 })
 
 function nod() {
-  judgeImagesClass.value = 'judges-image-nodding';
-
+  judgeImagesClass.value = '';
   clearTimeout(noddingTimer);
+
   noddingTimer = setTimeout(() => {
     judgeImagesClass.value = '';
   }, 1000);
+  judgeImagesClass.value = 'judges-image-nodding';
 }
 
 defineExpose({ nod });
