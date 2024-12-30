@@ -7,6 +7,7 @@ import bgImageUrl from '../assets/background/play-screen.svg';
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
 import Judges from '../components/judges.vue';
+import LevelUpSign from '../components/level-up-sign.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
@@ -23,6 +24,7 @@ const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(s
 
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
 const judgesRef = useTemplateRef('judges');
+const levelUpSignRef = useTemplateRef('levelUpSign');
 
 function abortGame() {
   router.push('/');
@@ -66,8 +68,16 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (hasCompletedWord.value) {
-    gotPointGaugeRef.value!.show();
-    judgesRef.value!.nod();
+    if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
+      currentJudgesCount.value = 3;
+      levelUpSignRef.value!.show();
+    } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
+      currentJudgesCount.value = 5;
+      levelUpSignRef.value!.show();
+    } else {
+      judgesRef.value!.nod();
+      gotPointGaugeRef.value!.show();
+    }
 
     currentScore.value += currentJudgesCount.value * currentCommPoint.value;
 
@@ -106,6 +116,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       <comm-gauge class="gauge" :comm-point="currentCommPoint" />
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
+      <level-up-sign class="level-up-sign" ref="levelUpSign" />
     </div>
   </div>
 </template>
@@ -170,5 +181,12 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   left: 170px;
   top: 270px;
   z-index: 120;
+}
+
+.level-up-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+  z-index: 130;
 }
 </style>
