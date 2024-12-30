@@ -17,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.13",
+    "@types/lodash": "^4.17.13",
     "@types/node": "20.12.7",
     "@vitejs/plugin-vue": "^5.1.2",
     "gts": "^5.3.1",
