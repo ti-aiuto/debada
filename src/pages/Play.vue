@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
+import shuffle from 'lodash/shuffle';
 
 import bgImageUrl from '../assets/background/play-screen.svg';
 import CommGauge from '../components/comm-gauge.vue';
@@ -11,7 +12,14 @@ import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
 
 const router = useRouter();
-const questions = findEasyQuestions();
+const questions = shuffle(findEasyQuestions()).slice(0, 6);
+
+const gotPointGaugeRef = useTemplateRef('gotPointSign');
+const judgesRef = useTemplateRef('judges');
+
+function abortGame() {
+  router.push('/');
+}
 
 const {
   correctCount,
@@ -29,16 +37,9 @@ const currentScore = ref(0);
 const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
 
-const gotPointGaugeRef = useTemplateRef('gotPointSign');
-const judgesRef = useTemplateRef('judges');
-
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
-
-function abortGame() {
-  router.push('/');
-}
 
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
