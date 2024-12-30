@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
-import judge1Image from '../assets/sprites/judge1.png';
 
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
+import Judges from '../components/judges.vue';
 
 import { typingGame } from '../composables/typing-game'
-import { computed, onMounted, onUnmounted, ref, useTemplateRef  } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { findEasyQuestions } from '../questions/easy';
 
@@ -26,11 +26,11 @@ const {
 } = typingGame(questions.map(item => item.kana));
 
 const currentScore = ref(0);
-const currentShinpanCount = ref(1);
+const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
-const judgeImagesClass = ref('');
 
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
+const judgesRef = useTemplateRef('judges');
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
@@ -39,8 +39,6 @@ const currentQuestion = computed(() => {
 function abortGame() {
   router.push('/');
 }
-
-let noddingTimer: any = null;
 
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -60,16 +58,10 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (hasCompletedWord.value) {
-    judgeImagesClass.value = 'judges-image-nodding';
-
-    clearTimeout(noddingTimer);
-    noddingTimer = setTimeout(() => {
-      judgeImagesClass.value = '';
-    }, 1000);
-
     gotPointGaugeRef.value!.show();
+    judgesRef.value!.nod();
 
-    currentScore.value += currentShinpanCount.value * currentCommPoint.value;
+    currentScore.value += currentJudgesCount.value * currentCommPoint.value;
 
     if (!proceedToNextQuestion()) {
       const gameResult = {
@@ -104,11 +96,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       </div>
 
       <comm-gauge class="gauge" :comm-point="currentCommPoint" />
-      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign"/>
-
-      <div class="judges-area">
-        <img :src="judge1Image" class="judges-image" :class="judgeImagesClass">
-      </div>
+      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
+      <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
     </div>
   </div>
 </template>
@@ -149,45 +138,10 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   color: #999;
 }
 
-@keyframes start-nodding {
-  0% {
-    top: 0;
-  }
-
-  25% {
-    top: 8px;
-  }
-
-  50% {
-    top: 0;
-  }
-
-  75% {
-    top: 8px;
-  }
-
-  100% {
-    top: 0;
-  }
-}
-
-.judges-area {
+.judges {
   top: 325px;
-  width: 100%;
   position: absolute;
-  display: flex;
-  justify-content: center;
   z-index: 100;
-}
-
-.judges-image {
-  position: absolute;
-}
-
-.judges-image-nodding {
-  animation-name: start-nodding;
-  animation-duration: 0.5s;
-  animation-iteration-count: 1;
 }
 
 .gauge {
