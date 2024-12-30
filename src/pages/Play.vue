@@ -10,9 +10,16 @@ import Judges from '../components/judges.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
+import { findMiddleQuestions } from '../questions/middle';
+import { findHardQuestions } from '../questions/hard';
 
 const router = useRouter();
-const questions = shuffle(findEasyQuestions()).slice(0, 6);
+
+const selectedEasyQuestions = shuffle(findEasyQuestions()).slice(0, 6);
+const selectedMiddleQuestions = shuffle(findMiddleQuestions()).slice(0, 3);
+const selectedHardQuestions = shuffle(findHardQuestions()).slice(0, 4);
+
+const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(selectedHardQuestions);
 
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
 const judgesRef = useTemplateRef('judges');
@@ -117,6 +124,9 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   font-size: 20px;
   position: absolute;
   top: 120px;
+  word-break: break-all;
+  padding: 0 24px;
+  line-height: 22px;
 }
 
 .question-label-area {
@@ -125,6 +135,9 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   font-size: 28px;
   position: absolute;
   top: 40px;
+  word-break: break-all;
+  padding: 0 24px;
+  line-height: 32px;
 }
 
 .question-label {
