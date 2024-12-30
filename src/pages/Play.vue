@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
 import judge1Image from '../assets/sprites/judge1.png';
-import gauge3Image from '../assets/sprites/gauge3.png';
-import gauge4Image from '../assets/sprites/gauge4.png';
-import gauge5Image from '../assets/sprites/gauge5.png';
 import pointGood from '../assets/sprites/point_good.png';
 import pointGreat from '../assets/sprites/point_great.png';
 import pointFantastic from '../assets/sprites/point_fantastic.png';
+
+import commGauge from '../components/comm-gauge.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -33,16 +32,6 @@ const currentShinpanCount = ref(1);
 const currentCommPoint = ref(3);
 const judgeImagesClass = ref('');
 const pointImageClass = ref('');
-
-const gaugeImageUrl = computed(() => {
-  if (currentCommPoint.value === 5) {
-    return gauge5Image;
-  } else if (currentCommPoint.value === 4) {
-    return gauge4Image;
-  } else {
-    return gauge3Image;
-  }
-})
 
 const pointImageUrl = computed(() => {
   if (currentCommPoint.value === 5) {
@@ -130,7 +119,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
-      <img :src="gaugeImageUrl" class="gauge">
+      <comm-gauge class="gauge" :comm-point="currentCommPoint" />
+
       <img :src="pointImageUrl" class="point-image" :class="pointImageClass">
 
       <div class="judges-area">
@@ -219,8 +209,6 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .gauge {
   position: absolute;
-  width: 380px;
-  height: 22px;
   left: 130px;
   top: 440px;
   z-index: 110;
