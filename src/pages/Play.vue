@@ -139,7 +139,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 }
 
 .judges {
-  top: 350px;
+  top: 330px;
   position: absolute;
   z-index: 100;
 }
