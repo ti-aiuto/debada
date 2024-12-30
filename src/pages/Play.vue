@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import bgImageUrl from '../assets/background/play-screen.svg';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { useRouter } from 'vue-router'
 
+import bgImageUrl from '../assets/background/play-screen.svg';
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
 import Judges from '../components/judges.vue';
 
 import { typingGame } from '../composables/typing-game'
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
-import { useRouter } from 'vue-router'
 import { findEasyQuestions } from '../questions/easy';
 
 const router = useRouter();
