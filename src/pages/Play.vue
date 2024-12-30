@@ -117,13 +117,14 @@ function keyDownListener(event: KeyboardEvent) {
     currentScore.value += currentShinpanCount.value * currentCommPoint.value;
 
     if (!proceedToNextQuestion()) {
-      // TODO: この結果をどこかで覚える
-      console.log({
+      const gameResult = {
         correctCount: correctCount.value,
         wrongCount: wrongCount.value,
         renzokuCorrectCount: renzokuCorrectCount.value,
         score: currentScore.value,
-      });
+      };
+      // TODO: この結果をどこかで覚える
+      console.log(gameResult);
       router.push('/result');
     }
   }
