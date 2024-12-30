@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.svg';
 import judge1Image from '../assets/sprites/judge1.png';
-import pointGood from '../assets/sprites/point_good.png';
-import pointGreat from '../assets/sprites/point_great.png';
-import pointFantastic from '../assets/sprites/point_fantastic.png';
 
-import commGauge from '../components/comm-gauge.vue';
+import CommGauge from '../components/comm-gauge.vue';
+import GotPointSign from '../components/got-point-sign.vue';
 
 import { typingGame } from '../composables/typing-game'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef  } from 'vue'
 import { useRouter } from 'vue-router'
 import { findEasyQuestions } from '../questions/easy';
 
@@ -31,17 +29,8 @@ const currentScore = ref(0);
 const currentShinpanCount = ref(1);
 const currentCommPoint = ref(3);
 const judgeImagesClass = ref('');
-const pointImageClass = ref('');
 
-const pointImageUrl = computed(() => {
-  if (currentCommPoint.value === 5) {
-    return pointFantastic;
-  } else if (currentCommPoint.value === 4) {
-    return pointGreat;
-  } else {
-    return pointGood;
-  }
-})
+const gotPointGaugeRef = useTemplateRef('gotPointSign');
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
@@ -52,7 +41,6 @@ function abortGame() {
 }
 
 let noddingTimer: any = null;
-let pointImageTimer: any = null;
 
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -79,11 +67,7 @@ function keyDownListener(event: KeyboardEvent) {
       judgeImagesClass.value = '';
     }, 1000);
 
-    pointImageClass.value = 'point-image-visible';
-    clearTimeout(pointImageTimer);
-    pointImageTimer = setTimeout(() => {
-      pointImageClass.value = '';
-    }, 1000);
+    gotPointGaugeRef.value!.show();
 
     currentScore.value += currentShinpanCount.value * currentCommPoint.value;
 
@@ -120,8 +104,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       </div>
 
       <comm-gauge class="gauge" :comm-point="currentCommPoint" />
-
-      <img :src="pointImageUrl" class="point-image" :class="pointImageClass">
+      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign"/>
 
       <div class="judges-area">
         <img :src="judge1Image" class="judges-image" :class="judgeImagesClass">
@@ -214,41 +197,10 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   z-index: 110;
 }
 
-.point-image {
+.got-point-sign {
   position: absolute;
   left: 170px;
   top: 270px;
-  width: 300px;
-  height: 74px;
-  opacity: 0;
   z-index: 120;
-}
-
-@keyframes point-image-animate {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  25% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  75% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(0);
-  }
-}
-
-.point-image-visible {
-  animation-name: point-image-animate;
-  animation-duration: 0.75s;
-  animation-iteration-count: 1;
 }
 </style>
