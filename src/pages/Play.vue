@@ -103,7 +103,7 @@ function disableBlockMode(success: boolean) {
   }, 750);
 }
 
-function completeQuestion(success: boolean) {
+function nextLevelOrProceed(success: boolean) {
   if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
     levelUpSignRef.value!.show();
     pauseGame();
@@ -163,7 +163,7 @@ function keyDownListener(event: KeyboardEvent) {
   if (!typeKey(event.key)) {
     if (currentBlockModeEnabled.value) {
       disableBlockMode(false);
-      return completeQuestion(false); // 強制的に次の問題に遷移
+      return nextLevelOrProceed(false); // 強制的に次の問題に遷移
     }
 
     // タイプミス効果音
@@ -184,7 +184,7 @@ function keyDownListener(event: KeyboardEvent) {
       // ブロック成功
       disableBlockMode(true);
     }
-    completeQuestion(true);
+    nextLevelOrProceed(true);
   }
 }
 
