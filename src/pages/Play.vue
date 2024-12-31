@@ -21,7 +21,7 @@ import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
 import { findMiddleQuestions } from '../questions/middle';
 import { findHardQuestions } from '../questions/hard';
-import { round } from 'lodash';
+import { GameResult } from '../debada-game/game-result';
 
 const router = useRouter();
 
@@ -159,15 +159,20 @@ function nextLevelOrProceed(success: boolean) {
 }
 
 function goToResultPage() {
-  const gameResult = {
-      correctCount: correctCount.value,
-      wrongCount: wrongCount.value,
-      renzokuCorrectCount: renzokuCorrectCount.value,
-      score: currentScore.value,
-    };
-    // TODO: この結果をどこかで覚える
-    console.log(gameResult);
-    router.push('/result');
+  const gameResult: GameResult = {
+    correctCount: correctCount.value,
+    wrongCount: wrongCount.value,
+    renzokuCorrectCount: renzokuCorrectCount.value,
+    score: currentScore.value,
+  };
+
+  // いい場所がないのでグローバル変数で値を渡す
+  Object.defineProperty(window, 'gameResult', {
+    value: gameResult,
+    writable: true,
+  });
+
+  router.push('/result');
 }
 
 function goToBlockOrProceed() {
