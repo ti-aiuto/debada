@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import bgImageUrl from '../assets/background/title-screen.svg';
+import bgImageUrl from '../assets/background/title-screen.webp';
 import startButton from '../assets/buttons/start-button.svg';
 import ruleButton from '../assets/buttons/rule-button.png';
 </script>

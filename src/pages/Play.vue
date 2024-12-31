@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import shuffle from 'lodash/shuffle';
 
-import bgImageUrl from '../assets/background/play-screen.svg';
+import bgImageUrl from '../assets/background/play-screen.webp';
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
 import Judges from '../components/judges.vue';

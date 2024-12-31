@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import bgImageUrl from '../assets/background/result-screen.svg';
+import bgImageUrl from '../assets/background/result-screen.webp';
 import toTitleButton from '../assets/buttons/to-title-button.png';
 </script>
 
