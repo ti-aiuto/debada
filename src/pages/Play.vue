@@ -91,11 +91,16 @@ function enabaleBlockMode() {
   }, 750);
 }
 
+function calcBlockGentenPoint() {
+  return currentJudgesCount.value * (2 + 3 * nokoriRomaji.value.length / (koremadeUttaRoamji.value.length + nokoriRomaji.value.length))
+}
+
 function disableBlockMode(success: boolean) {
   pauseGame();
   if (success) {
     blockSuccessSignRef.value!.show();
   } else {
+    currentScore.value -= calcBlockGentenPoint();
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
