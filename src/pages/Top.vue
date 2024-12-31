@@ -9,6 +9,8 @@
       <RouterLink to="/rule" class="rule-button">
         <img :src="ruleButton" class="image-button">
       </RouterLink>
+
+      <div class="m-plus-rounded-1c-regular version">v2.0.0</div>
     </div>
   </div>
 </template>
@@ -35,5 +37,12 @@ import ruleButton from '../assets/buttons/rule-button.png';
   position: absolute;
   top: 380px;
   left: calc(320px - 150px);
+}
+
+.version {
+  position: absolute;
+  font-size: 20px;
+  right: 12px;
+  bottom: 12px;
 }
 </style>
