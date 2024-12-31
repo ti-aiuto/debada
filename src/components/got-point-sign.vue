@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import pointGood from '../assets/sprites/point_good.png';
-import pointGreat from '../assets/sprites/point_great.png';
-import pointFantastic from '../assets/sprites/point_fantastic.png';
+import pointGood from '../assets/sprites/point_good.webp';
+import pointGreat from '../assets/sprites/point_great.webp';
+import pointFantastic from '../assets/sprites/point_fantastic.webp';
 
 import { computed, ref } from 'vue'
 
