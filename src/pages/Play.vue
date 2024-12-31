@@ -15,6 +15,7 @@ import KoshuKotaiSign from '../components/koshu-kotai-sign.vue';
 import BlockSuccessSign from '../components/block-success-sign.vue';
 import BlockFailSign from '../components/block-fail-sign.vue';
 import TimeUpSign from '../components/time-up-sign.vue';
+import GameStartSign from '../components/game-start-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
@@ -38,6 +39,7 @@ const koshuKotaiSignRef = useTemplateRef('koshuKotaiSign');
 const blockSuccessSignRef = useTemplateRef('blockSuccessSign');
 const blockFailSignRef = useTemplateRef('blockFailSign');
 const timeUpSignRef = useTemplateRef('timeUpSign');
+const gameStartSignRef = useTemplateRef('gameStartSign');
 const blockOverlayRef = useTemplateRef('blockOverlay');
 
 function abortGame() {
@@ -60,7 +62,7 @@ const {
 const currentScore = ref(0);
 const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
-const currentEnabledState = ref(true);
+const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
 
@@ -234,11 +236,21 @@ function keyDownListener(event: KeyboardEvent) {
   }
 }
 
-onMounted(() => document.addEventListener('keydown', keyDownListener))
+
+
+onMounted(() => {
+  document.addEventListener('keydown', keyDownListener);
+
+  gameStartSignRef.value!.show();
+  setTimeout(() => {
+    resumeGame();
+  }, 1000);
+});
+
 onUnmounted(() => {
   document.removeEventListener('keydown', keyDownListener);
   clearInterval(timerId);
-})
+});
 </script>
 
 <template>
@@ -267,6 +279,7 @@ onUnmounted(() => {
       <block-success-sign class="block-success-sign" ref="blockSuccessSign" />
       <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
       <time-up-sign class="time-up-sign" ref="timeUpSign" />
+      <game-start-sign class="game-start-sign" ref="gameStartSign" />
 
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <img :src="playerImageUrl" class="player">
@@ -382,6 +395,12 @@ onUnmounted(() => {
 }
 
 .time-up-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+}
+
+.game-start-sign {
   position: absolute;
   left: 34px;
   top: 80px;
