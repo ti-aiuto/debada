@@ -190,7 +190,7 @@ function goToBlockOrProceed() {
     enabaleBlockMode();
   } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 4 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
+  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
     enabaleBlockMode();
   } else {
     proceedToNextQuestion();
