@@ -186,11 +186,11 @@ function goToBlockOrProceed() {
     goToResultPage();
   }
 
-  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
+  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 3) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
+  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 1) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
+  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 2) {
     enabaleBlockMode();
   } else {
     proceedToNextQuestion();
