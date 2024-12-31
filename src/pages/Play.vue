@@ -72,6 +72,14 @@ function resumeGame() {
 }
 
 function nextQuestion() {
+  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
+    alert('ブロックモード')
+  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
+    alert('ブロックモード')
+  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
+    alert('ブロックモード')
+  }
+
   if (!proceedToNextQuestion()) {
     const gameResult = {
       correctCount: correctCount.value,
