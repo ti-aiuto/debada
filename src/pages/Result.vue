@@ -3,7 +3,11 @@
     <img :src="bgImageUrl" class="bg-image">
     <div>
       <div class="score m-plus-rounded-1c-regular">
-        スコア：{{ Math.floor(tweened.score) }}
+        スコア：<b>{{ Math.floor(tweened.score) }}</b>
+      </div>
+      <div class="correct-count m-plus-rounded-1c-regular">
+        正解タイプ数：<b>{{ Math.floor(tweened.correctCount) }}</b><br>
+        ミスタイプ数：<b>{{ Math.floor(tweened.wrongCount) }}</b>
       </div>
 
       <RouterLink to="/" class="to-title-button">
@@ -24,10 +28,14 @@ const descriptor = Object.getOwnPropertyDescriptor(window, 'gameResult');
 const savedGameResult = (descriptor?.value ?? {}) as GameResult;
 
 const tweened = reactive({
-  score: 0
+  score: 0,
+  correctCount: 0,
+  wrongCount: 0,
 })
 
 gsap.to(tweened, { duration: 1, score: savedGameResult.score ?? 0 })
+gsap.to(tweened, { duration: 1, correctCount: savedGameResult.correctCount ?? 0 })
+gsap.to(tweened, { duration: 1, wrongCount: savedGameResult.wrongCount ?? 0 })
 
 </script>
 
@@ -41,9 +49,18 @@ gsap.to(tweened, { duration: 1, score: savedGameResult.score ?? 0 })
 }
 
 .score {
-  font-size: 22px;
+  font-size: 21px;
   color: #fff;
-  top: 110px;
+  top: 85px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.correct-count {
+  font-size: 16px;
+  color: #fff;
+  top: 120px;
   position: absolute;
   text-align: center;
   width: 100%;
