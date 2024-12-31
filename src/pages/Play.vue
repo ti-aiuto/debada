@@ -14,6 +14,7 @@ import LevelUpSign from '../components/level-up-sign.vue';
 import KoshuKotaiSign from '../components/koshu-kotai-sign.vue';
 import BlockSuccessSign from '../components/block-success-sign.vue';
 import BlockFailSign from '../components/block-fail-sign.vue';
+import TimeUpSign from '../components/time-up-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
@@ -35,6 +36,7 @@ const levelUpSignRef = useTemplateRef('levelUpSign');
 const koshuKotaiSignRef = useTemplateRef('koshuKotaiSign');
 const blockSuccessSignRef = useTemplateRef('blockSuccessSign');
 const blockFailSignRef = useTemplateRef('blockFailSign');
+const timeUpSignRef = useTemplateRef('timeUpSign');
 const blockOverlayRef = useTemplateRef('blockOverlay');
 
 function abortGame() {
@@ -59,6 +61,21 @@ const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
 const currentEnabledState = ref(true);
 const currentBlockModeEnabled = ref(false);
+const nokoriJikanSeconds = ref(30);
+
+let timerId = setInterval(() => {
+  // TODO: 他タブ遷移中の処理
+  nokoriJikanSeconds.value -= 1;
+  if (nokoriJikanSeconds.value <= 0) {
+    clearInterval(timerId);
+
+    pauseGame();
+    timeUpSignRef.value!.show();
+    setTimeout(() => {
+      goToResultPage();
+    }, 1000);
+  }
+}, 1000);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
@@ -116,6 +133,7 @@ function nextLevelOrProceed(success: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 3;
+      nokoriJikanSeconds.value = 45;
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -124,6 +142,7 @@ function nextLevelOrProceed(success: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 5;
+      nokoriJikanSeconds.value = 60;
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -136,9 +155,8 @@ function nextLevelOrProceed(success: boolean) {
   }
 }
 
-function goToBlockOrProceed() {
-  if (!hasNext.value) {
-    const gameResult = {
+function goToResultPage() {
+  const gameResult = {
       correctCount: correctCount.value,
       wrongCount: wrongCount.value,
       renzokuCorrectCount: renzokuCorrectCount.value,
@@ -147,6 +165,11 @@ function goToBlockOrProceed() {
     // TODO: この結果をどこかで覚える
     console.log(gameResult);
     router.push('/result');
+}
+
+function goToBlockOrProceed() {
+  if (!hasNext.value) {
+    goToResultPage();
   }
 
   if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
@@ -198,7 +221,10 @@ function keyDownListener(event: KeyboardEvent) {
 }
 
 onMounted(() => document.addEventListener('keydown', keyDownListener))
-onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
+onUnmounted(() => {
+  document.removeEventListener('keydown', keyDownListener);
+  clearInterval(timerId);
+})
 </script>
 
 <template>
@@ -224,6 +250,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
       <block-success-sign class="block-success-sign" ref="blockSuccessSign" />
       <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
+      <time-up-sign class="time-up-sign" ref="timeUpSign" />
 
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <img :src="playerImageUrl" class="player">
@@ -321,6 +348,12 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 }
 
 .block-fail-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+}
+
+.time-up-sign {
   position: absolute;
   left: 34px;
   top: 80px;
