@@ -66,8 +66,7 @@ const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
 
-let lastTime = Date.now();
-let timerId = setInterval(() => {
+function nextTick() {
   if (!currentEnabledState.value) {
     lastTime = Date.now();
     return;
@@ -85,7 +84,10 @@ let timerId = setInterval(() => {
       goToResultPage();
     }, 1000);
   }
-}, 1000);
+}
+
+let lastTime = Date.now();
+let timerId = setInterval(nextTick, 1000);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
