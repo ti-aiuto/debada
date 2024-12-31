@@ -11,6 +11,9 @@ import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
 import Judges from '../components/judges.vue';
 import LevelUpSign from '../components/level-up-sign.vue';
+import KoshuKotaiSign from '../components/koshu-kotai-sign.vue';
+import BlockSuccessSign from '../components/block-success-sign.vue';
+import BlockFailSign from '../components/block-fail-sign.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
@@ -28,6 +31,9 @@ const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(s
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
 const judgesRef = useTemplateRef('judges');
 const levelUpSignRef = useTemplateRef('levelUpSign');
+const koshuKotaiSignRef = useTemplateRef('koshuKotaiSign');
+const blockSuccessSignRef = useTemplateRef('blockSuccessSign');
+const blockFailSignRef = useTemplateRef('blockFailSign');
 
 function abortGame() {
   router.push('/');
@@ -72,11 +78,25 @@ function resumeGame() {
 }
 
 function enabaleBlockMode() {
-  currentBlockModeEnabled.value = true;
+  pauseGame();
+  koshuKotaiSignRef.value!.show();
+  setTimeout(() => {
+    currentBlockModeEnabled.value = true;
+    resumeGame();
+  }, 750);
 }
 
 function disableBlockMode(success: boolean) {
-  currentBlockModeEnabled.value = false;
+  pauseGame();
+  if (success) {
+    blockSuccessSignRef.value!.show();
+  } else {
+    blockFailSignRef.value!.show();
+  }
+  setTimeout(() => {
+    currentBlockModeEnabled.value = false;
+    resumeGame();
+  }, 750);
 }
 
 function completeQuestion(success: boolean) {
@@ -186,7 +206,10 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
-
+      <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
+      <block-success-sign class="block-success-sign" ref="blockSuccessSign" />
+      <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
+      
       <img :src="playerImageUrl" class="player">
     </div>
   </div>
@@ -209,7 +232,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 22px;
-  z-index: 90;
+  z-index: -1;
 }
 
 .question-label-area {
@@ -221,7 +244,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 32px;
-  z-index: 90;
+  z-index: -1;
 }
 
 .question-label {
@@ -249,27 +272,41 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 .judges {
   top: 330px;
   position: absolute;
-  z-index: 100;
 }
 
 .gauge {
   position: absolute;
   left: 130px;
   top: 440px;
-  z-index: 110;
 }
 
 .got-point-sign {
   position: absolute;
   left: 170px;
   top: 270px;
-  z-index: 120;
 }
 
 .level-up-sign {
   position: absolute;
   left: 34px;
   top: 80px;
-  z-index: 130;
+}
+
+.koshu-kotai-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+}
+
+.block-success-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+}
+
+.block-fail-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
 }
 </style>

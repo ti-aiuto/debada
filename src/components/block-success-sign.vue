@@ -14,7 +14,7 @@ function show() {
     window.requestAnimationFrame(() => {
       imageTimer = setTimeout(() => {
         imageClass.value = '';
-      }, 1000);
+      }, 750);
       imageClass.value = 'image-visible';
     });
   });
@@ -33,6 +33,7 @@ defineExpose({ show });
   width: 571px;
   height: 299px;
   opacity: 0;
+  z-index: 130;
 }
 
 @keyframes image-animate {
@@ -59,7 +60,7 @@ defineExpose({ show });
 
 .image-visible {
   animation-name: image-animate;
-  animation-duration: 1s;
+  animation-duration: 0.75s;
   animation-iteration-count: 1;
 }
 </style>

@@ -29,5 +29,6 @@ const gaugeImageUrl = computed(() => {
 .gauge {
   width: 380px;
   height: 22px;
+  z-index: 100;
 }
 </style>
