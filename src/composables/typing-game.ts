@@ -11,6 +11,7 @@ export function typingGame(initialQunestions: string[]) {
   const nokoriRomaji = ref('');
   const hasCompletedWord = ref(false);
   const hasCompletedGame = ref(false);
+  const hasNext = ref(true);
 
   let currentTypingWord: TypingWord | undefined = undefined;
 
@@ -64,6 +65,7 @@ export function typingGame(initialQunestions: string[]) {
     koremadeUttaRoamji.value = currentTypingWord.koremadeUttaRoamji();
     nokoriRomaji.value = currentTypingWord.nokoriRomaji();
     hasCompletedWord.value = currentTypingWord.hasCompleted();
+    hasNext.value = currentQuestionIndex.value + 1 < questions.value.length;
   }
 
   proceedToNextQuestion();
@@ -77,6 +79,7 @@ export function typingGame(initialQunestions: string[]) {
     hasCompletedWord,
     hasCompletedGame,
     koremadeUttaRoamji,
+    hasNext,
     nokoriRomaji,
     currentQuestionIndex,
     questions,

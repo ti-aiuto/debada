@@ -11,6 +11,7 @@ describe('typingGame', () => {
       hasCompletedWord,
       hasCompletedGame,
       koremadeUttaRoamji,
+      hasNext,
       nokoriRomaji,
       currentQuestionIndex,
       questions,
@@ -70,6 +71,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('aka');
     expect(nokoriRomaji.value).toEqual('');
 
+    expect(hasNext.value).toBe(true);
     expect(proceedToNextQuestion()).toBe(true);
     expect(hasCompletedGame.value).toEqual(false);
 
@@ -108,6 +110,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('ao');
     expect(nokoriRomaji.value).toEqual('');
 
+    expect(hasNext.value).toBe(true);
     expect(proceedToNextQuestion()).toBe(true);
     expect(hasCompletedGame.value).toEqual(false);
 
@@ -145,6 +148,7 @@ describe('typingGame', () => {
     expect(koremadeUttaRoamji.value).toEqual('ki');
     expect(nokoriRomaji.value).toEqual('');
 
+    expect(hasNext.value).toBe(false);
     expect(proceedToNextQuestion()).toBe(false);
     expect(hasCompletedGame.value).toEqual(true);
 
