@@ -48,6 +48,7 @@ const {
   typeKey,
   proceedToNextQuestion,
   hasCompletedWord,
+  hasNext,
   koremadeUttaRoamji,
   nokoriRomaji,
   currentQuestionIndex,
@@ -85,6 +86,7 @@ function enabaleBlockMode() {
   blockOverlayRef.value!.show();
   setTimeout(() => {
     currentBlockModeEnabled.value = true;
+    proceedToNextQuestion();
     resumeGame();
   }, 750);
 }
@@ -109,7 +111,7 @@ function nextLevelOrProceed(success: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 3;
-      nextQuestion();
+      goToBlockOrProceed();
       resumeGame();
     }, 750);
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
@@ -117,7 +119,7 @@ function nextLevelOrProceed(success: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 5;
-      nextQuestion();
+      goToBlockOrProceed();
       resumeGame();
     }, 750);
   } else {
@@ -125,20 +127,12 @@ function nextLevelOrProceed(success: boolean) {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
     }
-    nextQuestion();
+    goToBlockOrProceed();
   }
 }
 
-function nextQuestion() {
-  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
-    enabaleBlockMode();
-  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
-    enabaleBlockMode();
-  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
-    enabaleBlockMode();
-  }
-
-  if (!proceedToNextQuestion()) {
+function goToBlockOrProceed() {
+  if (!hasNext.value) {
     const gameResult = {
       correctCount: correctCount.value,
       wrongCount: wrongCount.value,
@@ -148,6 +142,16 @@ function nextQuestion() {
     // TODO: この結果をどこかで覚える
     console.log(gameResult);
     router.push('/result');
+  }
+
+  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
+    enabaleBlockMode();
+  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
+    enabaleBlockMode();
+  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
+    enabaleBlockMode();
+  } else {
+    proceedToNextQuestion();
   }
 }
 
