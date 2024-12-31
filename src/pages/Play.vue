@@ -49,14 +49,14 @@ const currentScore = ref(0);
 const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
 const currentEnabledState = ref(true);
-const currentKoshuKotaiEnabled = ref(false);
+const currentBlockModeEnabled = ref(false);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
 
 const playerImageUrl = computed(() => {
-  if (currentKoshuKotaiEnabled.value) {
+  if (currentBlockModeEnabled.value) {
     return player2Url;
   } else {
     return player1Url;
@@ -71,13 +71,45 @@ function resumeGame() {
   currentEnabledState.value = true;
 }
 
+function enabaleBlockMode() {
+  currentBlockModeEnabled.value = true;
+}
+
+function disableBlockMode() {
+  currentBlockModeEnabled.value = false;
+}
+
+function completeQuestion() {
+  if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
+    levelUpSignRef.value!.show();
+    pauseGame();
+    setTimeout(() => {
+      currentJudgesCount.value = 3;
+      nextQuestion();
+      resumeGame();
+    }, 750);
+  } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
+    levelUpSignRef.value!.show();
+    pauseGame();
+    setTimeout(() => {
+      currentJudgesCount.value = 5;
+      nextQuestion();
+      resumeGame();
+    }, 750);
+  } else {
+    judgesRef.value!.nod();
+    gotPointGaugeRef.value!.show();
+    nextQuestion();
+  }
+}
+
 function nextQuestion() {
   if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4) {
-    alert('ブロックモード')
+    enabaleBlockMode();
   } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
-    alert('ブロックモード')
+    enabaleBlockMode();
   } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
-    alert('ブロックモード')
+    enabaleBlockMode();
   }
 
   if (!proceedToNextQuestion()) {
@@ -103,6 +135,12 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (!typeKey(event.key)) {
+    if (currentBlockModeEnabled.value) {
+      // TODO: ブロック失敗
+      disableBlockMode();
+      return completeQuestion(); // 強制的に次の問題に遷移
+    }
+
     // タイプミス効果音
   }
 
@@ -117,26 +155,12 @@ function keyDownListener(event: KeyboardEvent) {
   if (hasCompletedWord.value) {
     currentScore.value += currentJudgesCount.value * currentCommPoint.value;
 
-    if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
-      levelUpSignRef.value!.show();
-      pauseGame();
-      setTimeout(() => {
-        currentJudgesCount.value = 3;
-        nextQuestion();
-        resumeGame();
-      }, 750);
-    } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
-      levelUpSignRef.value!.show();
-      pauseGame();
-      setTimeout(() => {
-        currentJudgesCount.value = 5;
-        nextQuestion();
-        resumeGame();
-      }, 750);
-    } else {
-      judgesRef.value!.nod();
-      gotPointGaugeRef.value!.show();
+    if (currentBlockModeEnabled.value) {
+      // ブロック成功
+      disableBlockMode();
       nextQuestion();
+    } else {
+      completeQuestion();
     }
   }
 }
