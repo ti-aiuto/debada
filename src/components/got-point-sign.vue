@@ -48,7 +48,6 @@ defineExpose({ show });
   width: 300px;
   height: 74px;
   opacity: 0;
-  z-index: 150;
 }
 
 @keyframes point-image-animate {

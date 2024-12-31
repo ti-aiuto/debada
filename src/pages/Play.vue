@@ -202,14 +202,16 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
-      <comm-gauge class="gauge" :comm-point="currentCommPoint" />
-      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
+      <comm-gauge class="gauge" :comm-point="currentCommPoint" />
+
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
       <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
       <block-success-sign class="block-success-sign" ref="blockSuccessSign" />
       <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
-      
+
+      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
+
       <img :src="playerImageUrl" class="player">
     </div>
   </div>

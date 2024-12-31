@@ -33,7 +33,6 @@ defineExpose({ show });
   width: 571px;
   height: 299px;
   opacity: 0;
-  z-index: 130;
 }
 
 @keyframes image-animate {

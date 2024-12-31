@@ -77,7 +77,6 @@ defineExpose({ nod });
 .judges-image {
   position: absolute;
   height: 181px;
-  z-index: 100;
 }
 
 .judges-image-nodding {
