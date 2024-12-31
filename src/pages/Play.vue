@@ -262,7 +262,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .player {
   position: absolute;
-  z-index: 1;
+  z-index: -1;
   width: 140px;
   height: 150px;
   left: 255px;
