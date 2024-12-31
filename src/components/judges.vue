@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import judge1Image from '../assets/sprites/judge1.png';
-import judge3Image from '../assets/sprites/judge3.png';
-import judge5Image from '../assets/sprites/judge5.png';
+import judge1Image from '../assets/sprites/judge1.webp';
+import judge3Image from '../assets/sprites/judge3.webp';
+import judge5Image from '../assets/sprites/judge5.webp';
 
 import { computed, ref } from 'vue'
 
