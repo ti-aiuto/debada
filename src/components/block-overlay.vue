@@ -50,14 +50,14 @@ defineExpose({ show, hide });
 
 .image-visible {
   animation-name: image-animate-show;
-  animation-duration: 0.5s;
+  animation-duration: 0.75s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
 }
 
 .image-invisible {
   animation-name: image-animate-hide;
-  animation-duration: 0.5s;
+  animation-duration: 0.75s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
 }
