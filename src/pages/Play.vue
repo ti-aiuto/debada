@@ -126,6 +126,7 @@ function disableBlockMode(success: boolean) {
   blockOverlayRef.value!.hide();
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
+    nextLevelOrProceed(success);
     resumeGame();
   }, 750);
 }
@@ -202,8 +203,7 @@ function keyDownListener(event: KeyboardEvent) {
 
   if (!typeKey(event.key)) {
     if (currentBlockModeEnabled.value) {
-      disableBlockMode(false);
-      return nextLevelOrProceed(false); // 強制的に次の問題に遷移
+      return disableBlockMode(false);
     }
 
     // タイプミス効果音
@@ -222,7 +222,7 @@ function keyDownListener(event: KeyboardEvent) {
 
     if (currentBlockModeEnabled.value) {
       // ブロック成功
-      disableBlockMode(true);
+      return disableBlockMode(true);
     }
     nextLevelOrProceed(true);
   }
