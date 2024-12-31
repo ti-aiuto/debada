@@ -66,6 +66,11 @@ const nokoriJikanSeconds = ref(30);
 
 let lastTime = Date.now();
 let timerId = setInterval(() => {
+  if (!currentEnabledState.value) {
+    lastTime = Date.now();
+    return;
+  }
+
   nokoriJikanSeconds.value -= Math.max(Math.round((Date.now() - lastTime) / 1000), 0);
   lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
 
@@ -185,7 +190,7 @@ function goToBlockOrProceed() {
     enabaleBlockMode();
   } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
+  } else if (currentJudgesCount.value === 4 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3) {
     enabaleBlockMode();
   } else {
     proceedToNextQuestion();
@@ -222,9 +227,10 @@ function keyDownListener(event: KeyboardEvent) {
 
     if (currentBlockModeEnabled.value) {
       // ブロック成功
-      return disableBlockMode(true);
+      disableBlockMode(true);
+    } else {
+      nextLevelOrProceed(true);
     }
-    nextLevelOrProceed(true);
   }
 }
 
