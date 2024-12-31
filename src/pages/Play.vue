@@ -241,6 +241,8 @@ onUnmounted(() => {
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
+      <div class="nokori-jikan m-plus-rounded-1c-regular">残り時間：{{ nokoriJikanSeconds }}秒</div>
+
       <block-overlay class="block-overlay" ref="blockOverlay" />
 
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
@@ -288,6 +290,18 @@ onUnmounted(() => {
   padding: 0 24px;
   line-height: 32px;
   z-index: -10;
+}
+
+.nokori-jikan {
+  z-index: -8;
+  color: #000;
+  position: absolute;
+  top: 380px;
+  left: 400px;
+  border: solid 2px #000;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 8px;
 }
 
 .question-label {
