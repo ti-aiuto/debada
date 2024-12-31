@@ -167,4 +167,39 @@ describe('typingGame', () => {
     expect(nokoriRomaji.value).toEqual('');
     expect(currentQuestionIndex.value).toEqual(2);
   });
+
+  test('一連の流れのテスト', () => {
+    const {
+      correctCount,
+      wrongCount,
+      renzokuCorrectCount,
+      proceedToNextQuestion,
+      hasCompletedWord,
+      hasCompletedGame,
+      koremadeUttaRoamji,
+      nokoriRomaji,
+      currentQuestionIndex,
+    } = typingGame(['あか', 'あお', 'き']);
+
+    expect(correctCount.value).toEqual(0);
+    expect(wrongCount.value).toEqual(0);
+    expect(renzokuCorrectCount.value).toEqual(0);
+    expect(hasCompletedWord.value).toEqual(false);
+    expect(koremadeUttaRoamji.value).toEqual('');
+    expect(nokoriRomaji.value).toEqual('aka');
+    expect(currentQuestionIndex.value).toEqual(0);
+    expect(hasCompletedGame.value).toEqual(false);
+
+    // 問題の途中に次の問題に進んだ場合
+    proceedToNextQuestion();
+
+    expect(correctCount.value).toEqual(0);
+    expect(wrongCount.value).toEqual(0);
+    expect(renzokuCorrectCount.value).toEqual(0);
+    expect(hasCompletedWord.value).toEqual(false);
+    expect(koremadeUttaRoamji.value).toEqual('');
+    expect(nokoriRomaji.value).toEqual('ao');
+    expect(currentQuestionIndex.value).toEqual(1);
+    expect(hasCompletedGame.value).toEqual(false);
+  });
 });
