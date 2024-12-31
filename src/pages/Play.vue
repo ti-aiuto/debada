@@ -65,6 +65,7 @@ const currentCommPoint = ref(3);
 const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
+const showNokoriRomajiEnabled = ref(true);
 
 function nextTick() {
   if (!currentEnabledState.value) {
@@ -266,8 +267,9 @@ onUnmounted(() => {
       </div>
 
       <div class="question-kana-area m-plus-rounded-1c-regular" v-show="currentEnabledState">
-        <span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-before-type">{{
-          nokoriRomaji.toUpperCase() }}</span>
+        <span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-before-type"
+          v-show="showNokoriRomajiEnabled">{{
+            nokoriRomaji.toUpperCase() }}</span>
       </div>
 
       <block-overlay class="block-overlay" ref="blockOverlay" />
