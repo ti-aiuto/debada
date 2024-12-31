@@ -164,6 +164,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 22px;
+  z-index: 90;
 }
 
 .question-label-area {
@@ -175,6 +176,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 32px;
+  z-index: 90;
 }
 
 .question-label {
