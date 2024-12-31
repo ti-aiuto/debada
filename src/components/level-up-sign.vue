@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import levelUpImage from '../assets/sprites/level_up.png';
+import levelUpImage from '../assets/sprites/level_up.webp';
 
 let imageTimer: any = null;
 const imageClass = ref('');

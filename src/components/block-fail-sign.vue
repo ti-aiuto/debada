@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import blockFailImage from '../assets/sprites/block-fail.png';
+import blockFailImage from '../assets/sprites/block-fail.webp';
 
 let imageTimer: any = null;
 const imageClass = ref('');

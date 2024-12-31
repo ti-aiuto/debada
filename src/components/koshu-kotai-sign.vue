@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import koshuKotaiImage from '../assets/sprites/koshu-kotai.png';
+import koshuKotaiImage from '../assets/sprites/koshu-kotai.webp';
 
 let imageTimer: any = null;
 const imageClass = ref('');
