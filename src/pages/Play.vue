@@ -135,7 +135,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       </div>
 
       <div class="question-kana-area m-plus-rounded-1c-regular">
-        <span class="chars-before-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-after-type">{{
+        <span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-before-type">{{
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
@@ -185,10 +185,11 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .chars-before-type {
   color: #fff;
+  font-weight: bold;
 }
 
 .chars-after-type {
-  color: #999;
+  color: #ff0;
 }
 
 .judges {
