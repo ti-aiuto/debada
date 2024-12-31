@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import shuffle from 'lodash/shuffle';
 
 import bgImageUrl from '../assets/background/play-screen.webp';
+import player1Url from '../assets/sprites/player1.png';
+import player2Url from '../assets/sprites/player2.png';
+
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
 import Judges from '../components/judges.vue';
@@ -46,9 +49,18 @@ const currentScore = ref(0);
 const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
 const currentEnabledState = ref(true);
+const currentKoshuKotaiEnabled = ref(false);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
+});
+
+const playerImageUrl = computed(() => {
+  if (currentKoshuKotaiEnabled.value) {
+    return player2Url;
+  } else {
+    return player1Url;
+  }
 });
 
 function pauseGame() {
@@ -143,6 +155,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
+
+      <img :src="playerImageUrl" class="player">
     </div>
   </div>
 </template>
@@ -190,6 +204,15 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .chars-after-type {
   color: #ff0;
+}
+
+.player {
+  position: absolute;
+  z-index: 1;
+  width: 140px;
+  height: 150px;
+  left: 255px;
+  top: 165px;
 }
 
 .judges {
