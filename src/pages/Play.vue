@@ -14,6 +14,7 @@ import LevelUpSign from '../components/level-up-sign.vue';
 import KoshuKotaiSign from '../components/koshu-kotai-sign.vue';
 import BlockSuccessSign from '../components/block-success-sign.vue';
 import BlockFailSign from '../components/block-fail-sign.vue';
+import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
@@ -34,6 +35,7 @@ const levelUpSignRef = useTemplateRef('levelUpSign');
 const koshuKotaiSignRef = useTemplateRef('koshuKotaiSign');
 const blockSuccessSignRef = useTemplateRef('blockSuccessSign');
 const blockFailSignRef = useTemplateRef('blockFailSign');
+const blockOverlayRef = useTemplateRef('blockOverlay');
 
 function abortGame() {
   router.push('/');
@@ -80,6 +82,7 @@ function resumeGame() {
 function enabaleBlockMode() {
   pauseGame();
   koshuKotaiSignRef.value!.show();
+  blockOverlayRef.value!.show();
   setTimeout(() => {
     currentBlockModeEnabled.value = true;
     resumeGame();
@@ -93,6 +96,7 @@ function disableBlockMode(success: boolean) {
   } else {
     blockFailSignRef.value!.show();
   }
+  blockOverlayRef.value!.hide();
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
@@ -202,6 +206,8 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
+      <block-overlay class="block-overlay" ref="blockOverlay" />
+
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <comm-gauge class="gauge" :comm-point="currentCommPoint" />
 
@@ -211,7 +217,6 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
       <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
 
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
-
       <img :src="playerImageUrl" class="player">
     </div>
   </div>
@@ -234,7 +239,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 22px;
-  z-index: -1;
+  z-index: -10;
 }
 
 .question-label-area {
@@ -246,7 +251,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   word-break: break-all;
   padding: 0 24px;
   line-height: 32px;
-  z-index: -1;
+  z-index: -10;
 }
 
 .question-label {
@@ -264,7 +269,7 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
 
 .player {
   position: absolute;
-  z-index: -1;
+  z-index: -9;
   width: 140px;
   height: 150px;
   left: 255px;
@@ -310,5 +315,9 @@ onUnmounted(() => document.removeEventListener('keydown', keyDownListener))
   position: absolute;
   left: 34px;
   top: 80px;
+}
+
+.block-overlay {
+  position: absolute;
 }
 </style>
