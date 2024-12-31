@@ -131,12 +131,12 @@ function disableBlockMode(success: boolean) {
   blockOverlayRef.value!.hide();
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
-    nextLevelOrProceed(success);
+    nextLevelOrProceed(false);
     resumeGame();
   }, 750);
 }
 
-function nextLevelOrProceed(success: boolean) {
+function nextLevelOrProceed(noddingEnabled: boolean) {
   if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
     levelUpSignRef.value!.show();
     pauseGame();
@@ -156,7 +156,7 @@ function nextLevelOrProceed(success: boolean) {
       resumeGame();
     }, 750);
   } else {
-    if (success) {
+    if (noddingEnabled) {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
     }
@@ -246,11 +246,11 @@ onUnmounted(() => {
     <div class="wrapper">
       <img :src="bgImageUrl" class="bg-image">
 
-      <div class="question-label-area m-plus-rounded-1c-regular">
+      <div class="question-label-area m-plus-rounded-1c-regular" v-show="currentEnabledState">
         <span class="question-label">{{ currentQuestion.label }}</span>
       </div>
 
-      <div class="question-kana-area m-plus-rounded-1c-regular">
+      <div class="question-kana-area m-plus-rounded-1c-regular" v-show="currentEnabledState">
         <span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-before-type">{{
           nokoriRomaji.toUpperCase() }}</span>
       </div>
@@ -315,6 +315,7 @@ onUnmounted(() => {
   padding: 8px;
   background-color: #fff;
   border-radius: 8px;
+  z-index: -7;
 }
 
 .question-label {
