@@ -26,10 +26,14 @@ function nod() {
   judgeImagesClass.value = '';
   clearTimeout(noddingTimer);
 
-  noddingTimer = setTimeout(() => {
-    judgeImagesClass.value = '';
-  }, 1000);
-  judgeImagesClass.value = 'judges-image-nodding';
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      noddingTimer = setTimeout(() => {
+        judgeImagesClass.value = '';
+      }, 1000);
+      judgeImagesClass.value = 'judges-image-nodding';
+    });
+  });
 }
 
 defineExpose({ nod });

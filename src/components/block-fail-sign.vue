@@ -10,10 +10,14 @@ function show() {
   imageClass.value = '';
   clearTimeout(imageTimer);
 
-  imageTimer = setTimeout(() => {
-    imageClass.value = '';
-  }, 1000);
-  imageClass.value = 'image-visible';
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      imageTimer = setTimeout(() => {
+        imageClass.value = '';
+      }, 1000);
+      imageClass.value = 'image-visible';
+    });
+  });
 }
 
 defineExpose({ show });

@@ -26,10 +26,14 @@ function show() {
   pointImageClass.value = '';
   clearTimeout(pointImageTimer);
 
-  pointImageTimer = setTimeout(() => {
-    pointImageClass.value = '';
-  }, 1000);
-  pointImageClass.value = 'point-image-visible';
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      pointImageTimer = setTimeout(() => {
+        pointImageClass.value = '';
+      }, 1000);
+      pointImageClass.value = 'point-image-visible';
+    });
+  });
 }
 
 defineExpose({ show });
