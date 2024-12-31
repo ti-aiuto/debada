@@ -129,9 +129,9 @@ function disableBlockMode(success: boolean) {
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
+  nextLevelOrProceed(success);
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
-    nextLevelOrProceed(false);
     resumeGame();
   }, 750);
 }
