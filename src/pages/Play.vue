@@ -187,6 +187,7 @@ function goToResultPage() {
 
 function goToBlockOrProceed() {
   if (!hasNext.value) {
+    currentScore.value += nokoriJikanSeconds.value;
     goToResultPage();
   }
 
