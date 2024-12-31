@@ -81,7 +81,7 @@ defineExpose({ nod });
 
 .judges-image-nodding {
   animation-name: start-nodding;
-  animation-duration: 0.5s;
+  animation-duration: 0.75s;
   animation-iteration-count: 1;
 }
 </style>

@@ -21,6 +21,7 @@ import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
 import { findMiddleQuestions } from '../questions/middle';
 import { findHardQuestions } from '../questions/hard';
+import { round } from 'lodash';
 
 const router = useRouter();
 
@@ -63,9 +64,11 @@ const currentEnabledState = ref(true);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
 
+let lastTime = Date.now();
 let timerId = setInterval(() => {
-  // TODO: 他タブ遷移中の処理
-  nokoriJikanSeconds.value -= 1;
+  nokoriJikanSeconds.value -= Math.max(Math.round((Date.now() - lastTime) / 1000), 0);
+  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
+
   if (nokoriJikanSeconds.value <= 0) {
     clearInterval(timerId);
 
@@ -241,12 +244,12 @@ onUnmounted(() => {
           nokoriRomaji.toUpperCase() }}</span>
       </div>
 
-      <div class="nokori-jikan m-plus-rounded-1c-regular">残り時間：{{ nokoriJikanSeconds }}秒</div>
-
       <block-overlay class="block-overlay" ref="blockOverlay" />
 
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <comm-gauge class="gauge" :comm-point="currentCommPoint" />
+
+      <div class="nokori-jikan m-plus-rounded-1c-regular">残り時間：{{ nokoriJikanSeconds }}秒</div>
 
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
       <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
@@ -293,11 +296,10 @@ onUnmounted(() => {
 }
 
 .nokori-jikan {
-  z-index: -8;
   color: #000;
   position: absolute;
-  top: 380px;
-  left: 400px;
+  top: 285px;
+  left: 340px;
   border: solid 2px #000;
   padding: 8px;
   background-color: #fff;
