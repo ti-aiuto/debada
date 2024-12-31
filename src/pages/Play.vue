@@ -110,18 +110,18 @@ function keyDownListener(event: KeyboardEvent) {
     currentScore.value += currentJudgesCount.value * currentCommPoint.value;
 
     if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
-      currentJudgesCount.value = 3;
       levelUpSignRef.value!.show();
       pauseGame();
       setTimeout(() => {
+        currentJudgesCount.value = 3;
         nextQuestion();
         resumeGame();
       }, 750);
     } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
-      currentJudgesCount.value = 5;
       levelUpSignRef.value!.show();
       pauseGame();
       setTimeout(() => {
+        currentJudgesCount.value = 5;
         nextQuestion();
         resumeGame();
       }, 750);
