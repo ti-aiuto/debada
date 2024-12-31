@@ -45,14 +45,41 @@ const {
 const currentScore = ref(0);
 const currentJudgesCount = ref(1);
 const currentCommPoint = ref(3);
+const currentEnabledState = ref(true);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
 
+function pauseGame() {
+  currentEnabledState.value = false;
+}
+
+function resumeGame() {
+  currentEnabledState.value = true;
+}
+
+function nextQuestion() {
+  if (!proceedToNextQuestion()) {
+    const gameResult = {
+      correctCount: correctCount.value,
+      wrongCount: wrongCount.value,
+      renzokuCorrectCount: renzokuCorrectCount.value,
+      score: currentScore.value,
+    };
+    // TODO: この結果をどこかで覚える
+    console.log(gameResult);
+    router.push('/result');
+  }
+}
+
 function keyDownListener(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     return abortGame();
+  }
+
+  if (!currentEnabledState.value) {
+    return;
   }
 
   if (!typeKey(event.key)) {
@@ -68,29 +95,28 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (hasCompletedWord.value) {
+    currentScore.value += currentJudgesCount.value * currentCommPoint.value;
+
     if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
       currentJudgesCount.value = 3;
       levelUpSignRef.value!.show();
+      pauseGame();
+      setTimeout(() => {
+        nextQuestion();
+        resumeGame();
+      }, 750);
     } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
       currentJudgesCount.value = 5;
       levelUpSignRef.value!.show();
+      pauseGame();
+      setTimeout(() => {
+        nextQuestion();
+        resumeGame();
+      }, 750);
     } else {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
-    }
-
-    currentScore.value += currentJudgesCount.value * currentCommPoint.value;
-
-    if (!proceedToNextQuestion()) {
-      const gameResult = {
-        correctCount: correctCount.value,
-        wrongCount: wrongCount.value,
-        renzokuCorrectCount: renzokuCorrectCount.value,
-        score: currentScore.value,
-      };
-      // TODO: この結果をどこかで覚える
-      console.log(gameResult);
-      router.push('/result');
+      nextQuestion();
     }
   }
 }
