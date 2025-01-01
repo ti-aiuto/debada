@@ -1,4 +1,4 @@
-import { Question } from "./question";
+import { Question } from "../question";
 
 const questions = [
   ["このてんにかんしてはこうひともにきょうつうけんかいです", "この点に関しては肯否ともに共通見解です"],

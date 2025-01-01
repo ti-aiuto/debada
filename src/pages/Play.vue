@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import shuffle from 'lodash/shuffle';
 
 import bgImageUrl from '../assets/background/play-screen.webp';
 import player1Url from '../assets/sprites/player1.png';
@@ -20,19 +19,13 @@ import GameStartSign from '../components/game-start-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
-import { findEasyQuestions } from '../questions/easy';
-import { findMiddleQuestions } from '../questions/middle';
-import { findHardQuestions } from '../questions/hard';
+import { findQuestions } from '../questions/find-questions';
 
 const router = useRouter();
 const route = useRoute();
 
 const mode = route.query.mode === 'word-quiz' ? 'word-quiz' : 'typing-practice'
-
-const selectedEasyQuestions = shuffle(findEasyQuestions()).slice(0, 6);
-const selectedMiddleQuestions = shuffle(findMiddleQuestions()).slice(0, 3);
-const selectedHardQuestions = shuffle(findHardQuestions()).slice(0, 4);
-
+const { selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions } = findQuestions(mode);
 const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(selectedHardQuestions);
 
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
@@ -305,7 +298,6 @@ onUnmounted(() => {
 
 .question-kana-area {
   width: 100%;
-  text-align: center;
   font-size: 20px;
   position: absolute;
   top: 120px;
@@ -313,18 +305,27 @@ onUnmounted(() => {
   padding: 0 24px;
   line-height: 22px;
   z-index: -10;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .question-label-area {
   width: 100%;
-  text-align: center;
-  font-size: 28px;
+  font-size: 21px;
   position: absolute;
-  top: 40px;
+  top: 30px;
   word-break: break-all;
   padding: 0 24px;
-  line-height: 32px;
+  line-height: 28px;
   z-index: -10;
+  height: 84px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .nokori-jikan {
