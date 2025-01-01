@@ -15,6 +15,7 @@ import KoshuKotaiSign from '../components/koshu-kotai-sign.vue';
 import BlockSuccessSign from '../components/block-success-sign.vue';
 import BlockFailSign from '../components/block-fail-sign.vue';
 import TimeUpSign from '../components/time-up-sign.vue';
+import CompleteSign from '../components/complete-sign.vue';
 import GameStartSign from '../components/game-start-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
 
@@ -22,7 +23,6 @@ import { typingGame } from '../composables/typing-game'
 import { findEasyQuestions } from '../questions/easy';
 import { findMiddleQuestions } from '../questions/middle';
 import { findHardQuestions } from '../questions/hard';
-import { GameResult } from '../debada-game/game-result';
 
 const router = useRouter();
 
@@ -39,6 +39,7 @@ const koshuKotaiSignRef = useTemplateRef('koshuKotaiSign');
 const blockSuccessSignRef = useTemplateRef('blockSuccessSign');
 const blockFailSignRef = useTemplateRef('blockFailSign');
 const timeUpSignRef = useTemplateRef('timeUpSign');
+const completeSignRef = useTemplateRef('completeSign');
 const gameStartSignRef = useTemplateRef('gameStartSign');
 const blockOverlayRef = useTemplateRef('blockOverlay');
 
@@ -183,7 +184,11 @@ function goToResultPage() {
 function goToBlockOrProceed() {
   if (!hasNext.value) {
     currentScore.value += nokoriJikanSeconds.value;
-    goToResultPage();
+    pauseGame();
+    completeSignRef.value!.show();
+    setTimeout(() => {
+      goToResultPage();
+    }, 1000);
   }
 
   if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 3) {
@@ -278,6 +283,7 @@ onUnmounted(() => {
       <block-success-sign class="block-success-sign" ref="blockSuccessSign" />
       <block-fail-sign class="block-fail-sign" ref="blockFailSign" />
       <time-up-sign class="time-up-sign" ref="timeUpSign" />
+      <complete-sign class="complete-sign" ref="completeSign" />
       <game-start-sign class="game-start-sign" ref="gameStartSign" />
 
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
@@ -394,6 +400,12 @@ onUnmounted(() => {
 }
 
 .time-up-sign {
+  position: absolute;
+  left: 34px;
+  top: 80px;
+}
+
+.complete-sign {
   position: absolute;
   left: 34px;
   top: 80px;
