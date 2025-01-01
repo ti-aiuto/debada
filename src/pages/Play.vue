@@ -298,9 +298,9 @@ onUnmounted(() => {
 
 .question-kana-area {
   width: 100%;
-  font-size: 20px;
+  font-size: 19px;
   position: absolute;
-  top: 120px;
+  top: 110px;
   word-break: break-all;
   padding: 0 24px;
   line-height: 22px;
@@ -316,7 +316,7 @@ onUnmounted(() => {
   width: 100%;
   font-size: 21px;
   position: absolute;
-  top: 30px;
+  top: 20px;
   word-break: break-all;
   padding: 0 24px;
   line-height: 28px;
@@ -350,7 +350,8 @@ onUnmounted(() => {
 }
 
 .chars-after-type {
-  color: #ff0;
+  color: #999;
+  font-weight: bold;
 }
 
 .player {
