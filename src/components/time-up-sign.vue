@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import timeUpImage from '../assets/sprites/time-up.png';
+import timeUpImage from '../assets/sprites/time-up.webp';
 
 const imageClass = ref('');
 

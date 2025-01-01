@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import blockSuccessImage from '../assets/sprites/game-start.png';
+import blockSuccessImage from '../assets/sprites/game-start.webp';
 
 let imageTimer: any = null;
 const imageClass = ref('');
