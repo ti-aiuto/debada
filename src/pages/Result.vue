@@ -22,10 +22,9 @@ import bgImageUrl from '../assets/background/result-screen.webp';
 import toTitleButton from '../assets/buttons/to-title-button.png';
 import gsap from 'gsap'
 import { reactive } from 'vue'
-import { GameResult } from '../debada-game/game-result';
+import { useRoute } from 'vue-router'
 
-const descriptor = Object.getOwnPropertyDescriptor(window, 'gameResult');
-const savedGameResult = (descriptor?.value ?? {}) as GameResult;
+const route = useRoute();
 
 const tweened = reactive({
   score: 0,
@@ -33,9 +32,9 @@ const tweened = reactive({
   wrongCount: 0,
 })
 
-gsap.to(tweened, { duration: 1, score: savedGameResult.score ?? 0 })
-gsap.to(tweened, { duration: 1, correctCount: savedGameResult.correctCount ?? 0 })
-gsap.to(tweened, { duration: 1, wrongCount: savedGameResult.wrongCount ?? 0 })
+gsap.to(tweened, { duration: 1, score: Number(route.query.score ?? 0) })
+gsap.to(tweened, { duration: 1, correctCount: Number(route.query.correctCount ?? 0) })
+gsap.to(tweened, { duration: 1, wrongCount: Number(route.query.wrongCount ?? 0) })
 
 </script>
 

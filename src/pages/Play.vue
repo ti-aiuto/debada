@@ -170,20 +170,14 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
 }
 
 function goToResultPage() {
-  const gameResult: GameResult = {
-    correctCount: correctCount.value,
-    wrongCount: wrongCount.value,
-    renzokuCorrectCount: renzokuCorrectCount.value,
-    score: currentScore.value,
-  };
-
-  // いい場所がないのでグローバル変数で値を渡す
-  Object.defineProperty(window, 'gameResult', {
-    value: gameResult,
-    writable: true,
+  router.push({
+    path: '/result', query: {
+      correctCount: correctCount.value,
+      wrongCount: wrongCount.value,
+      renzokuCorrectCount: renzokuCorrectCount.value,
+      score: currentScore.value,
+    }
   });
-
-  router.push('/result');
 }
 
 function goToBlockOrProceed() {
