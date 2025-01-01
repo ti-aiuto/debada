@@ -1,4 +1,4 @@
-import { Question } from "../question";
+import {Question} from '../question';
 
 const questions = [
   ['こうていがわ', '肯定側'],
@@ -51,10 +51,10 @@ const questions = [
 ];
 
 export function findEasyQuestions(): Question[] {
-  return questions.map((question) => {
+  return questions.map(question => {
     return {
       kana: question[0],
-      label: question[1]
-    }
+      label: question[1],
+    };
   });
 }
