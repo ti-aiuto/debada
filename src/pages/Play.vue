@@ -262,9 +262,9 @@ onUnmounted(() => {
       </div>
 
       <div class="question-kana-area m-plus-rounded-1c-regular" v-show="currentEnabledState">
-        <span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span class="chars-before-type"
-          v-show="showNokoriRomajiEnabled">{{
-            nokoriRomaji.toUpperCase() }}</span>
+        <span><span class="chars-after-type">{{ koremadeUttaRoamji.toUpperCase() }}</span><span
+            class="chars-before-type" v-show="showNokoriRomajiEnabled">{{
+              nokoriRomaji.toUpperCase() }}</span></span>
       </div>
 
       <block-overlay class="block-overlay" ref="blockOverlay" />
