@@ -10,12 +10,14 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import bgImageUrl from '../assets/background/prepare-screen.webp';
+import { useRoute } from 'vue-router'
 
+const route = useRoute();
 const router = useRouter()
 
 function keyDownListener(event: KeyboardEvent) {
   if ([' ', 'Enter'].includes(event.key)) {
-    router.push('/play');
+    router.push({ path: '/play', query: { mode: route.query.mode } });
   } else if (event.key === 'Escape') {
     router.push('/');
   }

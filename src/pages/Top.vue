@@ -2,7 +2,7 @@
   <div>
     <img :src="bgImageUrl" class="bg-image">
     <div>
-      <RouterLink to="/prepare" class="start-button">
+      <RouterLink to="/select_mode" class="start-button">
         <img :src="startButton" class="image-button">
       </RouterLink>
 

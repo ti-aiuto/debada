@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import shuffle from 'lodash/shuffle';
 
 import bgImageUrl from '../assets/background/play-screen.webp';
@@ -25,6 +25,9 @@ import { findMiddleQuestions } from '../questions/middle';
 import { findHardQuestions } from '../questions/hard';
 
 const router = useRouter();
+const route = useRoute();
+
+const mode = route.query.mode === 'word-quiz' ? 'word-quiz' : 'typing-practice'
 
 const selectedEasyQuestions = shuffle(findEasyQuestions()).slice(0, 6);
 const selectedMiddleQuestions = shuffle(findMiddleQuestions()).slice(0, 3);
@@ -66,7 +69,7 @@ const currentCommPoint = ref(3);
 const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
-const showNokoriRomajiEnabled = ref(true);
+const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
 
 function nextTick() {
   if (!currentEnabledState.value) {

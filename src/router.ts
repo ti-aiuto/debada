@@ -5,6 +5,7 @@ import TopPage from './pages/Top.vue';
 import RulePage from './pages/Rule.vue';
 import ResultPage from './pages/Result.vue';
 import PreparePage from './pages/Prepare.vue';
+import SelectModePage from './pages/SelectMode.vue';
 
 const routes = [
   {path: '/', component: TopPage},
@@ -12,7 +13,7 @@ const routes = [
   {path: '/play', component: PlayPage},
   {path: '/prepare', component: PreparePage},
   {path: '/result', component: ResultPage},
-  {path: '/result', component: ResultPage},
+  {path: '/select_mode', component: SelectModePage},
 ];
 
 export const router = createRouter({
