@@ -270,7 +270,7 @@ onUnmounted(() => {
       <block-overlay class="block-overlay" ref="blockOverlay" />
 
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
-      <comm-gauge class="gauge" :comm-point="currentCommPoint" />
+      <comm-gauge class="gauge" :comm-point="currentCommPoint" v-show="currentEnabledState" />
 
       <div class="nokori-jikan m-plus-rounded-1c-regular">残り時間：{{ nokoriJikanSeconds }}秒</div>
 
