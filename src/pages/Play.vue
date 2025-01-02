@@ -267,12 +267,12 @@ onUnmounted(() => {
               nokoriRomaji.toUpperCase() }}</span></span>
       </div>
 
-      <block-overlay class="block-overlay" ref="blockOverlay" />
-
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <comm-gauge class="gauge" :comm-point="currentCommPoint" v-show="currentEnabledState" />
 
       <div class="nokori-jikan m-plus-rounded-1c-regular" v-show="currentEnabledState" >残り時間：{{ nokoriJikanSeconds }}秒</div>
+
+      <block-overlay class="block-overlay" ref="blockOverlay" />
 
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
       <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
