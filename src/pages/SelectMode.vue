@@ -18,8 +18,8 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import bgImageUrl from '../assets/background/select-mode.webp';
-import typingPracticeImageUrl from '../assets/buttons/typing-practice.png';
-import wordQuizImageUrl from '../assets/buttons/word-quiz.png';
+import typingPracticeImageUrl from '../assets/buttons/typing-practice.webp';
+import wordQuizImageUrl from '../assets/buttons/word-quiz.webp';
 
 const router = useRouter()
 

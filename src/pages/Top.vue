@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/play-screen.webp';
 import startButton from '../assets/buttons/start-button.svg';
-import ruleButton from '../assets/buttons/rule-button.png';
+import ruleButton from '../assets/buttons/rule-button.webp';
 import logoUrl from '../assets/sprites/title-logo.webp';
 </script>
 

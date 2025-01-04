@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import bgImageUrl from '../assets/background/rule-screen.webp';
-import toTitleButton from '../assets/buttons/to-title-button.png';
+import toTitleButton from '../assets/buttons/to-title-button.webp';
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 

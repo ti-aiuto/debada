@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import bgImageUrl from '../assets/background/play-screen.webp';
-import toTitleButton from '../assets/buttons/to-title-button.png';
+import toTitleButton from '../assets/buttons/to-title-button.webp';
 import logoUrl from '../assets/sprites/kekka-logo.webp';
 import gsap from 'gsap'
 import { reactive } from 'vue'
