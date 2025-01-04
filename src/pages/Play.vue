@@ -20,6 +20,7 @@ import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
+import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore } from '../debada-game/calc-score';
 
 const router = useRouter();
 const route = useRoute();
@@ -63,6 +64,10 @@ const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(30);
 const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
+
+function addScore(diff: number) {
+  currentScore.value += diff;
+}
 
 function nextTick() {
   if (!currentEnabledState.value) {
@@ -118,16 +123,15 @@ function enabaleBlockMode() {
   }, 750);
 }
 
-function calcBlockGentenPoint() {
-  return currentJudgesCount.value * (2 + 3 * nokoriRomaji.value.length / (koremadeUttaRoamji.value.length + nokoriRomaji.value.length))
-}
-
 function disableBlockMode(success: boolean) {
   pauseGame();
   if (success) {
     blockSuccessSignRef.value!.show();
   } else {
-    currentScore.value -= calcBlockGentenPoint();
+    addScore(calcBlockFailScore({ currentJudgesCount: currentJudgesCount.value, 
+      nokoriRomajiLength: nokoriRomaji.value.length, 
+      koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length
+     }));
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
@@ -179,7 +183,7 @@ function goToResultPage() {
 
 function goToBlockOrProceed() {
   if (!hasNext.value) {
-    currentScore.value += nokoriJikanSeconds.value;
+    addScore(calcCompleteGameScore({nokoriJikanSeconds:nokoriJikanSeconds.value }))
     pauseGame();
     completeSignRef.value!.show();
     setTimeout(() => {
@@ -224,7 +228,7 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (hasCompletedWord.value) {
-    currentScore.value += currentJudgesCount.value * currentCommPoint.value;
+    addScore(calcCompleteWordScore({ currentJudgesCount: currentJudgesCount.value, currentCommPoint: currentCommPoint.value }));
 
     if (currentBlockModeEnabled.value) {
       // ブロック成功
