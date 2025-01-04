@@ -1,30 +1,93 @@
+import {JudgesCount} from './judges-count';
+
+// 標準秒間キータイプ数
+function standardKeyTypeCountPerSeconds({
+  currentJudgesCount,
+}: {
+  currentJudgesCount: JudgesCount;
+}): number {
+  return {
+    1: 2,
+    3: 4,
+    5: 6,
+  }[currentJudgesCount];
+}
+
+// 単位クリアスコア
+function unitClearScore(): number {
+  return 1000;
+}
+
+// 標準クリアスコア
+function standardClearScore({
+  currentJudgesCount,
+}: {
+  currentJudgesCount: JudgesCount;
+}): number {
+  return unitClearScore() * currentJudgesCount;
+}
+
+export function standardJikan({
+  currentJudgesCount,
+}: {
+  currentJudgesCount: JudgesCount;
+}): number {
+  return {
+    1: 30,
+    3: 45,
+    5: 60,
+  }[currentJudgesCount];
+}
+
+// 標準キータイプあたりスコア
+function standardPerKeyTypeScore({
+  currentJudgesCount,
+}: {
+  currentJudgesCount: JudgesCount;
+}): number {
+  return (
+    standardClearScore({currentJudgesCount}) /
+    (standardJikan({currentJudgesCount}) *
+      standardKeyTypeCountPerSeconds({currentJudgesCount}))
+  );
+}
+
 // 単語一つを入力し終えたときのスコア加算
 export function calcCompleteWordScore({
   currentJudgesCount,
   currentCommPoint,
+  koremadeUttaRoamjiLength,
 }: {
-  currentJudgesCount: number;
+  currentJudgesCount: JudgesCount;
   currentCommPoint: number;
-}) {
-  return currentJudgesCount * currentCommPoint;
+  koremadeUttaRoamjiLength: number;
+}): number {
+  return Math.ceil(
+    koremadeUttaRoamjiLength *
+      currentCommPoint *
+      standardPerKeyTypeScore({
+        currentJudgesCount,
+      })
+  );
 }
 
 // 攻守交替でブロックに失敗したときのスコア加算
 export function calcBlockFailScore({
   currentJudgesCount,
   nokoriRomajiLength,
-  koremadeUttaRoamjiLength,
 }: {
-  currentJudgesCount: number;
+  currentJudgesCount: JudgesCount;
   nokoriRomajiLength: number;
-  koremadeUttaRoamjiLength: number;
-}) {
+}): number {
   return (
     -1 *
-    (currentJudgesCount *
-      (2 +
-        (3 * nokoriRomajiLength) /
-          (koremadeUttaRoamjiLength + nokoriRomajiLength)))
+    3 *
+    Math.ceil(
+      nokoriRomajiLength *
+        standardPerKeyTypeScore({
+          currentJudgesCount,
+        })
+    )
   );
 }
 
@@ -33,6 +96,6 @@ export function calcCompleteGameScore({
   nokoriJikanSeconds,
 }: {
   nokoriJikanSeconds: number;
-}) {
+}): number {
   return nokoriJikanSeconds;
 }

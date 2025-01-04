@@ -20,7 +20,8 @@ import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
-import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore } from '../debada-game/calc-score';
+import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikan } from '../debada-game/calc-score';
+import { JudgesCount } from '../debada-game/judges-count';
 
 const router = useRouter();
 const route = useRoute();
@@ -58,15 +59,16 @@ const {
 } = typingGame(questions.map(item => item.kana));
 
 const currentScore = ref(0);
-const currentJudgesCount = ref(1);
+const currentJudgesCount = ref<JudgesCount>(1);
 const currentCommPoint = ref(3);
 const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
-const nokoriJikanSeconds = ref(30);
+const nokoriJikanSeconds = ref(standardJikan({currentJudgesCount: currentJudgesCount.value}));
 const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
 
 function addScore(diff: number) {
   currentScore.value += diff;
+  console.debug(currentScore.value, diff);
 }
 
 function nextTick() {
@@ -130,7 +132,6 @@ function disableBlockMode(success: boolean) {
   } else {
     addScore(calcBlockFailScore({ currentJudgesCount: currentJudgesCount.value, 
       nokoriRomajiLength: nokoriRomaji.value.length, 
-      koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length
      }));
     blockFailSignRef.value!.show();
   }
@@ -148,7 +149,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 3;
-      nokoriJikanSeconds.value = 45;
+      nokoriJikanSeconds.value = standardJikan({currentJudgesCount: currentJudgesCount.value});
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -157,7 +158,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 5;
-      nokoriJikanSeconds.value = 60;
+      nokoriJikanSeconds.value = standardJikan({currentJudgesCount: currentJudgesCount.value});
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -228,7 +229,7 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (hasCompletedWord.value) {
-    addScore(calcCompleteWordScore({ currentJudgesCount: currentJudgesCount.value, currentCommPoint: currentCommPoint.value }));
+    addScore(calcCompleteWordScore({ currentJudgesCount: currentJudgesCount.value, currentCommPoint: currentCommPoint.value, koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length }));
 
     if (currentBlockModeEnabled.value) {
       // ブロック成功
@@ -238,8 +239,6 @@ function keyDownListener(event: KeyboardEvent) {
     }
   }
 }
-
-
 
 onMounted(() => {
   document.addEventListener('keydown', keyDownListener);
