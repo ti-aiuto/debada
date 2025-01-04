@@ -131,7 +131,7 @@ function disableBlockMode(success: boolean) {
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
-    nextLevelOrProceed(false);
+    nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
   }, 750);
 }
 
@@ -184,11 +184,11 @@ function goToResultPage() {
 }
 
 function goToBlockOrProceed() {
-  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 3) {
+  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4 - 1) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 1) {
+  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2 - 1) {
     enabaleBlockMode();
-  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 2) {
+  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3 - 1) {
     enabaleBlockMode();
   } else {
     proceedToNextQuestion();
