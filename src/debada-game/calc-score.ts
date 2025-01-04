@@ -27,7 +27,7 @@ function standardClearScore({
   return unitClearScore() * currentJudgesCount;
 }
 
-export function standardJikan({
+export function standardJikanSeconds({
   currentJudgesCount,
 }: {
   currentJudgesCount: JudgesCount;
@@ -47,7 +47,7 @@ function standardPerKeyTypeScore({
 }): number {
   return (
     standardClearScore({currentJudgesCount}) /
-    (standardJikan({currentJudgesCount}) *
+    (standardJikanSeconds({currentJudgesCount}) *
       standardKeyTypeCountPerSeconds({currentJudgesCount}))
   );
 }
@@ -93,9 +93,20 @@ export function calcBlockFailScore({
 
 // 全ての単語を入力したときのスコア加算
 export function calcCompleteGameScore({
+  currentJudgesCount,
   nokoriJikanSeconds,
 }: {
+  currentJudgesCount: JudgesCount;
   nokoriJikanSeconds: number;
 }): number {
-  return nokoriJikanSeconds;
+  return Math.ceil(
+    nokoriJikanSeconds *
+      0.5 *
+      standardKeyTypeCountPerSeconds({
+        currentJudgesCount,
+      }) *
+      standardPerKeyTypeScore({
+        currentJudgesCount,
+      })
+  );
 }

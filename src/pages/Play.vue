@@ -20,7 +20,7 @@ import BlockOverlay from '../components/block-overlay.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
-import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikan } from '../debada-game/calc-score';
+import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from '../debada-game/calc-score';
 import { JudgesCount } from '../debada-game/judges-count';
 
 const router = useRouter();
@@ -63,7 +63,7 @@ const currentJudgesCount = ref<JudgesCount>(1);
 const currentCommPoint = ref(3);
 const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
-const nokoriJikanSeconds = ref(standardJikan({currentJudgesCount: currentJudgesCount.value}));
+const nokoriJikanSeconds = ref(standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value }));
 const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
 
 function addScore(diff: number) {
@@ -130,9 +130,10 @@ function disableBlockMode(success: boolean) {
   if (success) {
     blockSuccessSignRef.value!.show();
   } else {
-    addScore(calcBlockFailScore({ currentJudgesCount: currentJudgesCount.value, 
-      nokoriRomajiLength: nokoriRomaji.value.length, 
-     }));
+    addScore(calcBlockFailScore({
+      currentJudgesCount: currentJudgesCount.value,
+      nokoriRomajiLength: nokoriRomaji.value.length,
+    }));
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
@@ -149,7 +150,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 3;
-      nokoriJikanSeconds.value = standardJikan({currentJudgesCount: currentJudgesCount.value});
+      nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -158,7 +159,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 5;
-      nokoriJikanSeconds.value = standardJikan({currentJudgesCount: currentJudgesCount.value});
+      nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
       goToBlockOrProceed();
       resumeGame();
     }, 750);
@@ -184,7 +185,7 @@ function goToResultPage() {
 
 function goToBlockOrProceed() {
   if (!hasNext.value) {
-    addScore(calcCompleteGameScore({nokoriJikanSeconds:nokoriJikanSeconds.value }))
+    addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
     pauseGame();
     completeSignRef.value!.show();
     setTimeout(() => {
@@ -273,7 +274,8 @@ onUnmounted(() => {
       <judges class="judges" :judges-count="currentJudgesCount" ref="judges" />
       <comm-gauge class="gauge" :comm-point="currentCommPoint" v-show="currentEnabledState" />
 
-      <div class="nokori-jikan m-plus-rounded-1c-regular" v-show="currentEnabledState" >残り時間：{{ nokoriJikanSeconds }}秒</div>
+      <div class="nokori-jikan m-plus-rounded-1c-regular" v-show="currentEnabledState">残り時間：{{ nokoriJikanSeconds }}秒
+      </div>
 
       <block-overlay class="block-overlay" ref="blockOverlay" />
 
