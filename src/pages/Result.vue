@@ -7,7 +7,7 @@
       </div>
       <div class="correct-count m-plus-rounded-1c-regular">
         正解タイプ数：<b>{{ Math.floor(tweened.correctCount) }}</b> ミスタイプ数：<b>{{ Math.floor(tweened.wrongCount) }}</b><br>
-        間違えたキー：{{ perKeyWrongCount }}
+        間違えたキー：{{ formattedPerKeyWrongCount }}
       </div>
 
       <RouterLink to="/" class="to-title-button">
@@ -37,7 +37,7 @@ gsap.to(tweened, { duration: 1, score: Number(route.query.score ?? 0) })
 gsap.to(tweened, { duration: 1, correctCount: Number(route.query.correctCount ?? 0) })
 gsap.to(tweened, { duration: 1, wrongCount: Number(route.query.wrongCount ?? 0) })
 
-const perKeyWrongCount = ref(route.query.perKeyWrongCount ?? '');
+const formattedPerKeyWrongCount = ref(route.query.formattedPerKeyWrongCount ?? '');
 
 </script>
 

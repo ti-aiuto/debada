@@ -182,7 +182,7 @@ function goToResultPage() {
       wrongCount: wrongCount.value,
       renzokuCorrectCount: renzokuCorrectCount.value,
       score: currentScore.value,
-      perKeyWrongCount: formatPerKeyWrongCount(perKeyWrongCount.value)
+      formattedPerKeyWrongCount: formatPerKeyWrongCount(perKeyWrongCount.value)
     }
   });
 }
