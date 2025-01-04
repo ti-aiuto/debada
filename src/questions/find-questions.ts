@@ -1,10 +1,10 @@
-import shuffle from 'lodash/shuffle';
-import {findEasyQuestions as practiceFindEasyQuestions} from './typing-practice/easy';
-import {findMiddleQuestions as practiceFindMiddleQuestions} from './typing-practice/middle';
-import {findHardQuestions as practiceFindHardQuestions} from './typing-practice/hard';
-import {findEasyQuestions as quizFindEasyQuestions} from './word-quiz/easy';
-import {findMiddleQuestions as quizFindMiddleQuestions} from './word-quiz/middle';
-import {findHardQuestions as quizFindHardQuestions} from './word-quiz/hard';
+import { shuffle } from 'lodash';
+import { findEasyQuestions as practiceFindEasyQuestions } from './typing-practice/easy';
+import { findMiddleQuestions as practiceFindMiddleQuestions } from './typing-practice/middle';
+import { findHardQuestions as practiceFindHardQuestions } from './typing-practice/hard';
+import { findEasyQuestions as quizFindEasyQuestions } from './word-quiz/easy';
+import { findMiddleQuestions as quizFindMiddleQuestions } from './word-quiz/middle';
+import { findHardQuestions as quizFindHardQuestions } from './word-quiz/hard';
 
 export function findQuestions(mode: 'typing-practice' | 'word-quiz') {
   if (mode === 'typing-practice') {

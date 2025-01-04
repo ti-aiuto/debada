@@ -21,6 +21,7 @@ import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
 import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from '../debada-game/calc-score';
 import { JudgesCount } from '../types/judges-count';
+import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
 
 const router = useRouter();
 const route = useRoute();
@@ -64,6 +65,8 @@ const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value }));
 const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
+
+const perKeyWrongCount = ref<{ [key: string]: number }>({});
 
 function addScore(diff: number) {
   currentScore.value += diff;
@@ -179,6 +182,7 @@ function goToResultPage() {
       wrongCount: wrongCount.value,
       renzokuCorrectCount: renzokuCorrectCount.value,
       score: currentScore.value,
+      perKeyWrongCount: formatPerKeyWrongCount(perKeyWrongCount.value)
     }
   });
 }
@@ -205,6 +209,9 @@ function keyDownListener(event: KeyboardEvent) {
   }
 
   if (!typeKey(event.key)) {
+    const correctChar = nokoriRomaji.value[0];
+    perKeyWrongCount.value[correctChar] = (perKeyWrongCount.value[correctChar] ?? 0) + 1;
+
     if (currentBlockModeEnabled.value) {
       return disableBlockMode(false);
     }

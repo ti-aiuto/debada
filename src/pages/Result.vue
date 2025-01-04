@@ -6,8 +6,8 @@
         スコア：<b>{{ Math.floor(tweened.score) }}</b>
       </div>
       <div class="correct-count m-plus-rounded-1c-regular">
-        正解タイプ数：<b>{{ Math.floor(tweened.correctCount) }}</b><br>
-        ミスタイプ数：<b>{{ Math.floor(tweened.wrongCount) }}</b>
+        正解タイプ数：<b>{{ Math.floor(tweened.correctCount) }}</b> ミスタイプ数：<b>{{ Math.floor(tweened.wrongCount) }}</b><br>
+        間違えたキー：{{ perKeyWrongCount }}
       </div>
 
       <RouterLink to="/" class="to-title-button">
@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import bgImageUrl from '../assets/background/result-screen.webp';
 import toTitleButton from '../assets/buttons/to-title-button.png';
 import gsap from 'gsap'
@@ -35,6 +36,8 @@ const tweened = reactive({
 gsap.to(tweened, { duration: 1, score: Number(route.query.score ?? 0) })
 gsap.to(tweened, { duration: 1, correctCount: Number(route.query.correctCount ?? 0) })
 gsap.to(tweened, { duration: 1, wrongCount: Number(route.query.wrongCount ?? 0) })
+
+const perKeyWrongCount = ref(route.query.perKeyWrongCount ?? '');
 
 </script>
 
