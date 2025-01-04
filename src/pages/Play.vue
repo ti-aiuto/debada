@@ -3,8 +3,6 @@ import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import bgImageUrl from '../assets/background/play-screen.webp';
-import player1Url from '../assets/sprites/player1.png';
-import player2Url from '../assets/sprites/player2.png';
 
 import CommGauge from '../components/comm-gauge.vue';
 import GotPointSign from '../components/got-point-sign.vue';
@@ -17,6 +15,7 @@ import TimeUpSign from '../components/time-up-sign.vue';
 import CompleteSign from '../components/complete-sign.vue';
 import GameStartSign from '../components/game-start-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
+import Player from '../components/player.vue';
 
 import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
@@ -96,14 +95,6 @@ let timerId = setInterval(nextTick, 1000);
 
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
-});
-
-const playerImageUrl = computed(() => {
-  if (currentBlockModeEnabled.value) {
-    return player2Url;
-  } else {
-    return player1Url;
-  }
 });
 
 function pauseGame() {
@@ -288,7 +279,7 @@ onUnmounted(() => {
       <game-start-sign class="game-start-sign" ref="gameStartSign" />
 
       <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
-      <img :src="playerImageUrl" class="player">
+      <player class="player" :block-mode-enabled="currentBlockModeEnabled" />
     </div>
   </div>
 </template>
@@ -362,8 +353,6 @@ onUnmounted(() => {
 .player {
   position: absolute;
   z-index: -9;
-  width: 140px;
-  height: 150px;
   left: 255px;
   top: 165px;
 }
