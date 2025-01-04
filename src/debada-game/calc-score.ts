@@ -33,7 +33,7 @@ export function standardJikanSeconds({
   currentJudgesCount: JudgesCount;
 }): number {
   return {
-    1: 3,
+    1: 30,
     3: 45,
     5: 60,
   }[currentJudgesCount];
