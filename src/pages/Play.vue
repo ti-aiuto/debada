@@ -137,10 +137,10 @@ function disableBlockMode(success: boolean) {
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
-  nextLevelOrProceed(success); // 頷くタイミングとブロック終了のタイミングを合わせるためタイマーの発火前に実行する
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
+    nextLevelOrProceed(false);
   }, 750);
 }
 
