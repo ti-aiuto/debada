@@ -275,7 +275,8 @@ onUnmounted(() => {
       <div class="nokori-jikan m-plus-rounded-1c-regular" v-show="currentEnabledState">残り時間：{{ nokoriJikanSeconds }}秒
       </div>
 
-      <block-overlay class="block-overlay" ref="blockOverlay" />
+      <player class="player" :block-mode-enabled="currentBlockModeEnabled" />
+      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
 
       <level-up-sign class="level-up-sign" ref="levelUpSign" />
       <koshu-kotai-sign class="koshu-kotai-sign" ref="koshuKotaiSign" />
@@ -285,8 +286,7 @@ onUnmounted(() => {
       <complete-sign class="complete-sign" ref="completeSign" />
       <game-start-sign class="game-start-sign" ref="gameStartSign" />
 
-      <got-point-sign class="got-point-sign" :comm-point="currentCommPoint" ref="gotPointSign" />
-      <player class="player" :block-mode-enabled="currentBlockModeEnabled" />
+      <block-overlay class="block-overlay" ref="blockOverlay" />
     </div>
   </div>
 </template>
