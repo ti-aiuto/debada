@@ -1,4 +1,4 @@
-import {JudgesCount} from './judges-count';
+import {JudgesCount} from '../types/judges-count';
 
 // 標準秒間キータイプ数
 function standardKeyTypeCountPerSeconds({

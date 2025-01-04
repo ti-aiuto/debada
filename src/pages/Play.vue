@@ -21,7 +21,7 @@ import BlockOverlay from '../components/block-overlay.vue';
 import { typingGame } from '../composables/typing-game'
 import { findQuestions } from '../questions/find-questions';
 import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from '../debada-game/calc-score';
-import { JudgesCount } from '../debada-game/judges-count';
+import { JudgesCount } from '../types/judges-count';
 
 const router = useRouter();
 const route = useRoute();
