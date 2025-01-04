@@ -21,7 +21,7 @@
 import bgImageUrl from '../assets/background/play-screen.webp';
 import startButton from '../assets/buttons/start-button.svg';
 import ruleButton from '../assets/buttons/rule-button.png';
-import logoUrl from '../assets/sprites/title-logo.png';
+import logoUrl from '../assets/sprites/title-logo.webp';
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import blockImageUrl from '../assets/sprites/block-overlay.png';
+import blockImageUrl from '../assets/sprites/block-overlay.webp';
 
 const imageClass = ref('');
 

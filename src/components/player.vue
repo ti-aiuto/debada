@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import player1Url from '../assets/sprites/player1.png';
-import player2Url from '../assets/sprites/player2.png';
+import player1Url from '../assets/sprites/player1.webp';
+import player2Url from '../assets/sprites/player2.webp';
 
 import { computed } from 'vue'
 

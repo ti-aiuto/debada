@@ -23,7 +23,7 @@
 import { ref } from 'vue'
 import bgImageUrl from '../assets/background/play-screen.webp';
 import toTitleButton from '../assets/buttons/to-title-button.png';
-import logoUrl from '../assets/sprites/kekka-logo.png';
+import logoUrl from '../assets/sprites/kekka-logo.webp';
 import gsap from 'gsap'
 import { reactive } from 'vue'
 import { useRoute } from 'vue-router'
