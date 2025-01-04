@@ -2,6 +2,8 @@
   <div>
     <img :src="bgImageUrl" class="bg-image">
     <div>
+      <img class="logo" :src="logoUrl">
+
       <div class="score m-plus-rounded-1c-regular">
         スコア：<b>{{ Math.floor(tweened.score) }}</b>
       </div>
@@ -19,8 +21,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import bgImageUrl from '../assets/background/result-screen.webp';
+import bgImageUrl from '../assets/background/play-screen.webp';
 import toTitleButton from '../assets/buttons/to-title-button.png';
+import logoUrl from '../assets/sprites/kekka-logo.png';
 import gsap from 'gsap'
 import { reactive } from 'vue'
 import { useRoute } from 'vue-router'
@@ -66,5 +69,11 @@ const formattedPerKeyWrongCount = ref(route.query.formattedPerKeyWrongCount ?? '
   position: absolute;
   text-align: center;
   width: 100%;
+}
+
+.logo {
+  position: absolute;
+  width: 640px;
+  top: 15px;
 }
 </style>

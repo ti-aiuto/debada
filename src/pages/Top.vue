@@ -11,14 +11,17 @@
       </RouterLink>
 
       <div class="m-plus-rounded-1c-regular version">v2.試作品</div>
+
+      <img class="logo" :src="logoUrl">
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import bgImageUrl from '../assets/background/title-screen.webp';
+import bgImageUrl from '../assets/background/play-screen.webp';
 import startButton from '../assets/buttons/start-button.svg';
 import ruleButton from '../assets/buttons/rule-button.png';
+import logoUrl from '../assets/sprites/title-logo.png';
 </script>
 
 <style scoped>
@@ -29,6 +32,12 @@ import ruleButton from '../assets/buttons/rule-button.png';
   position: absolute;
   top: 300px;
   left: calc(320px - 150px);
+}
+
+.logo {
+  position: absolute;
+  width: 640px;
+  top: 15px;
 }
 
 .rule-button {
