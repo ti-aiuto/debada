@@ -137,7 +137,7 @@ function disableBlockMode(success: boolean) {
     blockFailSignRef.value!.show();
   }
   blockOverlayRef.value!.hide();
-  nextLevelOrProceed(success);
+  nextLevelOrProceed(success); // 頷くタイミングとブロック終了のタイミングを合わせるためタイマーの発火前に実行する
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
@@ -145,7 +145,16 @@ function disableBlockMode(success: boolean) {
 }
 
 function nextLevelOrProceed(noddingEnabled: boolean) {
-  if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
+  if (!hasNext.value) {
+    // コンプリート
+    addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
+    pauseGame();
+    completeSignRef.value!.show();
+    setTimeout(() => {
+      goToResultPage();
+    }, 1000);
+    return;
+  } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
     levelUpSignRef.value!.show();
     pauseGame();
     setTimeout(() => {
@@ -184,15 +193,6 @@ function goToResultPage() {
 }
 
 function goToBlockOrProceed() {
-  if (!hasNext.value) {
-    addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
-    pauseGame();
-    completeSignRef.value!.show();
-    setTimeout(() => {
-      goToResultPage();
-    }, 1000);
-  }
-
   if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 3) {
     enabaleBlockMode();
   } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 1) {
