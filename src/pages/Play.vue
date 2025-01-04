@@ -367,6 +367,7 @@ onUnmounted(() => {
 .judges {
   top: 330px;
   position: absolute;
+  z-index: -9;
 }
 
 .gauge {
