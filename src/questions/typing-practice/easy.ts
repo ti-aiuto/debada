@@ -47,7 +47,6 @@ const questions = [
   ['どろっぷ', 'ドロップ'],
   ['こみゅてん', 'コミュ点'],
   ['ぼーと', 'ボート'],
-  ['おふせっと', 'オフセット'],
 ];
 
 export function findEasyQuestions(): Question[] {
