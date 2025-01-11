@@ -197,4 +197,8 @@ describe('kanaWordToRomajiChunks', () => {
       },
     ]);
   });
+
+  test('変換不能な文字が含まれる場合', () => {
+    expect(() => kanaWordToRomajiChunks('ｔ')).toThrow();
+  });
 });

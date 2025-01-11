@@ -5,6 +5,7 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
   const result: RomajiChunk[] = [];
   let cursor = 0;
   while (cursor < word.length) {
+    let cursorDiff = 0;
     const part2 = word.substr(cursor, 2);
     const part1 = word.substr(cursor, 1);
     if (
@@ -26,7 +27,7 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
             }
           }
           result.push({chunk: `ん${part}`, candidates: appendedPartsResult});
-          cursor += part.length + 1;
+          cursorDiff = part.length + 1;
           break;
         }
       }
@@ -44,7 +45,7 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
             }
           }
           result.push({chunk: `っ${part}`, candidates: appendedPartsResult});
-          cursor += part.length + 1;
+          cursorDiff = part.length + 1;
           break;
         }
       }
@@ -53,11 +54,15 @@ export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
         const partsResult = kanaPartToRomaji(part);
         if (partsResult.length) {
           result.push({chunk: part, candidates: partsResult});
-          cursor += part.length;
+          cursorDiff = part.length;
           break;
         }
       }
     }
+    if (cursorDiff === 0) {
+      throw new Error(`${word}に変換不能な文字が含まれています`);
+    }
+    cursor += cursorDiff;
   }
   return result;
 }
