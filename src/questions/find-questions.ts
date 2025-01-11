@@ -28,9 +28,9 @@ export function findQuestions(mode: 'typing-practice' | 'word-quiz') {
     const selectedEasyQuestions = shuffle(quizFindEasyQuestions()).slice(0, 6);
     const selectedMiddleQuestions = shuffle(quizFindMiddleQuestions()).slice(
       0,
-      3
+      6
     );
-    const selectedHardQuestions = shuffle(quizFindHardQuestions()).slice(0, 4);
+    const selectedHardQuestions = shuffle(quizFindHardQuestions()).slice(0, 6);
     return {
       selectedEasyQuestions,
       selectedMiddleQuestions,
