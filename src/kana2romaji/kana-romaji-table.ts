@@ -135,6 +135,12 @@ export const kanaRomajiTable: {[key: string]: string[]} = {
   ちぇ: ['tye'],
   ちょ: ['tyo', 'cho'],
 
+  てゃ: ['tha'],
+  てぃ: ['thi'],
+  てゅ: ['thu'],
+  てぇ: ['the'],
+  てょ: ['tho'],
+
   にゃ: ['nya'],
   にぃ: ['nyi'],
   にゅ: ['nyu'],
