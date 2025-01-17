@@ -73,7 +73,7 @@ function addScore(diff: number) {
   console.debug(currentScore.value, diff);
 }
 
-function nextTick() {
+function clockTick() {
   if (!currentEnabledState.value) {
     lastTime = Date.now();
     return;
@@ -94,7 +94,7 @@ function nextTick() {
 }
 
 let lastTime = Date.now();
-let timerId = setInterval(nextTick, 1000);
+let timerId = setInterval(clockTick, 1000);
 
 type EventName = 'game_start' | 'game_complete' | 'time_is_up' | 'level_up' | 'question_complete' | 'block_mode_start' | 'block_mode_succeeded' | 'block_mode_failed';
 
