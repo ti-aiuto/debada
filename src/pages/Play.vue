@@ -44,7 +44,7 @@ const gameStartSignRef = useTemplateRef('gameStartSign');
 const blockOverlayRef = useTemplateRef('blockOverlay');
 
 function abortGame() {
-  router.push('/');
+  notifyGameEvent('abort_game');
 }
 
 const {
@@ -122,6 +122,8 @@ function notifyGameEvent(eventName: GameEventName) {
     timeUpSignRef.value!.show();
   } else if (eventName === 'game_complete') {
     completeSignRef.value!.show();
+  } else if (eventName === 'abort_game') {
+    router.push('/');
   }
 }
 
