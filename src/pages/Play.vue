@@ -96,6 +96,30 @@ function nextTick() {
 let lastTime = Date.now();
 let timerId = setInterval(nextTick, 1000);
 
+type EventName = 'game_start' | 'game_complete' | 'time_is_up' | 'level_up' | 'question_complete' | 'block_mode_start' | 'block_mode_succeeded' | 'block_mode_failed';
+
+function notifyGameEvent(eventName: EventName) {
+  if (eventName === 'level_up') {
+    levelUpSignRef.value!.show();
+  } else if (eventName === 'question_complete') {
+    judgesRef.value!.nod();
+    gotPointGaugeRef.value!.show();
+  } else if (eventName === 'game_complete') {
+    completeSignRef.value!.show();
+  } else if (eventName === 'block_mode_start') {
+    koshuKotaiSignRef.value!.show();
+    blockOverlayRef.value!.show();
+  } else if (eventName === 'block_mode_succeeded') {
+    blockSuccessSignRef.value!.show();
+    blockOverlayRef.value!.hide();
+  } else if (eventName === 'block_mode_failed') {
+    blockFailSignRef.value!.show();
+    blockOverlayRef.value!.hide();
+  } else if (eventName === 'game_start') {
+    gameStartSignRef.value!.show();
+  }
+}
+
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
@@ -110,8 +134,7 @@ function resumeGame() {
 
 function enabaleBlockMode() {
   pauseGame();
-  koshuKotaiSignRef.value!.show();
-  blockOverlayRef.value!.show();
+  notifyGameEvent('block_mode_start')
   setTimeout(() => {
     currentBlockModeEnabled.value = true;
     proceedToNextQuestion();
@@ -121,16 +144,15 @@ function enabaleBlockMode() {
 
 function disableBlockMode(success: boolean) {
   pauseGame();
+  addScore(calcBlockFailScore({
+    currentJudgesCount: currentJudgesCount.value,
+    nokoriRomajiLength: nokoriRomaji.value.length,
+  }));
   if (success) {
-    blockSuccessSignRef.value!.show();
+    notifyGameEvent('block_mode_succeeded')
   } else {
-    addScore(calcBlockFailScore({
-      currentJudgesCount: currentJudgesCount.value,
-      nokoriRomajiLength: nokoriRomaji.value.length,
-    }));
-    blockFailSignRef.value!.show();
+    notifyGameEvent('block_mode_failed')
   }
-  blockOverlayRef.value!.hide();
   setTimeout(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
@@ -143,13 +165,13 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     // コンプリート
     addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
     pauseGame();
-    completeSignRef.value!.show();
+    notifyGameEvent('game_complete');
     setTimeout(() => {
       goToResultPage();
     }, 1000);
     return;
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
-    levelUpSignRef.value!.show();
+    notifyGameEvent('level_up');
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 3;
@@ -158,7 +180,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
       resumeGame();
     }, 750);
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
-    levelUpSignRef.value!.show();
+    notifyGameEvent('level_up');
     pauseGame();
     setTimeout(() => {
       currentJudgesCount.value = 5;
@@ -168,8 +190,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     }, 750);
   } else {
     if (noddingEnabled) {
-      judgesRef.value!.nod();
-      gotPointGaugeRef.value!.show();
+      notifyGameEvent('question_complete');
     }
     goToBlockOrProceed();
   }
@@ -241,8 +262,7 @@ function keyDownListener(event: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', keyDownListener);
-
-  gameStartSignRef.value!.show();
+  notifyGameEvent('game_start');
   setTimeout(() => {
     resumeGame();
   }, 1000);
