@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import bgImageUrl from '../assets/background/play-screen.webp';
@@ -17,20 +17,13 @@ import GameStartSign from '../components/game-start-sign.vue';
 import BlockOverlay from '../components/block-overlay.vue';
 import Player from '../components/player.vue';
 
-import { typingGame } from '../composables/typing-game'
-import { findQuestions } from '../questions/find-questions';
-import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from '../debada-game/calc-score';
-import { JudgesCount } from '../types/judges-count';
 import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
 import { runAfterDelay } from '../browser/run-after-delay';
 import { GameEventName } from '../debada-game/game-event-name';
+import { initializeGame } from '../debada-game/game';
 
 const router = useRouter();
 const route = useRoute();
-
-const mode = route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice'
-const { selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions } = findQuestions(mode);
-const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(selectedHardQuestions);
 
 const gotPointGaugeRef = useTemplateRef('gotPointSign');
 const judgesRef = useTemplateRef('judges');
@@ -42,173 +35,6 @@ const timeUpSignRef = useTemplateRef('timeUpSign');
 const completeSignRef = useTemplateRef('completeSign');
 const gameStartSignRef = useTemplateRef('gameStartSign');
 const blockOverlayRef = useTemplateRef('blockOverlay');
-
-function abortGame() {
-  notifyGameEvent('abort_game');
-}
-
-const {
-  correctCount,
-  wrongCount,
-  renzokuCorrectCount,
-  typeKey,
-  proceedToNextQuestion,
-  hasCompletedWord,
-  hasNext,
-  koremadeUttaRoamji,
-  nokoriRomaji,
-  currentQuestionIndex,
-} = typingGame(questions.map(item => item.kana));
-
-const currentScore = ref(0);
-const currentJudgesCount = ref<JudgesCount>(1);
-const currentCommPoint = ref(3);
-const currentEnabledState = ref(false);
-const currentBlockModeEnabled = ref(false);
-const nokoriJikanSeconds = ref(standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value }));
-const showNokoriRomajiEnabled = ref(mode === 'typing_practice');
-
-const perKeyWrongCount = ref<{ [key: string]: number }>({});
-
-function addScore(diff: number) {
-  currentScore.value += diff;
-  console.debug(currentScore.value, diff);
-}
-
-let lastTime = Date.now();
-let timerId = setInterval(intervalClockCallback, 1000);
-function intervalClockCallback() {
-  const timeElapsedSeconds = Math.round((Date.now() - lastTime) / 1000);
-  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
-  clockTick(timeElapsedSeconds);
-}
-
-function clockTick(timeElapsedSeconds: number) {
-  if (!currentEnabledState.value) {
-    return;
-  }
-  nokoriJikanSeconds.value = Math.max(nokoriJikanSeconds.value - timeElapsedSeconds, 0);
-
-  if (nokoriJikanSeconds.value <= 0) {
-    clearInterval(timerId);
-
-    pauseGame();
-    notifyGameEvent('time_is_up');
-  }
-}
-
-
-function notifyGameEvent(eventName: GameEventName) {
-  if (eventName === 'game_start') {
-    gameStartSignRef.value!.show();
-  } else if (eventName === 'block_mode_start') {
-    koshuKotaiSignRef.value!.show();
-    blockOverlayRef.value!.show();
-  } else if (eventName === 'block_mode_succeeded') {
-    blockSuccessSignRef.value!.show();
-    blockOverlayRef.value!.hide();
-  } else if (eventName === 'block_mode_failed') {
-    blockFailSignRef.value!.show();
-    blockOverlayRef.value!.hide();
-  } else if (eventName === 'level_up') {
-    levelUpSignRef.value!.show();
-  } else if (eventName === 'question_complete') {
-    judgesRef.value!.nod();
-    gotPointGaugeRef.value!.show();
-  } else if (eventName === 'time_is_up') {
-    timeUpSignRef.value!.show();
-    runAfterDelay(() => {
-      goToResultPage();
-    }, 1000);
-  } else if (eventName === 'game_complete') {
-    completeSignRef.value!.show();
-    runAfterDelay(() => {
-      goToResultPage();
-    }, 1000);
-  } else if (eventName === 'abort_game') {
-    router.push('/');
-  }
-}
-
-function startGame() {
-  notifyGameEvent('game_start');
-  runAfterDelay(() => {
-    resumeGame();
-  }, 1000);
-}
-
-const currentQuestion = computed(() => {
-  return questions[currentQuestionIndex.value];
-});
-
-function pauseGame() {
-  currentEnabledState.value = false;
-}
-
-function resumeGame() {
-  currentEnabledState.value = true;
-}
-
-function enabaleBlockMode() {
-  pauseGame();
-  notifyGameEvent('block_mode_start')
-  runAfterDelay(() => {
-    currentBlockModeEnabled.value = true;
-    proceedToNextQuestion();
-    resumeGame();
-  }, 750);
-}
-
-function disableBlockMode(success: boolean) {
-  pauseGame();
-  addScore(calcBlockFailScore({
-    currentJudgesCount: currentJudgesCount.value,
-    nokoriRomajiLength: nokoriRomaji.value.length,
-  }));
-  if (success) {
-    notifyGameEvent('block_mode_succeeded')
-  } else {
-    notifyGameEvent('block_mode_failed')
-  }
-  runAfterDelay(() => {
-    currentBlockModeEnabled.value = false;
-    resumeGame();
-    nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
-  }, 750);
-}
-
-function nextLevelOrProceed(noddingEnabled: boolean) {
-  if (!hasNext.value) {
-    // コンプリート
-    addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
-    pauseGame();
-    notifyGameEvent('game_complete');
-    return;
-  } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
-    notifyGameEvent('level_up');
-    pauseGame();
-    runAfterDelay(() => {
-      currentJudgesCount.value = 3;
-      nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
-      goToBlockOrProceed();
-      resumeGame();
-    }, 750);
-  } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
-    notifyGameEvent('level_up');
-    pauseGame();
-    runAfterDelay(() => {
-      currentJudgesCount.value = 5;
-      nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
-      goToBlockOrProceed();
-      resumeGame();
-    }, 750);
-  } else {
-    if (noddingEnabled) {
-      notifyGameEvent('question_complete');
-    }
-    goToBlockOrProceed();
-  }
-}
 
 function goToResultPage() {
   router.push({
@@ -222,56 +48,65 @@ function goToResultPage() {
   });
 }
 
-function goToBlockOrProceed() {
-  if (currentJudgesCount.value === 1 && currentQuestionIndex.value + 1 === 4 - 1) {
-    enabaleBlockMode();
-  } else if (currentJudgesCount.value === 3 && (currentQuestionIndex.value - selectedEasyQuestions.length) + 1 === 2 - 1) {
-    enabaleBlockMode();
-  } else if (currentJudgesCount.value === 5 && (currentQuestionIndex.value - selectedEasyQuestions.length - selectedMiddleQuestions.length) + 1 === 3 - 1) {
-    enabaleBlockMode();
-  } else {
-    proceedToNextQuestion();
-  }
-}
-
-function handleKeyDownEvent(key: string) {
-  if (key === 'Escape') {
-    return abortGame();
-  }
-
-  if (!currentEnabledState.value) {
-    return;
-  }
-
-  if (!typeKey(key)) {
-    const correctChar = nokoriRomaji.value[0];
-    perKeyWrongCount.value[correctChar] = (perKeyWrongCount.value[correctChar] ?? 0) + 1;
-
-    if (currentBlockModeEnabled.value) {
-      return disableBlockMode(false);
+const {
+  handleKeyDownEvent,
+  clockTick,
+  startGame,
+  currentQuestion,
+  correctCount,
+  wrongCount,
+  renzokuCorrectCount,
+  koremadeUttaRoamji,
+  nokoriRomaji,
+  currentScore,
+  currentJudgesCount,
+  currentCommPoint,
+  currentEnabledState,
+  currentBlockModeEnabled,
+  nokoriJikanSeconds,
+  showNokoriRomajiEnabled,
+  perKeyWrongCount
+} = initializeGame({
+  mode: route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice',
+  notifyGameEvent(eventName: GameEventName) {
+    if (eventName === 'game_start') {
+      gameStartSignRef.value!.show();
+    } else if (eventName === 'block_mode_start') {
+      koshuKotaiSignRef.value!.show();
+      blockOverlayRef.value!.show();
+    } else if (eventName === 'block_mode_succeeded') {
+      blockSuccessSignRef.value!.show();
+      blockOverlayRef.value!.hide();
+    } else if (eventName === 'block_mode_failed') {
+      blockFailSignRef.value!.show();
+      blockOverlayRef.value!.hide();
+    } else if (eventName === 'level_up') {
+      levelUpSignRef.value!.show();
+    } else if (eventName === 'question_complete') {
+      judgesRef.value!.nod();
+      gotPointGaugeRef.value!.show();
+    } else if (eventName === 'time_is_up') {
+      timeUpSignRef.value!.show();
+      runAfterDelay(() => {
+        goToResultPage();
+      }, 1000);
+    } else if (eventName === 'game_complete') {
+      completeSignRef.value!.show();
+      runAfterDelay(() => {
+        goToResultPage();
+      }, 1000);
+    } else if (eventName === 'abort_game') {
+      router.push('/');
     }
-
-    // タイプミス効果音
   }
+});
 
-  if (renzokuCorrectCount.value >= 30) {
-    currentCommPoint.value = 5;
-  } else if (renzokuCorrectCount.value >= 15) {
-    currentCommPoint.value = 4;
-  } else {
-    currentCommPoint.value = 3;
-  }
-
-  if (hasCompletedWord.value) {
-    addScore(calcCompleteWordScore({ currentJudgesCount: currentJudgesCount.value, currentCommPoint: currentCommPoint.value, koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length }));
-
-    if (currentBlockModeEnabled.value) {
-      // ブロック成功
-      disableBlockMode(true);
-    } else {
-      nextLevelOrProceed(true);
-    }
-  }
+let lastTime = Date.now();
+let timerId = setInterval(intervalClockCallback, 1000);
+function intervalClockCallback() {
+  const timeElapsedSeconds = Math.round((Date.now() - lastTime) / 1000);
+  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
+  clockTick(timeElapsedSeconds);
 }
 
 function keyDownListener(event: KeyboardEvent) {
