@@ -74,7 +74,7 @@ function addScore(diff: number) {
 }
 
 let lastTime = Date.now();
-let timerId = setInterval(timeElapsedSeconds, 1000);
+let timerId = setInterval(intervalClockCallback, 1000);
 function intervalClockCallback() {
   const timeElapsedSeconds = Math.round((Date.now() - lastTime) / 1000);
   lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
