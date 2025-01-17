@@ -73,6 +73,10 @@ function addScore(diff: number) {
   console.debug(currentScore.value, diff);
 }
 
+function runAfterDelay(callback: Function, delayMilliseconds: number): number {
+  return setTimeout(callback, delayMilliseconds);
+}
+
 let lastTime = Date.now();
 let timerId = setInterval(intervalClockCallback, 1000);
 function intervalClockCallback() {
@@ -92,7 +96,7 @@ function clockTick(timeElapsedSeconds: number) {
 
     pauseGame();
     notifyGameEvent('time_is_up');
-    setTimeout(() => {
+    runAfterDelay(() => {
       goToResultPage();
     }, 1000);
   }
@@ -125,6 +129,13 @@ function notifyGameEvent(eventName: EventName) {
   }
 }
 
+function startGame() {
+  notifyGameEvent('game_start');
+  runAfterDelay(() => {
+    resumeGame();
+  }, 1000);
+}
+
 const currentQuestion = computed(() => {
   return questions[currentQuestionIndex.value];
 });
@@ -140,7 +151,7 @@ function resumeGame() {
 function enabaleBlockMode() {
   pauseGame();
   notifyGameEvent('block_mode_start')
-  setTimeout(() => {
+  runAfterDelay(() => {
     currentBlockModeEnabled.value = true;
     proceedToNextQuestion();
     resumeGame();
@@ -158,7 +169,7 @@ function disableBlockMode(success: boolean) {
   } else {
     notifyGameEvent('block_mode_failed')
   }
-  setTimeout(() => {
+  runAfterDelay(() => {
     currentBlockModeEnabled.value = false;
     resumeGame();
     nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
@@ -171,14 +182,14 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
     pauseGame();
     notifyGameEvent('game_complete');
-    setTimeout(() => {
+    runAfterDelay(() => {
       goToResultPage();
     }, 1000);
     return;
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
     notifyGameEvent('level_up');
     pauseGame();
-    setTimeout(() => {
+    runAfterDelay(() => {
       currentJudgesCount.value = 3;
       nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
       goToBlockOrProceed();
@@ -187,7 +198,7 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length + selectedMiddleQuestions.length) {
     notifyGameEvent('level_up');
     pauseGame();
-    setTimeout(() => {
+    runAfterDelay(() => {
       currentJudgesCount.value = 5;
       nokoriJikanSeconds.value = standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value });
       goToBlockOrProceed();
@@ -267,10 +278,7 @@ function keyDownListener(event: KeyboardEvent) {
 
 onMounted(() => {
   document.addEventListener('keydown', keyDownListener);
-  notifyGameEvent('game_start');
-  setTimeout(() => {
-    resumeGame();
-  }, 1000);
+  startGame();
 });
 
 onUnmounted(() => {
