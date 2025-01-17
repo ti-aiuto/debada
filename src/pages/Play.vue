@@ -236,8 +236,8 @@ function goToBlockOrProceed() {
   }
 }
 
-function keyDownListener(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+function handleKeyDownEvent(key: string) {
+  if (key === 'Escape') {
     return abortGame();
   }
 
@@ -245,7 +245,7 @@ function keyDownListener(event: KeyboardEvent) {
     return;
   }
 
-  if (!typeKey(event.key)) {
+  if (!typeKey(key)) {
     const correctChar = nokoriRomaji.value[0];
     perKeyWrongCount.value[correctChar] = (perKeyWrongCount.value[correctChar] ?? 0) + 1;
 
@@ -274,6 +274,10 @@ function keyDownListener(event: KeyboardEvent) {
       nextLevelOrProceed(true);
     }
   }
+}
+
+function keyDownListener(event: KeyboardEvent) {
+  handleKeyDownEvent(event.key);
 }
 
 onMounted(() => {
