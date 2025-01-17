@@ -66,7 +66,7 @@ const currentCommPoint = ref(3);
 const currentEnabledState = ref(false);
 const currentBlockModeEnabled = ref(false);
 const nokoriJikanSeconds = ref(standardJikanSeconds({ currentJudgesCount: currentJudgesCount.value }));
-const showNokoriRomajiEnabled = ref(mode === 'typing-practice');
+const showNokoriRomajiEnabled = ref(mode === 'typing_practice');
 
 const perKeyWrongCount = ref<{ [key: string]: number }>({});
 
@@ -94,9 +94,6 @@ function clockTick(timeElapsedSeconds: number) {
 
     pauseGame();
     notifyGameEvent('time_is_up');
-    runAfterDelay(() => {
-      goToResultPage();
-    }, 1000);
   }
 }
 
@@ -120,8 +117,14 @@ function notifyGameEvent(eventName: GameEventName) {
     gotPointGaugeRef.value!.show();
   } else if (eventName === 'time_is_up') {
     timeUpSignRef.value!.show();
+    runAfterDelay(() => {
+      goToResultPage();
+    }, 1000);
   } else if (eventName === 'game_complete') {
     completeSignRef.value!.show();
+    runAfterDelay(() => {
+      goToResultPage();
+    }, 1000);
   } else if (eventName === 'abort_game') {
     router.push('/');
   }
@@ -180,9 +183,6 @@ function nextLevelOrProceed(noddingEnabled: boolean) {
     addScore(calcCompleteGameScore({ nokoriJikanSeconds: nokoriJikanSeconds.value, currentJudgesCount: currentJudgesCount.value }))
     pauseGame();
     notifyGameEvent('game_complete');
-    runAfterDelay(() => {
-      goToResultPage();
-    }, 1000);
     return;
   } else if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
     notifyGameEvent('level_up');
