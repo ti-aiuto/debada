@@ -22,6 +22,7 @@ import { findQuestions } from '../questions/find-questions';
 import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from '../debada-game/calc-score';
 import { JudgesCount } from '../types/judges-count';
 import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
+import { runAfterDelay } from '../browser/run-after-delay';
 
 const router = useRouter();
 const route = useRoute();
@@ -71,10 +72,6 @@ const perKeyWrongCount = ref<{ [key: string]: number }>({});
 function addScore(diff: number) {
   currentScore.value += diff;
   console.debug(currentScore.value, diff);
-}
-
-function runAfterDelay(callback: Function, delayMilliseconds: number): number {
-  return setTimeout(callback, delayMilliseconds);
 }
 
 let lastTime = Date.now();
