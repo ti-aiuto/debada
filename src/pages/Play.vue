@@ -73,39 +73,37 @@ function addScore(diff: number) {
   console.debug(currentScore.value, diff);
 }
 
-function clockTick() {
+let lastTime = Date.now();
+let timerId = setInterval(timeElapsedSeconds, 1000);
+function intervalClockCallback() {
+  const timeElapsedSeconds = Math.round((Date.now() - lastTime) / 1000);
+  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
+  clockTick(timeElapsedSeconds);
+}
+
+function clockTick(timeElapsedSeconds: number) {
   if (!currentEnabledState.value) {
-    lastTime = Date.now();
     return;
   }
-
-  nokoriJikanSeconds.value -= Math.max(Math.round((Date.now() - lastTime) / 1000), 0);
-  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
+  nokoriJikanSeconds.value = Math.max(nokoriJikanSeconds.value - timeElapsedSeconds, 0);
 
   if (nokoriJikanSeconds.value <= 0) {
     clearInterval(timerId);
 
     pauseGame();
-    timeUpSignRef.value!.show();
+    notifyGameEvent('time_is_up');
     setTimeout(() => {
       goToResultPage();
     }, 1000);
   }
 }
 
-let lastTime = Date.now();
-let timerId = setInterval(clockTick, 1000);
 
 type EventName = 'game_start' | 'game_complete' | 'time_is_up' | 'level_up' | 'question_complete' | 'block_mode_start' | 'block_mode_succeeded' | 'block_mode_failed';
 
 function notifyGameEvent(eventName: EventName) {
-  if (eventName === 'level_up') {
-    levelUpSignRef.value!.show();
-  } else if (eventName === 'question_complete') {
-    judgesRef.value!.nod();
-    gotPointGaugeRef.value!.show();
-  } else if (eventName === 'game_complete') {
-    completeSignRef.value!.show();
+  if (eventName === 'game_start') {
+    gameStartSignRef.value!.show();
   } else if (eventName === 'block_mode_start') {
     koshuKotaiSignRef.value!.show();
     blockOverlayRef.value!.show();
@@ -115,8 +113,15 @@ function notifyGameEvent(eventName: EventName) {
   } else if (eventName === 'block_mode_failed') {
     blockFailSignRef.value!.show();
     blockOverlayRef.value!.hide();
-  } else if (eventName === 'game_start') {
-    gameStartSignRef.value!.show();
+  } else if (eventName === 'level_up') {
+    levelUpSignRef.value!.show();
+  } else if (eventName === 'question_complete') {
+    judgesRef.value!.nod();
+    gotPointGaugeRef.value!.show();
+  } else if (eventName === 'time_is_up') {
+    timeUpSignRef.value!.show();
+  } else if (eventName === 'game_complete') {
+    completeSignRef.value!.show();
   }
 }
 
