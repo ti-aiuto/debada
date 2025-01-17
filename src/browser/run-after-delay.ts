@@ -1,3 +1,6 @@
-export function runAfterDelay(callback: Function, delayMilliseconds: number): number {
+export function runAfterDelay(
+  callback: Function,
+  delayMilliseconds: number
+): number {
   return setTimeout(callback, delayMilliseconds);
 }

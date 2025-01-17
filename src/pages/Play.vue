@@ -28,7 +28,7 @@ import { GameEventName } from '../debada-game/game-event-name';
 const router = useRouter();
 const route = useRoute();
 
-const mode = route.query.mode === 'word-quiz' ? 'word-quiz' : 'typing-practice'
+const mode = route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice'
 const { selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions } = findQuestions(mode);
 const questions = selectedEasyQuestions.concat(selectedMiddleQuestions).concat(selectedHardQuestions);
 

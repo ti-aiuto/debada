@@ -6,9 +6,10 @@ import {findEasyQuestions as quizFindEasyQuestions} from './word-quiz/easy';
 import {findMiddleQuestions as quizFindMiddleQuestions} from './word-quiz/middle';
 import {findHardQuestions as quizFindHardQuestions} from './word-quiz/hard';
 import {kanaWordToRomajiChunks} from '../kana2romaji/kana-word-to-romaji-chunks';
+import {GameMode} from '../debada-game/game-mode';
 
-export function findQuestions(mode: 'typing-practice' | 'word-quiz') {
-  if (mode === 'typing-practice') {
+export function findQuestions(mode: GameMode) {
+  if (mode === 'typing_practice') {
     // 最初に変換エラーがないことを確認しておく
     practiceFindEasyQuestions().forEach(item =>
       kanaWordToRomajiChunks(item.kana)
