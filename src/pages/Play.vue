@@ -23,6 +23,7 @@ import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, stand
 import { JudgesCount } from '../types/judges-count';
 import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
 import { runAfterDelay } from '../browser/run-after-delay';
+import { GameEventName } from '../debada-game/game-event-name';
 
 const router = useRouter();
 const route = useRoute();
@@ -100,9 +101,7 @@ function clockTick(timeElapsedSeconds: number) {
 }
 
 
-type EventName = 'game_start' | 'game_complete' | 'time_is_up' | 'level_up' | 'question_complete' | 'block_mode_start' | 'block_mode_succeeded' | 'block_mode_failed';
-
-function notifyGameEvent(eventName: EventName) {
+function notifyGameEvent(eventName: GameEventName) {
   if (eventName === 'game_start') {
     gameStartSignRef.value!.show();
   } else if (eventName === 'block_mode_start') {
