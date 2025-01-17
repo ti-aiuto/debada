@@ -1,5 +1,5 @@
 import { runAfterDelay } from "../browser/run-after-delay";
-import { typingGame } from "../composables/typing-game";
+import { typingGame } from "../base-typing-game/typing-game";
 import { findQuestions } from "../questions/find-questions";
 import { JudgesCount } from "../types/judges-count";
 import { calcBlockFailScore, calcCompleteGameScore, calcCompleteWordScore, standardJikanSeconds } from "./calc-score";
