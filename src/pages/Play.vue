@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, ref, useTemplateRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import bgImageUrl from '../assets/background/play-screen.webp';
@@ -22,6 +22,8 @@ import { runAfterDelay } from '../browser/run-after-delay';
 import { GameEventName } from '../debada-game/game-event-name';
 import { useDebadaGame } from '../debada-game/use-debada-game';
 import { findQuestions } from '../questions/find-questions';
+import { useEverySecondClock } from '../debada-game/use-every-second-clock';
+import { useKeyDownListener } from '../debada-game/use-key-down-listener';
 
 const router = useRouter();
 const route = useRoute();
@@ -106,26 +108,11 @@ const {
   }
 });
 
-let lastTime = Date.now();
-let timerId = setInterval(intervalClockCallback, 1000);
-function intervalClockCallback() {
-  const timeElapsedSeconds = Math.round((Date.now() - lastTime) / 1000);
-  lastTime = Date.now(); // 他タブを表示していたときなどタイマーが止まっている間のずれを補正
-  clockTick(timeElapsedSeconds);
-}
-
-function keyDownListener(event: KeyboardEvent) {
-  handleKeyDownEvent(event.key);
-}
+useEverySecondClock(clockTick);
+useKeyDownListener(handleKeyDownEvent);
 
 onMounted(() => {
-  document.addEventListener('keydown', keyDownListener);
   startGame();
-});
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', keyDownListener);
-  clearInterval(timerId);
 });
 </script>
 
