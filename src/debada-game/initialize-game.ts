@@ -9,20 +9,17 @@ import {
 } from './calc-score';
 import {GameEventName} from './game-event-name';
 import {computed, ref} from 'vue';
-import {GameMode} from './game-mode';
 import {Question} from '../questions/question';
 
 export function initializeGame({
   selectedEasyQuestions,
   selectedMiddleQuestions,
   selectedHardQuestions,
-  mode,
   notifyGameEvent,
 }: {
   selectedEasyQuestions: Question[];
   selectedMiddleQuestions: Question[];
   selectedHardQuestions: Question[];
-  mode: GameMode;
   notifyGameEvent: (eventName: GameEventName) => void;
 }) {
   const questions = selectedEasyQuestions
@@ -51,7 +48,6 @@ export function initializeGame({
   const nokoriJikanSeconds = ref(
     standardJikanSeconds({currentJudgesCount: currentJudgesCount.value})
   );
-  const showNokoriRomajiEnabled = ref(mode === 'typing_practice');
   const perKeyWrongCount = ref<{[key: string]: number}>({});
 
   const currentQuestion = computed(() => {
@@ -270,7 +266,6 @@ export function initializeGame({
     currentEnabledState,
     currentBlockModeEnabled,
     nokoriJikanSeconds,
-    showNokoriRomajiEnabled,
     perKeyWrongCount,
   };
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import bgImageUrl from '../assets/background/play-screen.webp';
@@ -50,6 +50,7 @@ function goToResultPage() {
 }
 
 const mode = route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice';
+const showNokoriRomajiEnabled = ref(mode === 'typing_practice');
 
 const { selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions } = findQuestions(mode)
 
@@ -69,7 +70,6 @@ const {
   currentEnabledState,
   currentBlockModeEnabled,
   nokoriJikanSeconds,
-  showNokoriRomajiEnabled,
   perKeyWrongCount
 } = initializeGame({
   mode,
