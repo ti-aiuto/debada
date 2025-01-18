@@ -21,6 +21,7 @@ import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-coun
 import { runAfterDelay } from '../browser/run-after-delay';
 import { GameEventName } from '../debada-game/game-event-name';
 import { initializeGame } from '../debada-game/game';
+import { findQuestions } from '../questions/find-questions';
 
 const router = useRouter();
 const route = useRoute();
@@ -48,6 +49,10 @@ function goToResultPage() {
   });
 }
 
+const mode = route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice';
+
+const { selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions } = findQuestions(mode)
+
 const {
   handleKeyDownEvent,
   clockTick,
@@ -67,7 +72,8 @@ const {
   showNokoriRomajiEnabled,
   perKeyWrongCount
 } = initializeGame({
-  mode: route.query.mode === 'word-quiz' ? 'word_quiz' : 'typing_practice',
+  mode,
+  selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions,
   notifyGameEvent(eventName: GameEventName) {
     if (eventName === 'game_start') {
       gameStartSignRef.value!.show();
