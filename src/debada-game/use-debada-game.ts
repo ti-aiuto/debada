@@ -54,6 +54,20 @@ export function useDebadaGame({
     return questions[currentQuestionIndex.value];
   });
 
+  const questionIndexInCurrentDifficulty = computed(() => {
+    if (currentJudgesCount.value === 3) {
+      return currentQuestionIndex.value - selectedEasyQuestions.length;
+    } else if (currentJudgesCount.value === 5) {
+      return (
+        currentQuestionIndex.value -
+        selectedEasyQuestions.length -
+        selectedMiddleQuestions.length
+      );
+    } else {
+      return currentQuestionIndex.value;
+    }
+  });
+
   function addScore(diff: number) {
     currentScore.value += diff;
     console.debug(currentScore.value, diff);
@@ -174,24 +188,11 @@ export function useDebadaGame({
   }
 
   function goToBlockOrProceed() {
-    if (
-      currentJudgesCount.value === 1 &&
-      currentQuestionIndex.value + 1 === 4 - 1
-    ) {
+    if (questionIndexInCurrentDifficulty.value + 1 === 4 - 1) {
       enabaleBlockMode();
-    } else if (
-      currentJudgesCount.value === 3 &&
-      currentQuestionIndex.value - selectedEasyQuestions.length + 1 === 2 - 1
-    ) {
+    } else if (questionIndexInCurrentDifficulty.value + 1 === 2 - 1) {
       enabaleBlockMode();
-    } else if (
-      currentJudgesCount.value === 5 &&
-      currentQuestionIndex.value -
-        selectedEasyQuestions.length -
-        selectedMiddleQuestions.length +
-        1 ===
-        3 - 1
-    ) {
+    } else if (questionIndexInCurrentDifficulty.value + 1 === 3 - 1) {
       enabaleBlockMode();
     } else {
       proceedToNextQuestion();
