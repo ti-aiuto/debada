@@ -1,4 +1,4 @@
-import {typingGame} from './typing-game';
+import {useBaseTypingGame} from './use-base-typing-game';
 
 describe('typingGame', () => {
   test('一連の流れのテスト', () => {
@@ -15,7 +15,7 @@ describe('typingGame', () => {
       nokoriRomaji,
       currentQuestionIndex,
       questions,
-    } = typingGame(['あか', 'あお', 'き']);
+    } = useBaseTypingGame(['あか', 'あお', 'き']);
 
     expect(questions.value).toEqual(['あか', 'あお', 'き']);
 
@@ -183,7 +183,7 @@ describe('typingGame', () => {
       koremadeUttaRoamji,
       nokoriRomaji,
       currentQuestionIndex,
-    } = typingGame(['あか', 'あお', 'き']);
+    } = useBaseTypingGame(['あか', 'あお', 'き']);
 
     expect(correctCount.value).toEqual(0);
     expect(wrongCount.value).toEqual(0);

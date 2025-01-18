@@ -1,5 +1,5 @@
 import {runAfterDelay} from '../browser/run-after-delay';
-import {typingGame} from '../base-typing-game/typing-game';
+import {useBaseTypingGame} from '../base-typing-game/use-base-typing-game';
 import {JudgesCount} from './judges-count';
 import {
   calcBlockFailScore,
@@ -11,7 +11,7 @@ import {GameEventName} from './game-event-name';
 import {computed, ref} from 'vue';
 import {Question} from '../questions/question';
 
-export function initializeGame({
+export function useDebadaGame({
   selectedEasyQuestions,
   selectedMiddleQuestions,
   selectedHardQuestions,
@@ -37,7 +37,7 @@ export function initializeGame({
     koremadeUttaRoamji,
     nokoriRomaji,
     currentQuestionIndex,
-  } = typingGame(questions.map(item => item.kana));
+  } = useBaseTypingGame(questions.map(item => item.kana));
 
   const gameState = ref<'to_do' | 'doing' | 'done'>('to_do');
   const currentScore = ref(0);

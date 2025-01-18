@@ -20,7 +20,7 @@ import Player from '../components/player.vue';
 import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
 import { runAfterDelay } from '../browser/run-after-delay';
 import { GameEventName } from '../debada-game/game-event-name';
-import { initializeGame } from '../debada-game/initialize-game';
+import { useDebadaGame } from '../debada-game/use-debada-game';
 import { findQuestions } from '../questions/find-questions';
 
 const router = useRouter();
@@ -71,7 +71,7 @@ const {
   currentBlockModeEnabled,
   nokoriJikanSeconds,
   perKeyWrongCount
-} = initializeGame({
+} = useDebadaGame({
   selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions,
   notifyGameEvent(eventName: GameEventName) {
     if (eventName === 'game_start') {
