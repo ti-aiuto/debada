@@ -255,7 +255,6 @@ export function useDebadaGame({
     handleKeyDownEvent,
     clockTick,
     startGame,
-    gameState,
     currentQuestion,
     correctCount,
     wrongCount,
