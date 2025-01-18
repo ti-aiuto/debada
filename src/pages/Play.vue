@@ -72,7 +72,6 @@ const {
   nokoriJikanSeconds,
   perKeyWrongCount
 } = initializeGame({
-  mode,
   selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions,
   notifyGameEvent(eventName: GameEventName) {
     if (eventName === 'game_start') {
