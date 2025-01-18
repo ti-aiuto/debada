@@ -42,12 +42,28 @@ export function useDebadaGame({
   const gameState = ref<'to_do' | 'doing' | 'done'>('to_do');
   const currentScore = ref(0);
   const currentJudgesCount = ref<JudgesCount>(1);
-  const currentCommPoint = ref(3);
+
+  // 画面下部のコミュ点ゲージ
+  const currentCommPoint = computed(() => {
+    if (renzokuCorrectCount.value >= 30) {
+      return 5;
+    } else if (renzokuCorrectCount.value >= 15) {
+      return 4;
+    } else {
+      return 3;
+    }
+  });
+
+  // 残り時間の初期値
+  const standardInitialNokoriJikanSeconds = computed(() => {
+    return standardJikanSeconds({
+      currentJudgesCount: currentJudgesCount.value,
+    });
+  });
+
   const currentEnabledState = ref(false);
   const currentBlockModeEnabled = ref(false);
-  const nokoriJikanSeconds = ref(
-    standardJikanSeconds({currentJudgesCount: currentJudgesCount.value})
-  );
+  const nokoriJikanSeconds = ref(standardInitialNokoriJikanSeconds.value);
   const perKeyWrongCount = ref<{[key: string]: number}>({});
 
   const currentQuestion = computed(() => {
@@ -159,9 +175,7 @@ export function useDebadaGame({
       pauseGame();
       runAfterDelay(() => {
         currentJudgesCount.value = 3;
-        nokoriJikanSeconds.value = standardJikanSeconds({
-          currentJudgesCount: currentJudgesCount.value,
-        });
+        nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
         goToBlockOrProceed();
         resumeGame();
       }, 750);
@@ -173,9 +187,7 @@ export function useDebadaGame({
       pauseGame();
       runAfterDelay(() => {
         currentJudgesCount.value = 5;
-        nokoriJikanSeconds.value = standardJikanSeconds({
-          currentJudgesCount: currentJudgesCount.value,
-        });
+        nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
         goToBlockOrProceed();
         resumeGame();
       }, 750);
@@ -219,14 +231,6 @@ export function useDebadaGame({
       }
 
       // タイプミス効果音
-    }
-
-    if (renzokuCorrectCount.value >= 30) {
-      currentCommPoint.value = 5;
-    } else if (renzokuCorrectCount.value >= 15) {
-      currentCommPoint.value = 4;
-    } else {
-      currentCommPoint.value = 3;
     }
 
     if (hasCompletedWord.value) {
