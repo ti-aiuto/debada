@@ -159,19 +159,16 @@ export function useDebadaGame({
       );
       await Promise.resolve(notifyGameEvent('game_complete'));
       return;
-    } else if (
-      currentQuestionIndex.value + 1 ===
-      selectedEasyQuestions.length
-    ) {
+    }
+
+    // レベルアップ判定＆実行
+    if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
       await Promise.resolve(
         notifyGameEvent('question_complete_without_nodding')
       );
       await Promise.resolve(notifyGameEvent('level_up'));
-      pauseGame();
       currentJudgesCount.value = 3;
       nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
-      await goToBlockOrProceed();
-      resumeGame();
     } else if (
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length + selectedMiddleQuestions.length
@@ -180,12 +177,10 @@ export function useDebadaGame({
         notifyGameEvent('question_complete_without_nodding')
       );
       await Promise.resolve(notifyGameEvent('level_up'));
-      pauseGame();
       currentJudgesCount.value = 5;
       nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
-      await goToBlockOrProceed();
-      resumeGame();
     } else {
+      // ふつうに一問入力完了した場合
       if (noddingEnabled) {
         await Promise.resolve(
           notifyGameEvent('question_complete_with_nodding')
@@ -195,8 +190,13 @@ export function useDebadaGame({
           notifyGameEvent('question_complete_without_nodding')
         );
       }
-      await goToBlockOrProceed();
     }
+
+    if (checkEnableBlockMode()) {
+      await enabaleBlockMode();
+    }
+
+    return Promise.resolve(proceedToNextQuestion());
   }
 
   function checkEnableBlockMode(): boolean {
@@ -218,13 +218,6 @@ export function useDebadaGame({
     } else {
       return false;
     }
-  }
-
-  async function goToBlockOrProceed(): Promise<unknown> {
-    if (checkEnableBlockMode()) {
-      await enabaleBlockMode();
-    }
-    return Promise.resolve(proceedToNextQuestion());
   }
 
   async function handleKeyDownEvent(key: string) {
