@@ -4,7 +4,7 @@ describe('useDebadaGame', () => {
   function build({
     selectedEasyQuestions = [
       {label: 'か', kana: 'か'},
-      {label: 'き', kana: 'き'},
+      {label: 'きき', kana: 'きき'}, // 文字数が長い場合にスコアが変わること
       {label: 'く', kana: 'く'},
       {label: 'け', kana: 'け'},
       {label: 'こ', kana: 'こ'},
@@ -37,9 +37,14 @@ describe('useDebadaGame', () => {
   describe('ミスなく完了できるパターンのテスト', () => {
     it('諸々想定通りに値になること', async () => {
       const notifyGameEvent = jest.fn();
+      const fetchLastEventName = () =>
+        notifyGameEvent.mock.calls.slice(-1)[0][0];
+      const countEventName = (eventName: string) =>
+        notifyGameEvent.mock.calls.filter(it => it[0] === eventName).length;
+
       const {
         handleKeyDownEvent,
-        startGame, 
+        startGame,
         currentQuestion,
         correctCount,
         wrongCount,
@@ -70,7 +75,7 @@ describe('useDebadaGame', () => {
       await startGame();
 
       // ゲーム開始直後の状態の確認
-      expect(notifyGameEvent.mock.calls.slice(-1)[0][0]).toEqual('game_start');
+      expect(fetchLastEventName()).toEqual('game_start');
       expect(currentEnabledState.value).toBe(true);
       expect(currentBlockModeEnabled.value).toBe(false);
       expect(currentJudgesCount.value).toEqual(1);
@@ -80,7 +85,7 @@ describe('useDebadaGame', () => {
       expect(nokoriRomaji.value).toEqual('ka');
 
       await handleKeyDownEvent('k');
-      
+
       expect(correctCount.value).toEqual(1);
       expect(wrongCount.value).toEqual(0);
       expect(renzokuCorrectCount.value).toEqual(1);
@@ -89,19 +94,49 @@ describe('useDebadaGame', () => {
       expect(koremadeUttaRoamji.value).toEqual('k');
       expect(nokoriRomaji.value).toEqual('a');
 
-      expect(notifyGameEvent.mock.calls.slice(-1)[0][0]).toEqual('game_start');
+      expect(countEventName('game_start')).toEqual(1);
+      expect(countEventName('question_complete')).toEqual(0);
       await handleKeyDownEvent('a');
-      expect(notifyGameEvent.mock.calls.slice(-1)[0][0]).toEqual('question_complete_with_nodding');
+      expect(fetchLastEventName()).toEqual('question_complete');
+      expect(countEventName('question_complete')).toEqual(1);
 
       expect(correctCount.value).toEqual(2);
-      expect(wrongCount.value).toEqual(0);
       expect(renzokuCorrectCount.value).toEqual(2);
       expect(currentScore.value).toEqual(100);
 
       // 2問目
-      expect(currentQuestion.value.label).toEqual('き');
+      expect(currentQuestion.value.label).toEqual('きき');
       expect(koremadeUttaRoamji.value).toEqual('');
-      expect(nokoriRomaji.value).toEqual('ki');      
+      expect(nokoriRomaji.value).toEqual('kiki');
+
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+
+      expect(countEventName('question_complete')).toEqual(2);
+      expect(correctCount.value).toEqual(6);
+      expect(renzokuCorrectCount.value).toEqual(6);
+      expect(currentScore.value).toEqual(300);
+
+      // 3問目
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('u');
+
+      expect(countEventName('question_complete')).toEqual(3);
+      expect(correctCount.value).toEqual(8);
+      expect(renzokuCorrectCount.value).toEqual(8);
+      expect(currentScore.value).toEqual(400);
+
+      // ブロックモードへの遷移の確認
+      expect(fetchLastEventName()).toEqual('block_mode_start');
+
+      expect(currentEnabledState.value).toBe(true);
+      expect(currentBlockModeEnabled.value).toBe(true);
+
+      expect(currentQuestion.value.label).toEqual('け');
+      expect(koremadeUttaRoamji.value).toEqual('');
+      expect(nokoriRomaji.value).toEqual('ke');
     });
   });
 
