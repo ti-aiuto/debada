@@ -18,20 +18,18 @@ export function useLevelDependantValues({
 }) {
   // 現在のレベルの中で何問目か
   const questionIndexInCurrentDifficulty = computed<number>(() => {
-    if (currentJudgesCount.value === 1) {
-      return currentQuestionIndex.value;
-    } else if (currentJudgesCount.value === 3) {
-      return currentQuestionIndex.value - selectedEasyQuestions.length;
-    } else if (currentJudgesCount.value === 5) {
+    if (
+      currentQuestionIndex.value >=
+      selectedEasyQuestions.length + selectedMiddleQuestions.length
+    ) {
       return (
         currentQuestionIndex.value -
-        selectedEasyQuestions.length -
-        selectedMiddleQuestions.length
+        (selectedEasyQuestions.length + selectedMiddleQuestions.length)
       );
+    } else if (currentQuestionIndex.value >= selectedEasyQuestions.length) {
+      return currentQuestionIndex.value - selectedEasyQuestions.length;
     } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
+      return currentQuestionIndex.value;
     }
   });
 
