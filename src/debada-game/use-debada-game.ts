@@ -40,7 +40,6 @@ export function useDebadaGame({
     typeKey,
     proceedToNextQuestion,
     hasCompletedWord,
-    hasNext,
     koremadeUttaRoamji,
     nokoriRomaji,
     currentQuestionIndex,
@@ -92,9 +91,8 @@ export function useDebadaGame({
   // レベルの初期化
   function setupNextLevel(nextLevel: JudgesCount) {
     currentJudgesCount.value = nextLevel;
-
     nokoriJikanSeconds.value = standardJikanSeconds({
-      currentJudgesCount: nextLevel,
+      currentJudgesCount: currentJudgesCount.value,
     });
   }
 
@@ -108,8 +106,7 @@ export function useDebadaGame({
     );
 
     if (nokoriJikanSeconds.value <= 0) {
-      pauseGame();
-      await Promise.resolve(notifyGameEvent('time_is_up'));
+      return timeIsUp();
     }
   }
 
@@ -151,6 +148,12 @@ export function useDebadaGame({
 
     pauseGame();
     return Promise.resolve(notifyGameEvent('game_complete'));
+  }
+
+  // 時間切れ
+  function timeIsUp() {
+    pauseGame();
+    return Promise.resolve(notifyGameEvent('time_is_up'));
   }
 
   // 問題一問終わったとき
