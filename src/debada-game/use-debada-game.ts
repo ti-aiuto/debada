@@ -56,13 +56,17 @@ export function useDebadaGame({
       return 3;
     }
   });
-  
+
+  // 現在挑戦中の問題
   const currentQuestion = computed(() => {
     return questions[currentQuestionIndex.value];
   });
 
+  // 現在のレベルの中で何問目か
   const questionIndexInCurrentDifficulty = computed(() => {
-    if (currentJudgesCount.value === 3) {
+    if (currentJudgesCount.value === 1) {
+      return currentQuestionIndex.value;
+    } else if (currentJudgesCount.value === 3) {
       return currentQuestionIndex.value - selectedEasyQuestions.length;
     } else if (currentJudgesCount.value === 5) {
       return (
@@ -71,7 +75,53 @@ export function useDebadaGame({
         selectedMiddleQuestions.length
       );
     } else {
-      return currentQuestionIndex.value;
+      throw new Error(
+        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
+      );
+    }
+  });
+
+  // 現在のレベルで何問あるか
+  const questionsTotalCountInCurrentDifficulty = computed(() => {
+    if (currentJudgesCount.value === 1) {
+      return selectedEasyQuestions.length;
+    } else if (currentJudgesCount.value === 3) {
+      return selectedMiddleQuestions.length;
+    } else if (currentJudgesCount.value === 5) {
+      return selectedHardQuestions.length;
+    } else {
+      throw new Error(
+        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
+      );
+    }
+  });
+
+  // ブロックモードを有効化したいインデックスの配列を返す
+  const blockModeQuestionIndicesInCurrentDifficulty = computed(() => {
+    if (currentJudgesCount.value === 1) {
+      return Object.freeze([3]);
+    } else if (currentJudgesCount.value === 3) {
+      return Object.freeze([1]);
+    } else if (currentJudgesCount.value === 5) {
+      return Object.freeze([2]);
+    } else {
+      throw new Error(
+        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
+      );
+    }
+  });
+
+  const nextJudgesCount = computed(() => {
+    if (currentJudgesCount.value === 1) {
+      return 3;
+    } else if (currentJudgesCount.value === 3) {
+      return 5;
+    } else if (currentJudgesCount.value === 5) {
+      return null; // 次はない
+    } else {
+      throw new Error(
+        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
+      );
     }
   });
 
@@ -84,7 +134,7 @@ export function useDebadaGame({
   // レベルの初期化
   function setupNextLevel(nextLevel: JudgesCount) {
     currentJudgesCount.value = nextLevel;
-    
+
     nokoriJikanSeconds.value = standardJikanSeconds({
       currentJudgesCount: nextLevel,
     });
@@ -109,6 +159,7 @@ export function useDebadaGame({
     if (gameState.value !== 'to_do') {
       return;
     }
+    setupNextLevel(1);
     gameState.value = 'doing';
     await Promise.resolve(notifyGameEvent('game_start'));
     resumeGame();
@@ -147,72 +198,55 @@ export function useDebadaGame({
   }
 
   async function nextLevelOrProceed(noddingEnabled: boolean) {
-    if (!hasNext.value) {
-      // コンプリート
-      addScore(
-        calcCompleteGameScore({
-          nokoriJikanSeconds: nokoriJikanSeconds.value,
-          currentJudgesCount: currentJudgesCount.value,
-        })
-      );
-      pauseGame();
-      await Promise.resolve(
-        notifyGameEvent('question_complete_without_nodding')
-      );
-      await Promise.resolve(notifyGameEvent('game_complete'));
-      return;
-    }
-
-    // レベルアップ判定＆実行
-    if (currentQuestionIndex.value + 1 === selectedEasyQuestions.length) {
-      await Promise.resolve(
-        notifyGameEvent('question_complete_without_nodding')
-      );
-      await Promise.resolve(notifyGameEvent('level_up'));
-      setupNextLevel(3);
-    } else if (
-      currentQuestionIndex.value + 1 ===
-      selectedEasyQuestions.length + selectedMiddleQuestions.length
+    if (
+      questionIndexInCurrentDifficulty.value + 1 ===
+      questionsTotalCountInCurrentDifficulty.value
     ) {
-      await Promise.resolve(
-        notifyGameEvent('question_complete_without_nodding')
-      );
-      await Promise.resolve(notifyGameEvent('level_up'));
-      setupNextLevel(5);
+      // 現在のレベルの問題を全部終わったとき
+
+      if (!nextJudgesCount.value) {
+        // 次がない＝全レベルコンプリート
+        addScore(
+          calcCompleteGameScore({
+            nokoriJikanSeconds: nokoriJikanSeconds.value,
+            currentJudgesCount: currentJudgesCount.value,
+          })
+        );
+        pauseGame();
+        await Promise.resolve(
+          notifyGameEvent('question_complete_without_nodding')
+        );
+        await Promise.resolve(notifyGameEvent('game_complete'));
+        return;
+      } else {
+        // レベルアップ
+        await Promise.resolve(
+          notifyGameEvent('question_complete_without_nodding')
+        );
+        await Promise.resolve(notifyGameEvent('level_up'));
+        setupNextLevel(nextJudgesCount.value);
+      }
     } else {
       // ふつうに一問入力完了した場合
       await Promise.resolve(
-        notifyGameEvent(noddingEnabled ? 'question_complete_with_nodding' : 'question_complete_without_nodding')
+        notifyGameEvent(
+          noddingEnabled
+            ? 'question_complete_with_nodding'
+            : 'question_complete_without_nodding'
+        )
       );
     }
 
-    if (checkEnableBlockMode()) {
-      // 次の問題をセットする前にブロックモードの有効化を実行
+    // 次の問題をセットする前にブロックモードの有効化を実行
+    if (
+      blockModeQuestionIndicesInCurrentDifficulty.value.includes(
+        questionIndexInCurrentDifficulty.value + 1
+      )
+    ) {
       await enabaleBlockMode();
     }
 
     return Promise.resolve(proceedToNextQuestion());
-  }
-
-  function checkEnableBlockMode(): boolean {
-    if (
-      currentJudgesCount.value === 1 &&
-      questionIndexInCurrentDifficulty.value + 1 === 4 - 1
-    ) {
-      return true;
-    } else if (
-      currentJudgesCount.value === 3 &&
-      questionIndexInCurrentDifficulty.value + 1 === 2 - 1
-    ) {
-      return true;
-    } else if (
-      currentJudgesCount.value === 5 &&
-      questionIndexInCurrentDifficulty.value + 1 === 3 - 1
-    ) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   async function handleKeyDownEvent(key: string) {
