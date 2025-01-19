@@ -147,11 +147,9 @@ export function useDebadaGame({
         nokoriRomajiLength: nokoriRomaji.value.length,
       })
     );
-    if (success) {
-      await Promise.resolve(notifyGameEvent('block_mode_succeeded'));
-    } else {
-      await Promise.resolve(notifyGameEvent('block_mode_failed'));
-    }
+    await Promise.resolve(
+      notifyGameEvent(success ? 'block_mode_succeeded' : 'block_mode_failed')
+    );
     currentBlockModeEnabled.value = false;
     resumeGame();
   }
