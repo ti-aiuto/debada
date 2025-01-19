@@ -139,6 +139,20 @@ export function useDebadaGame({
     return notifyGameEvent('abort_game');
   }
 
+  // ゲーム完遂
+  function completeGame() {
+    // 残時間をスコアに加算
+    addScore(
+      calcCompleteGameScore({
+        nokoriJikanSeconds: nokoriJikanSeconds.value,
+        currentJudgesCount: currentJudgesCount.value,
+      })
+    );
+
+    pauseGame();
+    return Promise.resolve(notifyGameEvent('game_complete'));
+  }
+
   async function enabaleBlockMode() {
     pauseGame();
     await Promise.resolve(notifyGameEvent('block_mode_start'));
@@ -170,15 +184,7 @@ export function useDebadaGame({
 
       if (!nextJudgesCount.value) {
         // 次がない＝全レベルコンプリート
-        addScore(
-          calcCompleteGameScore({
-            nokoriJikanSeconds: nokoriJikanSeconds.value,
-            currentJudgesCount: currentJudgesCount.value,
-          })
-        );
-        pauseGame();
-        await Promise.resolve(notifyGameEvent('game_complete'));
-        return;
+        return completeGame();
       } else {
         // レベルアップ
         await Promise.resolve(notifyGameEvent('level_up'));
