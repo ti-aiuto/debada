@@ -234,6 +234,7 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('e');
 
       // レベルアップしたこと
+      expect(currentJudgesCount.value).toEqual(5);
       expect(fetchEventNamesSinceLastCall()).toEqual([
         'question_complete',
         'level_up',
@@ -286,6 +287,10 @@ describe('useDebadaGame', () => {
       expect(currentScore.value).toEqual(4511);
       expect(currentEnabledState.value).toEqual(false);
       expect(perKeyWrongCount.value).toEqual({});
+
+      // ゲーム終了後の状態の確認（基本的には最終問題のまま）
+      expect(currentQuestion.value.label).toEqual('の');
+      expect(currentJudgesCount.value).toEqual(5);
     });
   });
 
