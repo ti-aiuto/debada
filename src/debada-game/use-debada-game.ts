@@ -163,12 +163,14 @@ export function useDebadaGame({
         })
       );
       pauseGame();
+      notifyGameEvent('question_complete_without_nodding');
       notifyGameEvent('game_complete');
       return;
     } else if (
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length
     ) {
+      notifyGameEvent('question_complete_without_nodding');
       notifyGameEvent('level_up');
       pauseGame();
       runAfterDelay(() => {
@@ -181,6 +183,7 @@ export function useDebadaGame({
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length + selectedMiddleQuestions.length
     ) {
+      notifyGameEvent('question_complete_without_nodding');
       notifyGameEvent('level_up');
       pauseGame();
       runAfterDelay(() => {
@@ -191,7 +194,9 @@ export function useDebadaGame({
       }, 750);
     } else {
       if (noddingEnabled) {
-        notifyGameEvent('question_complete');
+        notifyGameEvent('question_complete_with_nodding');
+      } else {
+        notifyGameEvent('question_complete_without_nodding');
       }
       goToBlockOrProceed();
     }

@@ -89,7 +89,7 @@ const {
       blockOverlayRef.value!.hide();
     } else if (eventName === 'level_up') {
       levelUpSignRef.value!.show();
-    } else if (eventName === 'question_complete') {
+    } else if (eventName === 'question_complete_with_nodding') {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
     } else if (eventName === 'time_is_up') {
