@@ -124,7 +124,6 @@ export function useDebadaGame({
     pauseGame();
     await Promise.resolve(notifyGameEvent('block_mode_start'));
     currentBlockModeEnabled.value = true;
-    proceedToNextQuestion();
     resumeGame();
   }
 
@@ -143,7 +142,6 @@ export function useDebadaGame({
     }
     currentBlockModeEnabled.value = false;
     resumeGame();
-    nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
   }
 
   async function nextLevelOrProceed(noddingEnabled: boolean) {
@@ -201,28 +199,35 @@ export function useDebadaGame({
     }
   }
 
-  function goToBlockOrProceed(): Promise<unknown> {
+  function checkEnableBlockMode(): boolean {
     if (
       currentJudgesCount.value === 1 &&
       questionIndexInCurrentDifficulty.value + 1 === 4 - 1
     ) {
-      return enabaleBlockMode();
+      return true;
     } else if (
       currentJudgesCount.value === 3 &&
       questionIndexInCurrentDifficulty.value + 1 === 2 - 1
     ) {
-      return enabaleBlockMode();
+      return true;
     } else if (
       currentJudgesCount.value === 5 &&
       questionIndexInCurrentDifficulty.value + 1 === 3 - 1
     ) {
-      return enabaleBlockMode();
+      return true;
     } else {
-      return Promise.resolve(proceedToNextQuestion());
+      return false;
     }
   }
 
-  function handleKeyDownEvent(key: string) {
+  async function goToBlockOrProceed(): Promise<unknown> {
+    if (checkEnableBlockMode()) {
+      await enabaleBlockMode();
+    }
+    return Promise.resolve(proceedToNextQuestion());
+  }
+
+  async function handleKeyDownEvent(key: string) {
     if (key === 'Escape') {
       // ゲーム中止
       return notifyGameEvent('abort_game');
@@ -238,7 +243,8 @@ export function useDebadaGame({
         (perKeyWrongCount.value[correctChar] ?? 0) + 1;
 
       if (currentBlockModeEnabled.value) {
-        return disableBlockMode(false);
+        disableBlockMode(false);
+        return nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
       }
 
       // タイプミス効果音
@@ -255,7 +261,8 @@ export function useDebadaGame({
 
       if (currentBlockModeEnabled.value) {
         // ブロック成功
-        disableBlockMode(true);
+        await disableBlockMode(true);
+        nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
       } else {
         nextLevelOrProceed(true);
       }
