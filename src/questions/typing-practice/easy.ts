@@ -1,4 +1,4 @@
-import {Question} from '../question';
+import {Question} from '../../debada-game/question';
 
 const questions = [
   ['こうていがわ', '肯定側'],

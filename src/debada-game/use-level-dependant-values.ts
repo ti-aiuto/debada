@@ -1,6 +1,6 @@
 import {computed, Ref} from 'vue';
 import {JudgesCount} from './judges-count';
-import {Question} from '../questions/question';
+import {Question} from './question';
 
 // 各レベル固有の処理を切り出したもの
 export function useLevelDependantValues({

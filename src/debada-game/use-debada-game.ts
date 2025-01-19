@@ -8,7 +8,7 @@ import {
 } from './calc-score';
 import {GameEventName} from './game-event-name';
 import {computed, ref} from 'vue';
-import {Question} from '../questions/question';
+import {Question} from './question';
 import {useLevelDependantValues} from './use-level-dependant-values';
 
 export function useDebadaGame({
