@@ -97,6 +97,7 @@ const {
     } else if (eventName === 'question_complete_with_nodding') {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
+      // ここは待たずに即次の問題に遷移する
     } else if (eventName === 'time_is_up') {
       timeUpSignRef.value!.show();
       await asyncSleep(1000);
