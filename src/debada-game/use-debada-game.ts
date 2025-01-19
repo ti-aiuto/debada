@@ -228,14 +228,14 @@ export function useDebadaGame({
           await Promise.resolve(
             notifyGameEvent('question_complete_without_nodding')
           );
-
-          nextLevelOrProceed();
         } else {
+          // ふつうに正解
           await Promise.resolve(
             notifyGameEvent('question_complete_with_nodding')
           );
-          nextLevelOrProceed();
         }
+
+        nextLevelOrProceed();
       }
     } else {
       // キーを間違えた場合
@@ -251,6 +251,7 @@ export function useDebadaGame({
           notifyGameEvent('question_complete_without_nodding')
         );
 
+        // ブロックモード中は一回でも間違えたら強制的に次に遷移
         nextLevelOrProceed();
       }
     }
