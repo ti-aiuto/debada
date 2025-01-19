@@ -1,4 +1,3 @@
-import {runAfterDelay} from '../browser/run-after-delay';
 import {useBaseTypingGame} from '../base-typing-game/use-base-typing-game';
 import {JudgesCount} from './judges-count';
 import {
@@ -89,7 +88,7 @@ export function useDebadaGame({
     console.debug(currentScore.value, diff);
   }
 
-  function clockTick(timeElapsedSeconds: number) {
+  async function clockTick(timeElapsedSeconds: number) {
     if (!currentEnabledState.value) {
       return;
     }
@@ -100,19 +99,17 @@ export function useDebadaGame({
 
     if (nokoriJikanSeconds.value <= 0) {
       pauseGame();
-      notifyGameEvent('time_is_up');
+      await Promise.resolve(notifyGameEvent('time_is_up'));
     }
   }
 
-  function startGame() {
+  async function startGame() {
     if (gameState.value !== 'to_do') {
       return;
     }
     gameState.value = 'doing';
-    notifyGameEvent('game_start');
-    runAfterDelay(() => {
-      resumeGame();
-    }, 1000);
+    await Promise.resolve(notifyGameEvent('game_start'));
+    resumeGame();
   }
 
   function pauseGame() {
@@ -123,17 +120,15 @@ export function useDebadaGame({
     currentEnabledState.value = true;
   }
 
-  function enabaleBlockMode() {
+  async function enabaleBlockMode() {
     pauseGame();
-    notifyGameEvent('block_mode_start');
-    runAfterDelay(() => {
-      currentBlockModeEnabled.value = true;
-      proceedToNextQuestion();
-      resumeGame();
-    }, 750);
+    await Promise.resolve(notifyGameEvent('block_mode_start'));
+    currentBlockModeEnabled.value = true;
+    proceedToNextQuestion();
+    resumeGame();
   }
 
-  function disableBlockMode(success: boolean) {
+  async function disableBlockMode(success: boolean) {
     pauseGame();
     addScore(
       calcBlockFailScore({
@@ -142,18 +137,16 @@ export function useDebadaGame({
       })
     );
     if (success) {
-      notifyGameEvent('block_mode_succeeded');
+      await Promise.resolve(notifyGameEvent('block_mode_succeeded'));
     } else {
-      notifyGameEvent('block_mode_failed');
+      await Promise.resolve(notifyGameEvent('block_mode_failed'));
     }
-    runAfterDelay(() => {
-      currentBlockModeEnabled.value = false;
-      resumeGame();
-      nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
-    }, 750);
+    currentBlockModeEnabled.value = false;
+    resumeGame();
+    nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
   }
 
-  function nextLevelOrProceed(noddingEnabled: boolean) {
+  async function nextLevelOrProceed(noddingEnabled: boolean) {
     if (!hasNext.value) {
       // コンプリート
       addScore(
@@ -163,54 +156,60 @@ export function useDebadaGame({
         })
       );
       pauseGame();
-      notifyGameEvent('question_complete_without_nodding');
-      notifyGameEvent('game_complete');
+      await Promise.resolve(
+        notifyGameEvent('question_complete_without_nodding')
+      );
+      await Promise.resolve(notifyGameEvent('game_complete'));
       return;
     } else if (
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length
     ) {
-      notifyGameEvent('question_complete_without_nodding');
-      notifyGameEvent('level_up');
+      await Promise.resolve(
+        notifyGameEvent('question_complete_without_nodding')
+      );
+      await Promise.resolve(notifyGameEvent('level_up'));
       pauseGame();
-      runAfterDelay(() => {
-        currentJudgesCount.value = 3;
-        nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
-        goToBlockOrProceed();
-        resumeGame();
-      }, 750);
+      currentJudgesCount.value = 3;
+      nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
+      await goToBlockOrProceed();
+      resumeGame();
     } else if (
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length + selectedMiddleQuestions.length
     ) {
-      notifyGameEvent('question_complete_without_nodding');
-      notifyGameEvent('level_up');
+      await Promise.resolve(
+        notifyGameEvent('question_complete_without_nodding')
+      );
+      await Promise.resolve(notifyGameEvent('level_up'));
       pauseGame();
-      runAfterDelay(() => {
-        currentJudgesCount.value = 5;
-        nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
-        goToBlockOrProceed();
-        resumeGame();
-      }, 750);
+      currentJudgesCount.value = 5;
+      nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
+      await goToBlockOrProceed();
+      resumeGame();
     } else {
       if (noddingEnabled) {
-        notifyGameEvent('question_complete_with_nodding');
+        await Promise.resolve(
+          notifyGameEvent('question_complete_with_nodding')
+        );
       } else {
-        notifyGameEvent('question_complete_without_nodding');
+        await Promise.resolve(
+          notifyGameEvent('question_complete_without_nodding')
+        );
       }
-      goToBlockOrProceed();
+      await goToBlockOrProceed();
     }
   }
 
-  function goToBlockOrProceed() {
+  function goToBlockOrProceed(): Promise<unknown> {
     if (questionIndexInCurrentDifficulty.value + 1 === 4 - 1) {
-      enabaleBlockMode();
+      return enabaleBlockMode();
     } else if (questionIndexInCurrentDifficulty.value + 1 === 2 - 1) {
-      enabaleBlockMode();
+      return enabaleBlockMode();
     } else if (questionIndexInCurrentDifficulty.value + 1 === 3 - 1) {
-      enabaleBlockMode();
+      return enabaleBlockMode();
     } else {
-      proceedToNextQuestion();
+      return Promise.resolve(proceedToNextQuestion());
     }
   }
 

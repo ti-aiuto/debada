@@ -78,17 +78,22 @@ const {
   async notifyGameEvent(eventName: GameEventName) {
     if (eventName === 'game_start') {
       gameStartSignRef.value!.show();
+      await asyncSleep(1000);
     } else if (eventName === 'block_mode_start') {
       koshuKotaiSignRef.value!.show();
       blockOverlayRef.value!.show();
+      await asyncSleep(750);
     } else if (eventName === 'block_mode_succeeded') {
       blockSuccessSignRef.value!.show();
       blockOverlayRef.value!.hide();
+      await asyncSleep(750);
     } else if (eventName === 'block_mode_failed') {
       blockFailSignRef.value!.show();
       blockOverlayRef.value!.hide();
+      await asyncSleep(750);
     } else if (eventName === 'level_up') {
       levelUpSignRef.value!.show();
+      await asyncSleep(750);
     } else if (eventName === 'question_complete_with_nodding') {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
