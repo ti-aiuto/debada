@@ -197,6 +197,7 @@ describe('useDebadaGame', () => {
       expect(correctCount.value).toEqual(15);
       expect(renzokuCorrectCount.value).toEqual(15);
       expect(currentScore.value).toEqual(700);
+      expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await handleKeyDownEvent('i');
 
@@ -240,6 +241,7 @@ describe('useDebadaGame', () => {
       expect(correctCount.value).toEqual(23);
       expect(renzokuCorrectCount.value).toEqual(23);
       expect(currentScore.value).toEqual(1236);
+      expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await handleKeyDownEvent('e');
 
@@ -286,6 +288,7 @@ describe('useDebadaGame', () => {
       expect(correctCount.value).toEqual(33);
       expect(renzokuCorrectCount.value).toEqual(33);
       expect(currentScore.value).toEqual(1872);
+      expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await handleKeyDownEvent('o');
 
