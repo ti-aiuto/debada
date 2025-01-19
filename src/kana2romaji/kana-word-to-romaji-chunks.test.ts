@@ -83,7 +83,7 @@ describe('kanaWordToRomajiChunks', () => {
       expect(kanaWordToRomajiChunks('いんよう')).toEqual([
         {
           chunk: 'い',
-          candidates: ['i'],
+          candidates: ['i', 'yi'],
         },
         {
           chunk: 'ん',
@@ -133,11 +133,20 @@ describe('kanaWordToRomajiChunks', () => {
     expect(kanaWordToRomajiChunks('いしゃ')).toEqual([
       {
         chunk: 'い',
-        candidates: ['i'],
+        candidates: ['i', 'yi'],
       },
       {
         chunk: 'しゃ',
-        candidates: ['sya', 'sha', 'sixya', 'silya', 'shixya', 'shilya'],
+        candidates: [
+          'sya',
+          'sha',
+          'sixya',
+          'silya',
+          'shixya',
+          'shilya',
+          'cixya',
+          'cilya',
+        ],
       },
     ]);
 
@@ -155,12 +164,16 @@ describe('kanaWordToRomajiChunks', () => {
           'nsilya',
           'nshixya',
           'nshilya',
+          'ncixya',
+          'ncilya',
           'nnsya',
           'nnsha',
           'nnsixya',
           'nnsilya',
           'nnshixya',
           'nnshilya',
+          'nncixya',
+          'nncilya',
         ],
       },
     ]);
@@ -193,7 +206,7 @@ describe('kanaWordToRomajiChunks', () => {
       },
       {
         chunk: 'い',
-        candidates: ['i'],
+        candidates: ['i', 'yi'],
       },
     ]);
   });
