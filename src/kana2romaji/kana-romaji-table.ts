@@ -1,6 +1,6 @@
 export const kanaRomajiTable: {[key: string]: string[]} = {
   あ: ['a'],
-  い: ['i'],
+  い: ['i', 'yi'],
   う: ['u', 'wu', 'whu'],
   え: ['e'],
   お: ['o'],
@@ -101,10 +101,7 @@ export const kanaRomajiTable: {[key: string]: string[]} = {
   ぺ: ['pe'],
   ぽ: ['po'],
 
-  ふぁ: ['fa'],
-  ふぃ: ['fi', 'fyi'],
-  ふぇ: ['fe', 'fye'],
-  ふぉ: ['fo'],
+  いぇ: ['ye'],
 
   ヴぁ: ['va'],
   ヴぃ: ['vi'],
@@ -153,10 +150,13 @@ export const kanaRomajiTable: {[key: string]: string[]} = {
   ひぇ: ['hye'],
   ひょ: ['hyo'],
 
+  ふぁ: ['fa'],
+  ふぃ: ['fi', 'fyi'],
+  ふぇ: ['fe', 'fye'],
+  ふぉ: ['fo'],
+
   ふゃ: ['fya'],
-  // ふぃ: ["fyi"],
   ふゅ: ['fyu'],
-  // ふぇ: ["fye"],
   ふょ: ['fyo'],
 
   みゃ: ['mya'],
