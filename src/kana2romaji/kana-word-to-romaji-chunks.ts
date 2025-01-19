@@ -1,6 +1,7 @@
 import {kanaPartToRomaji} from './kana-part-to-romaji';
 import {RomajiChunk} from './romaji-chunk';
 
+// ひらがなの文字列全体をローマ字に変換する
 export function kanaWordToRomajiChunks(word: string): RomajiChunk[] {
   const result: RomajiChunk[] = [];
   let cursor = 0;

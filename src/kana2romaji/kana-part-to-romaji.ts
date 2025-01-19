@@ -1,6 +1,8 @@
 import {kanaRomajiTable} from './kana-romaji-table';
 import {RomajiCandidate} from './romaji-candidate';
 
+// ローマ字表の一マスについて対応するローマ字を返す
+// 複数の入力方法がある場合は全パターンを返す
 export function kanaPartToRomaji(part: string): RomajiCandidate[] {
   const romajis = kanaRomajiTable[part];
   if (romajis) {

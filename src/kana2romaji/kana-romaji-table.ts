@@ -1,3 +1,4 @@
+// ローマ字表
 export const kanaRomajiTable: {[key: string]: string[]} = {
   あ: ['a'],
   い: ['i', 'yi'],
