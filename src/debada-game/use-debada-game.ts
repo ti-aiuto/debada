@@ -205,7 +205,7 @@ export function useDebadaGame({
     resumeGame();
   }
 
-  async function nextLevelOrProceed(noddingEnabled: boolean) {
+  async function nextLevelOrProceed() {
     if (
       questionIndexInCurrentDifficulty.value + 1 ===
       questionsTotalCountInCurrentDifficulty.value
@@ -221,28 +221,13 @@ export function useDebadaGame({
           })
         );
         pauseGame();
-        await Promise.resolve(
-          notifyGameEvent('question_complete_without_nodding')
-        );
         await Promise.resolve(notifyGameEvent('game_complete'));
         return;
       } else {
         // レベルアップ
-        await Promise.resolve(
-          notifyGameEvent('question_complete_without_nodding')
-        );
         await Promise.resolve(notifyGameEvent('level_up'));
         setupNextLevel(nextJudgesCount.value);
       }
-    } else {
-      // ふつうに一問入力完了した場合
-      await Promise.resolve(
-        notifyGameEvent(
-          noddingEnabled
-            ? 'question_complete_with_nodding'
-            : 'question_complete_without_nodding'
-        )
-      );
     }
 
     // 次の問題をセットする前にブロックモードの有効化を実行
@@ -258,16 +243,38 @@ export function useDebadaGame({
   }
 
   async function handleKeyDownEvent(key: string) {
-    if (key === 'Escape') {
-      abortGame();
-    }
+    if (key === 'Escape') abortGame();
+    if (!currentEnabledState.value) return;
 
-    if (!currentEnabledState.value) {
-      // ゲームを実行中でない場合は何もしない
-      return;
-    }
+    if (typeKey(key)) {
+      // キー入力を間違えていない場合
+      if (hasCompletedWord.value) {
+        // 一語全て入力し終わったとき
+        addScore(
+          calcCompleteWordScore({
+            currentJudgesCount: currentJudgesCount.value,
+            currentCommPoint: currentCommPoint.value,
+            koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length,
+          })
+        );
 
-    if (!typeKey(key)) {
+        if (currentBlockModeEnabled.value) {
+          // ブロック成功
+          await disableBlockMode(true);
+
+          // 頷くと間が悪いので頷かない
+          await Promise.resolve(
+            notifyGameEvent('question_complete_without_nodding')
+          );
+          nextLevelOrProceed();
+        } else {
+          await Promise.resolve(
+            notifyGameEvent('question_complete_with_nodding')
+          );
+          nextLevelOrProceed();
+        }
+      }
+    } else {
       // キーを間違えた場合
       const correctChar = nokoriRomaji.value[0];
       perKeyWrongCount.value[correctChar] =
@@ -275,28 +282,13 @@ export function useDebadaGame({
 
       if (currentBlockModeEnabled.value) {
         disableBlockMode(false);
-        return nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
-      }
 
-      // タイプミス効果音
-    }
+        // 頷くと間が悪いので頷かない
+        await Promise.resolve(
+          notifyGameEvent('question_complete_without_nodding')
+        );
 
-    if (hasCompletedWord.value) {
-      // 一語全て入力し終わったとき
-      addScore(
-        calcCompleteWordScore({
-          currentJudgesCount: currentJudgesCount.value,
-          currentCommPoint: currentCommPoint.value,
-          koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length,
-        })
-      );
-
-      if (currentBlockModeEnabled.value) {
-        // ブロック成功
-        await disableBlockMode(true);
-        nextLevelOrProceed(false); // 頷くと間が悪いので頷かない
-      } else {
-        nextLevelOrProceed(true);
+        nextLevelOrProceed(false);
       }
     }
   }
