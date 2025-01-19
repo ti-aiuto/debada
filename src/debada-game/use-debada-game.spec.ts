@@ -73,13 +73,13 @@ describe('useDebadaGame', () => {
       expect(currentScore.value).toEqual(0);
       expect(perKeyWrongCount.value).toEqual({});
 
-      expect(currentJudgesCount.value).toEqual(1);
-
       // 開始前でも一問目が返る
+      expect(currentJudgesCount.value).toEqual(1);
       expect(currentQuestion.value.label).toEqual('か');
       expect(koremadeUttaRoamji.value).toEqual('');
       expect(nokoriRomaji.value).toEqual('ka');
 
+      // 初期状態の確認
       expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await startGame();
@@ -143,13 +143,152 @@ describe('useDebadaGame', () => {
       expect(currentEnabledState.value).toBe(true);
       expect(currentBlockModeEnabled.value).toBe(true);
 
+      // 4問目
       expect(currentQuestion.value.label).toEqual('け');
-      expect(koremadeUttaRoamji.value).toEqual('');
-      expect(nokoriRomaji.value).toEqual('ke');
+
+      // 4問目入力完了
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('e');
+
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
+
+      // ブロックモード終了の確認
+      expect(currentEnabledState.value).toBe(true);
+      expect(currentBlockModeEnabled.value).toBe(false);
+
+      // 正解してればスコア加算
+      expect(correctCount.value).toEqual(10);
+      expect(renzokuCorrectCount.value).toEqual(10);
+      expect(currentScore.value).toEqual(500);
+
+      // 5問目, 6問目
+      expect(currentQuestion.value.label).toEqual('こ');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('o');
+
+      expect(currentQuestion.value.label).toEqual('さ');
+      await handleKeyDownEvent('s');
+      await handleKeyDownEvent('a');
+
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'question_complete',
+      ]);
+
+      // 7問目=最終問題
+      expect(currentQuestion.value.label).toEqual('し');
+      await handleKeyDownEvent('s');
+
+      // レベルアップ前
+      expect(currentJudgesCount.value).toEqual(1);
+      expect(correctCount.value).toEqual(15);
+      expect(renzokuCorrectCount.value).toEqual(15);
+      expect(currentScore.value).toEqual(700);
+
+      await handleKeyDownEvent('i');
+
+      // レベルアップしたこと
+      expect(currentJudgesCount.value).toEqual(3);
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'level_up',
+      ]);
+      expect(correctCount.value).toEqual(16);
+      expect(renzokuCorrectCount.value).toEqual(16);
+      expect(currentScore.value).toEqual(834);
+
+      // レベル2を順に実行していく
+      expect(currentQuestion.value.label).toEqual('た');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ち');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('つ');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('て');
+      await handleKeyDownEvent('t');
+
+      // レベルアップ前
+      expect(currentJudgesCount.value).toEqual(3);
+      expect(correctCount.value).toEqual(23);
+      expect(renzokuCorrectCount.value).toEqual(23);
+      expect(currentScore.value).toEqual(1236);
+
+      await handleKeyDownEvent('e');
+
+      // レベルアップしたこと
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'level_up',
+      ]);
+      expect(currentScore.value).toEqual(1370);
+
+      // レベル3を順に実行していく
+      expect(currentQuestion.value.label).toEqual('な');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('に');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ぬ');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ね');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('e');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('の');
+      await handleKeyDownEvent('n');
+
+      // クリア前
+      expect(currentEnabledState.value).toEqual(true);
+      expect(correctCount.value).toEqual(33);
+      expect(renzokuCorrectCount.value).toEqual(33);
+      expect(currentScore.value).toEqual(1872);
+
+      await handleKeyDownEvent('o');
+
+      // クリアしたこと
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'game_complete',
+      ]);
+      expect(currentScore.value).toEqual(4511);
+      expect(currentEnabledState.value).toEqual(false);
+      expect(perKeyWrongCount.value).toEqual({});
     });
   });
 
-  // 全て想定通り入力できたときのテスト
   // 途中で打ち間違えたときのテスト
   // ブロックモード中にタイピング失敗した場合のテスト
   // 時間が経過した場合のテスト
