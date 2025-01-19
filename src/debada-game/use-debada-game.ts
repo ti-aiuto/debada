@@ -48,7 +48,7 @@ export function useDebadaGame({
 
   const gameState = ref<'to_do' | 'doing'>('to_do');
   const currentScore = ref(0); // 現在のスコア合計
-  const currentJudgesCount = ref<JudgesCount>(1); // 審判人数＝現在ンおレベル
+  const currentJudgesCount = ref<JudgesCount>(1); // 審判人数＝現在のレベル
   const currentEnabledState = ref(false); // ゲームの一時停止中はfalse
   const currentBlockModeEnabled = ref(false); // ブロックモード中かどうか
   const nokoriJikanSeconds = ref(0); // 便宜上適当な値で初期化しておく
