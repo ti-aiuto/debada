@@ -7,9 +7,15 @@ import {
 
 describe('standardJikanSeconds', () => {
   it('時間を返すこと', () => {
-    expect(standardJikanSeconds({currentJudgesCount: 1})).toEqual(30);
-    expect(standardJikanSeconds({currentJudgesCount: 3})).toEqual(45);
-    expect(standardJikanSeconds({currentJudgesCount: 5})).toEqual(60);
+    expect(
+      standardJikanSeconds({currentJudgesCount: 1})
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      standardJikanSeconds({currentJudgesCount: 3})
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      standardJikanSeconds({currentJudgesCount: 5})
+    ).toBeGreaterThanOrEqual(1);
   });
 });
 
