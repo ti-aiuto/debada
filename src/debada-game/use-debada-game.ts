@@ -202,11 +202,20 @@ export function useDebadaGame({
   }
 
   function goToBlockOrProceed(): Promise<unknown> {
-    if (questionIndexInCurrentDifficulty.value + 1 === 4 - 1) {
+    if (
+      currentJudgesCount.value === 1 &&
+      questionIndexInCurrentDifficulty.value + 1 === 4 - 1
+    ) {
       return enabaleBlockMode();
-    } else if (questionIndexInCurrentDifficulty.value + 1 === 2 - 1) {
+    } else if (
+      currentJudgesCount.value === 3 &&
+      questionIndexInCurrentDifficulty.value + 1 === 2 - 1
+    ) {
       return enabaleBlockMode();
-    } else if (questionIndexInCurrentDifficulty.value + 1 === 3 - 1) {
+    } else if (
+      currentJudgesCount.value === 5 &&
+      questionIndexInCurrentDifficulty.value + 1 === 3 - 1
+    ) {
       return enabaleBlockMode();
     } else {
       return Promise.resolve(proceedToNextQuestion());
