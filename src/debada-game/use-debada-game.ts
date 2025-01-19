@@ -155,6 +155,7 @@ export function useDebadaGame({
     }
   }
 
+  // ゲームの開始。一度だけ呼び出す
   async function startGame() {
     if (gameState.value !== 'to_do') {
       return;
@@ -165,12 +166,19 @@ export function useDebadaGame({
     resumeGame();
   }
 
+  // 各種イベント監視やタイマーの一時停止
   function pauseGame() {
     currentEnabledState.value = false;
   }
 
+  // 再開
   function resumeGame() {
     currentEnabledState.value = true;
+  }
+
+  // ゲーム中止
+  function abortGame() {
+    return notifyGameEvent('abort_game');
   }
 
   async function enabaleBlockMode() {
@@ -251,8 +259,7 @@ export function useDebadaGame({
 
   async function handleKeyDownEvent(key: string) {
     if (key === 'Escape') {
-      // ゲーム中止
-      return notifyGameEvent('abort_game');
+      abortGame();
     }
 
     if (!currentEnabledState.value) {
@@ -261,6 +268,7 @@ export function useDebadaGame({
     }
 
     if (!typeKey(key)) {
+      // キーを間違えた場合
       const correctChar = nokoriRomaji.value[0];
       perKeyWrongCount.value[correctChar] =
         (perKeyWrongCount.value[correctChar] ?? 0) + 1;
@@ -274,6 +282,7 @@ export function useDebadaGame({
     }
 
     if (hasCompletedWord.value) {
+      // 一語全て入力し終わったとき
       addScore(
         calcCompleteWordScore({
           currentJudgesCount: currentJudgesCount.value,
