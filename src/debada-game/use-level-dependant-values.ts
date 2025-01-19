@@ -17,7 +17,7 @@ export function useLevelDependantValues({
   selectedHardQuestions: Question[];
 }) {
   // 現在のレベルの中で何問目か
-  const questionIndexInCurrentDifficulty = computed(() => {
+  const questionIndexInCurrentDifficulty = computed<number>(() => {
     if (currentJudgesCount.value === 1) {
       return currentQuestionIndex.value;
     } else if (currentJudgesCount.value === 3) {
@@ -36,7 +36,7 @@ export function useLevelDependantValues({
   });
 
   // 現在のレベルで何問あるか
-  const questionsTotalCountInCurrentDifficulty = computed(() => {
+  const questionsTotalCountInCurrentDifficulty = computed<number>(() => {
     if (currentJudgesCount.value === 1) {
       return selectedEasyQuestions.length;
     } else if (currentJudgesCount.value === 3) {
@@ -51,7 +51,9 @@ export function useLevelDependantValues({
   });
 
   // ブロックモードを有効化したいインデックスの配列を返す
-  const blockModeQuestionIndicesInCurrentDifficulty = computed(() => {
+  const blockModeQuestionIndicesInCurrentDifficulty = computed<
+    Readonly<number[]>
+  >(() => {
     if (currentJudgesCount.value === 1) {
       return Object.freeze([3]);
     } else if (currentJudgesCount.value === 3) {
@@ -65,7 +67,8 @@ export function useLevelDependantValues({
     }
   });
 
-  const nextJudgesCount = computed(() => {
+  // 次のレベルを返す。なければnull
+  const nextJudgesCount = computed<JudgesCount | null>(() => {
     if (currentJudgesCount.value === 1) {
       return 3;
     } else if (currentJudgesCount.value === 3) {
