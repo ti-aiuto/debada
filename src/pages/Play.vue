@@ -18,7 +18,6 @@ import BlockOverlay from '../components/block-overlay.vue';
 import Player from '../components/player.vue';
 
 import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-count';
-import { runAfterDelay } from '../browser/run-after-delay';
 import { GameEventName } from '../debada-game/game-event-name';
 import { useDebadaGame } from '../debada-game/use-debada-game';
 import { findQuestions } from '../questions/find-questions';
