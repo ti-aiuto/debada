@@ -22,6 +22,13 @@ export function useDebadaGame({
   selectedHardQuestions: Question[];
   notifyGameEvent: (eventName: GameEventName) => void | Promise<void>;
 }) {
+  if (!selectedEasyQuestions.length)
+    throw new Error('selectedEasyQuestionsを1問以上指定してください');
+  if (!selectedMiddleQuestions.length)
+    throw new Error('selectedMiddleQuestionsを1問以上指定してください');
+  if (!selectedHardQuestions.length)
+    throw new Error('selectedHardQuestionsを1問以上指定してください');
+
   const questions = selectedEasyQuestions
     .concat(selectedMiddleQuestions)
     .concat(selectedHardQuestions);
