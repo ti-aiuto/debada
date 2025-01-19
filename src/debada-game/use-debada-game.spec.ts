@@ -1,6 +1,25 @@
 import {useDebadaGame} from './use-debada-game';
 
 describe('useDebadaGame', () => {
+  function prepareMockEventFn() {
+    const notifyGameEvent = jest.fn();
+    let notifyGameEventMockCursor = 0;
+
+    // 前回の呼び出し以後に発生したイベント名の配列を返す（ステートフルなので注意）
+    function fetchEventNamesSinceLastCall() {
+      const result = notifyGameEvent.mock.calls
+        .slice(notifyGameEventMockCursor, notifyGameEvent.mock.calls.length)
+        .map(it => it[0]);
+      notifyGameEventMockCursor = notifyGameEvent.mock.calls.length;
+      return result;
+    }
+
+    return {
+      notifyGameEvent,
+      fetchEventNamesSinceLastCall,
+    };
+  }
+
   function build({
     selectedEasyQuestions = [
       {label: 'か', kana: 'か'},
@@ -36,17 +55,8 @@ describe('useDebadaGame', () => {
 
   describe('ミスなく完了できるパターンのテスト', () => {
     it('諸々想定通りに値になること', async () => {
-      const notifyGameEvent = jest.fn();
-      let notifyGameEventMockCursor = 0;
-
-      // 前回の呼び出し以後に発生したイベント名の配列を返す（ステートフルなので注意）
-      function fetchEventNamesSinceLastCall() {
-        const result = notifyGameEvent.mock.calls
-          .slice(notifyGameEventMockCursor, notifyGameEvent.mock.calls.length)
-          .map(it => it[0]);
-        notifyGameEventMockCursor = notifyGameEvent.mock.calls.length;
-        return result;
-      }
+      const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+        prepareMockEventFn();
 
       const {
         handleKeyDownEvent,
@@ -294,7 +304,7 @@ describe('useDebadaGame', () => {
     });
   });
 
-  // 途中で打ち間違えたときのテスト
+  // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
   // ブロックモード中にタイピング失敗した場合のテスト
   // 時間が経過した場合のテスト
   // 時間切れのテスト
