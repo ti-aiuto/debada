@@ -169,15 +169,13 @@ export function useDebadaGame({
 
     if (currentBlockModeEnabled.value) {
       // ブロック成功
-      await disableBlockMode(true);
-
-      // 頷くと間が悪いので頷かない
-      await Promise.resolve(
-        notifyGameEvent('question_complete_without_nodding')
-      );
+      await Promise.all([
+        disableBlockMode(true),
+        Promise.resolve(notifyGameEvent('question_complete')),
+      ]);
     } else {
       // ふつうに正解
-      await Promise.resolve(notifyGameEvent('question_complete_with_nodding'));
+      await Promise.resolve(notifyGameEvent('question_complete'));
     }
 
     proceedToNextQuestionOrLevel();
@@ -190,12 +188,7 @@ export function useDebadaGame({
       (perKeyWrongCount.value[correctChar] ?? 0) + 1;
 
     if (currentBlockModeEnabled.value) {
-      disableBlockMode(false);
-
-      // 頷くと間が悪いので頷かない
-      await Promise.resolve(
-        notifyGameEvent('question_complete_without_nodding')
-      );
+      await disableBlockMode(false);
 
       // ブロックモード中は一回でも間違えたら強制的に次に遷移
       proceedToNextQuestionOrLevel();

@@ -94,7 +94,7 @@ const {
     } else if (eventName === 'level_up') {
       levelUpSignRef.value!.show();
       await asyncSleep(750);
-    } else if (eventName === 'question_complete_with_nodding') {
+    } else if (eventName === 'question_complete') {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
       // ここは待たずに即次の問題に遷移する
