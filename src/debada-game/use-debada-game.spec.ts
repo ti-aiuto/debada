@@ -37,10 +37,16 @@ describe('useDebadaGame', () => {
   describe('ミスなく完了できるパターンのテスト', () => {
     it('諸々想定通りに値になること', async () => {
       const notifyGameEvent = jest.fn();
-      const fetchLastEventName = () =>
-        notifyGameEvent.mock.calls.slice(-1)[0][0];
-      const countEventName = (eventName: string) =>
-        notifyGameEvent.mock.calls.filter(it => it[0] === eventName).length;
+      let notifyGameEventMockCursor = 0;
+
+      // 前回の呼び出し以後に発生したイベント名の配列を返す（ステートフルなので注意）
+      function fetchEventNamesSinceLastCall() {
+        const result = notifyGameEvent.mock.calls
+          .slice(notifyGameEventMockCursor, notifyGameEvent.mock.calls.length)
+          .map(it => it[0]);
+        notifyGameEventMockCursor = notifyGameEvent.mock.calls.length;
+        return result;
+      }
 
       const {
         handleKeyDownEvent,
@@ -51,6 +57,7 @@ describe('useDebadaGame', () => {
         renzokuCorrectCount,
         koremadeUttaRoamji,
         nokoriRomaji,
+        perKeyWrongCount,
         currentScore,
         currentJudgesCount,
         currentEnabledState,
@@ -64,6 +71,7 @@ describe('useDebadaGame', () => {
       expect(wrongCount.value).toEqual(0);
       expect(renzokuCorrectCount.value).toEqual(0);
       expect(currentScore.value).toEqual(0);
+      expect(perKeyWrongCount.value).toEqual({});
 
       expect(currentJudgesCount.value).toEqual(1);
 
@@ -72,10 +80,12 @@ describe('useDebadaGame', () => {
       expect(koremadeUttaRoamji.value).toEqual('');
       expect(nokoriRomaji.value).toEqual('ka');
 
+      expect(fetchEventNamesSinceLastCall()).toEqual([]);
+
       await startGame();
 
       // ゲーム開始直後の状態の確認
-      expect(fetchLastEventName()).toEqual('game_start');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
       expect(currentEnabledState.value).toBe(true);
       expect(currentBlockModeEnabled.value).toBe(false);
       expect(currentJudgesCount.value).toEqual(1);
@@ -94,11 +104,8 @@ describe('useDebadaGame', () => {
       expect(koremadeUttaRoamji.value).toEqual('k');
       expect(nokoriRomaji.value).toEqual('a');
 
-      expect(countEventName('game_start')).toEqual(1);
-      expect(countEventName('question_complete')).toEqual(0);
       await handleKeyDownEvent('a');
-      expect(fetchLastEventName()).toEqual('question_complete');
-      expect(countEventName('question_complete')).toEqual(1);
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
 
       expect(correctCount.value).toEqual(2);
       expect(renzokuCorrectCount.value).toEqual(2);
@@ -114,7 +121,7 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('i');
 
-      expect(countEventName('question_complete')).toEqual(2);
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
       expect(correctCount.value).toEqual(6);
       expect(renzokuCorrectCount.value).toEqual(6);
       expect(currentScore.value).toEqual(300);
@@ -123,13 +130,15 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('u');
 
-      expect(countEventName('question_complete')).toEqual(3);
       expect(correctCount.value).toEqual(8);
       expect(renzokuCorrectCount.value).toEqual(8);
       expect(currentScore.value).toEqual(400);
 
       // ブロックモードへの遷移の確認
-      expect(fetchLastEventName()).toEqual('block_mode_start');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
 
       expect(currentEnabledState.value).toBe(true);
       expect(currentBlockModeEnabled.value).toBe(true);
