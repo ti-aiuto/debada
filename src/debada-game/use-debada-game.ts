@@ -20,7 +20,7 @@ export function useDebadaGame({
   selectedEasyQuestions: Question[];
   selectedMiddleQuestions: Question[];
   selectedHardQuestions: Question[];
-  notifyGameEvent: (eventName: GameEventName) => void;
+  notifyGameEvent: (eventName: GameEventName) => void | Promise<void>;
 }) {
   const questions = selectedEasyQuestions
     .concat(selectedMiddleQuestions)

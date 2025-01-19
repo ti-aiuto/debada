@@ -24,6 +24,7 @@ import { useDebadaGame } from '../debada-game/use-debada-game';
 import { findQuestions } from '../questions/find-questions';
 import { useEverySecondClock } from '../debada-game/use-every-second-clock';
 import { useKeyDownListener } from '../debada-game/use-key-down-listener';
+import { asyncSleep } from '../system/async-sleep';
 
 const router = useRouter();
 const route = useRoute();
@@ -75,7 +76,7 @@ const {
   perKeyWrongCount
 } = useDebadaGame({
   selectedEasyQuestions, selectedMiddleQuestions, selectedHardQuestions,
-  notifyGameEvent(eventName: GameEventName) {
+  async notifyGameEvent(eventName: GameEventName) {
     if (eventName === 'game_start') {
       gameStartSignRef.value!.show();
     } else if (eventName === 'block_mode_start') {
@@ -94,14 +95,12 @@ const {
       gotPointGaugeRef.value!.show();
     } else if (eventName === 'time_is_up') {
       timeUpSignRef.value!.show();
-      runAfterDelay(() => {
-        goToResultPage();
-      }, 1000);
+      await asyncSleep(1000);
+      goToResultPage();
     } else if (eventName === 'game_complete') {
       completeSignRef.value!.show();
-      runAfterDelay(() => {
-        goToResultPage();
-      }, 1000);
+      await asyncSleep(1000);
+      goToResultPage();
     } else if (eventName === 'abort_game') {
       router.push('/');
     }
