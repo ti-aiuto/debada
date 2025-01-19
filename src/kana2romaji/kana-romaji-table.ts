@@ -12,9 +12,9 @@ export const kanaRomajiTable: {[key: string]: string[]} = {
   こ: ['ko', 'co'],
 
   さ: ['sa'],
-  し: ['si', 'shi'],
+  し: ['si', 'shi', 'ci'],
   す: ['su'],
-  せ: ['se'],
+  せ: ['se', 'ce'],
   そ: ['so'],
 
   た: ['ta'],
