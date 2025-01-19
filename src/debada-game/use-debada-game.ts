@@ -266,18 +266,15 @@ export function useDebadaGame({
   }
 
   return {
-    handleKeyDownEvent,
-    clockTick,
-    startGame,
+    handleKeyDownEvent, // 呼び出し側にリスナー登録してもらう
+    clockTick, // 呼び出し側にリスナー登録してもらう
+    startGame, // 呼び出し側が好きなタイミングで呼び出す
     currentQuestion,
     correctCount,
     wrongCount,
     renzokuCorrectCount,
-    hasCompletedWord,
-    hasNext,
     koremadeUttaRoamji,
     nokoriRomaji,
-    currentQuestionIndex,
     currentScore,
     currentJudgesCount,
     currentCommPoint,
