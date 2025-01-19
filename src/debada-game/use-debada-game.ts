@@ -9,6 +9,7 @@ import {
 import {GameEventName} from './game-event-name';
 import {computed, ref} from 'vue';
 import {Question} from '../questions/question';
+import {useLevelDependantValues} from './use-level-dependant-values';
 
 export function useDebadaGame({
   selectedEasyQuestions,
@@ -46,6 +47,19 @@ export function useDebadaGame({
   const nokoriJikanSeconds = ref(0); // 便宜上適当な値で初期化しておく
   const perKeyWrongCount = ref<{[key: string]: number}>({}); // 間違えたキーの対応表
 
+  const {
+    questionIndexInCurrentDifficulty,
+    questionsTotalCountInCurrentDifficulty,
+    blockModeQuestionIndicesInCurrentDifficulty,
+    nextJudgesCount,
+  } = useLevelDependantValues({
+    currentJudgesCount,
+    currentQuestionIndex,
+    selectedEasyQuestions,
+    selectedMiddleQuestions,
+    selectedHardQuestions,
+  });
+
   // 画面下部のコミュ点ゲージ
   const currentCommPoint = computed(() => {
     if (renzokuCorrectCount.value >= 30) {
@@ -60,69 +74,6 @@ export function useDebadaGame({
   // 現在挑戦中の問題
   const currentQuestion = computed(() => {
     return questions[currentQuestionIndex.value];
-  });
-
-  // 現在のレベルの中で何問目か
-  const questionIndexInCurrentDifficulty = computed(() => {
-    if (currentJudgesCount.value === 1) {
-      return currentQuestionIndex.value;
-    } else if (currentJudgesCount.value === 3) {
-      return currentQuestionIndex.value - selectedEasyQuestions.length;
-    } else if (currentJudgesCount.value === 5) {
-      return (
-        currentQuestionIndex.value -
-        selectedEasyQuestions.length -
-        selectedMiddleQuestions.length
-      );
-    } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
-    }
-  });
-
-  // 現在のレベルで何問あるか
-  const questionsTotalCountInCurrentDifficulty = computed(() => {
-    if (currentJudgesCount.value === 1) {
-      return selectedEasyQuestions.length;
-    } else if (currentJudgesCount.value === 3) {
-      return selectedMiddleQuestions.length;
-    } else if (currentJudgesCount.value === 5) {
-      return selectedHardQuestions.length;
-    } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
-    }
-  });
-
-  // ブロックモードを有効化したいインデックスの配列を返す
-  const blockModeQuestionIndicesInCurrentDifficulty = computed(() => {
-    if (currentJudgesCount.value === 1) {
-      return Object.freeze([3]);
-    } else if (currentJudgesCount.value === 3) {
-      return Object.freeze([1]);
-    } else if (currentJudgesCount.value === 5) {
-      return Object.freeze([2]);
-    } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
-    }
-  });
-
-  const nextJudgesCount = computed(() => {
-    if (currentJudgesCount.value === 1) {
-      return 3;
-    } else if (currentJudgesCount.value === 3) {
-      return 5;
-    } else if (currentJudgesCount.value === 5) {
-      return null; // 次はない
-    } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
-    }
   });
 
   // スコア加算の抽象化
@@ -140,10 +91,10 @@ export function useDebadaGame({
     });
   }
 
+  // 時間が経過するごとに実行される処理
   async function clockTick(timeElapsedSeconds: number) {
-    if (!currentEnabledState.value) {
-      return;
-    }
+    if (!currentEnabledState.value) return;
+
     nokoriJikanSeconds.value = Math.max(
       nokoriJikanSeconds.value - timeElapsedSeconds,
       0
@@ -239,7 +190,7 @@ export function useDebadaGame({
       await enabaleBlockMode();
     }
 
-    return Promise.resolve(proceedToNextQuestion());
+    proceedToNextQuestion();
   }
 
   async function handleKeyDownEvent(key: string) {
@@ -266,6 +217,7 @@ export function useDebadaGame({
           await Promise.resolve(
             notifyGameEvent('question_complete_without_nodding')
           );
+
           nextLevelOrProceed();
         } else {
           await Promise.resolve(
@@ -288,7 +240,7 @@ export function useDebadaGame({
           notifyGameEvent('question_complete_without_nodding')
         );
 
-        nextLevelOrProceed(false);
+        nextLevelOrProceed();
       }
     }
   }
