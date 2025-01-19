@@ -93,7 +93,7 @@ const {
       await asyncSleep(750);
     } else if (eventName === 'level_up') {
       levelUpSignRef.value!.show();
-      await asyncSleep(750);
+      await asyncSleep(1000);
     } else if (eventName === 'question_complete_with_nodding') {
       judgesRef.value!.nod();
       gotPointGaugeRef.value!.show();
