@@ -39,7 +39,7 @@ export function useDebadaGame({
     currentQuestionIndex,
   } = useBaseTypingGame(questions.map(item => item.kana));
 
-  const gameState = ref<'to_do' | 'doing' | 'done'>('to_do');
+  const gameState = ref<'to_do' | 'doing'>('to_do');
   const currentScore = ref(0);
   const currentJudgesCount = ref<JudgesCount>(1);
 
@@ -100,7 +100,6 @@ export function useDebadaGame({
 
     if (nokoriJikanSeconds.value <= 0) {
       pauseGame();
-      gameState.value = 'done';
       notifyGameEvent('time_is_up');
     }
   }
@@ -164,7 +163,6 @@ export function useDebadaGame({
         })
       );
       pauseGame();
-      gameState.value = 'done';
       notifyGameEvent('game_complete');
       return;
     } else if (
