@@ -16,6 +16,21 @@ export function useLevelDependantValues({
   selectedMiddleQuestions: Question[];
   selectedHardQuestions: Question[];
 }) {
+  // 現在のレベルで何問あるか
+  const questionsTotalCountInCurrentDifficulty = computed<number>(() => {
+    if (currentJudgesCount.value === 1) {
+      return selectedEasyQuestions.length;
+    } else if (currentJudgesCount.value === 3) {
+      return selectedMiddleQuestions.length;
+    } else if (currentJudgesCount.value === 5) {
+      return selectedHardQuestions.length;
+    } else {
+      throw new Error(
+        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
+      );
+    }
+  });
+
   // 現在のレベルの中で何問目か
   const questionIndexInCurrentDifficulty = computed<number>(() => {
     if (
@@ -30,21 +45,6 @@ export function useLevelDependantValues({
       return currentQuestionIndex.value - selectedEasyQuestions.length;
     } else {
       return currentQuestionIndex.value;
-    }
-  });
-
-  // 現在のレベルで何問あるか
-  const questionsTotalCountInCurrentDifficulty = computed<number>(() => {
-    if (currentJudgesCount.value === 1) {
-      return selectedEasyQuestions.length;
-    } else if (currentJudgesCount.value === 3) {
-      return selectedMiddleQuestions.length;
-    } else if (currentJudgesCount.value === 5) {
-      return selectedHardQuestions.length;
-    } else {
-      throw new Error(
-        `想定外のcurrentJudgesCount: ${currentJudgesCount.value}`
-      );
     }
   });
 

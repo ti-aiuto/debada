@@ -26,6 +26,24 @@ describe('useLevelDependantValues', () => {
     });
   }
 
+  describe('questionsTotalCountInCurrentDifficulty', () => {
+    it('レベルごとに何問あるか返せること', () => {
+      const currentJudgesCount = ref<JudgesCount>(1);
+      const {questionsTotalCountInCurrentDifficulty} = build({
+        currentJudgesCount,
+      });
+
+      currentJudgesCount.value = 1;
+      expect(questionsTotalCountInCurrentDifficulty.value).toEqual(1);
+
+      currentJudgesCount.value = 3;
+      expect(questionsTotalCountInCurrentDifficulty.value).toEqual(2);
+
+      currentJudgesCount.value = 5;
+      expect(questionsTotalCountInCurrentDifficulty.value).toEqual(3);
+    });
+  });
+
   describe('questionIndexInCurrentDifficulty', () => {
     it('レベルごとに今は何番目か返せること', () => {
       const currentQuestionIndex = ref(0);
