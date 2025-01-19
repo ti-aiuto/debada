@@ -68,4 +68,40 @@ describe('useLevelDependantValues', () => {
       expect(questionIndexInCurrentDifficulty.value).toEqual(2);
     });
   });
+
+  describe('blockModeQuestionIndicesInCurrentDifficulty', () => {
+    it('ブロックモードにしたいインデックスの配列を返すこと', () => {
+      const currentJudgesCount = ref<JudgesCount>(1);
+      const {blockModeQuestionIndicesInCurrentDifficulty} = build({
+        currentJudgesCount,
+      });
+
+      currentJudgesCount.value = 1;
+      expect(blockModeQuestionIndicesInCurrentDifficulty.value).toEqual([3]);
+
+      currentJudgesCount.value = 3;
+      expect(blockModeQuestionIndicesInCurrentDifficulty.value).toEqual([1]);
+
+      currentJudgesCount.value = 5;
+      expect(blockModeQuestionIndicesInCurrentDifficulty.value).toEqual([2]);
+    });
+  });
+
+  describe('nextJudgesCount', () => {
+    it('次のレベルを返すこと', () => {
+      const currentJudgesCount = ref<JudgesCount>(1);
+      const {nextJudgesCount} = build({
+        currentJudgesCount,
+      });
+
+      currentJudgesCount.value = 1;
+      expect(nextJudgesCount.value).toEqual(3);
+
+      currentJudgesCount.value = 3;
+      expect(nextJudgesCount.value).toEqual(5);
+
+      currentJudgesCount.value = 5;
+      expect(nextJudgesCount.value).toBeNull();
+    });
+  });
 });
