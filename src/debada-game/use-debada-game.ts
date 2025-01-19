@@ -39,8 +39,12 @@ export function useDebadaGame({
   } = useBaseTypingGame(questions.map(item => item.kana));
 
   const gameState = ref<'to_do' | 'doing'>('to_do');
-  const currentScore = ref(0);
-  const currentJudgesCount = ref<JudgesCount>(1);
+  const currentScore = ref(0); // 現在のスコア合計
+  const currentJudgesCount = ref<JudgesCount>(1); // 審判人数＝現在ンおレベル
+  const currentEnabledState = ref(false); // ゲームの一時停止中はfalse
+  const currentBlockModeEnabled = ref(false); // ブロックモード中かどうか
+  const nokoriJikanSeconds = ref(0); // 便宜上適当な値で初期化しておく
+  const perKeyWrongCount = ref<{[key: string]: number}>({}); // 間違えたキーの対応表
 
   // 画面下部のコミュ点ゲージ
   const currentCommPoint = computed(() => {
@@ -52,19 +56,7 @@ export function useDebadaGame({
       return 3;
     }
   });
-
-  // 残り時間の初期値
-  const standardInitialNokoriJikanSeconds = computed(() => {
-    return standardJikanSeconds({
-      currentJudgesCount: currentJudgesCount.value,
-    });
-  });
-
-  const currentEnabledState = ref(false);
-  const currentBlockModeEnabled = ref(false);
-  const nokoriJikanSeconds = ref(standardInitialNokoriJikanSeconds.value);
-  const perKeyWrongCount = ref<{[key: string]: number}>({});
-
+  
   const currentQuestion = computed(() => {
     return questions[currentQuestionIndex.value];
   });
@@ -83,9 +75,19 @@ export function useDebadaGame({
     }
   });
 
+  // スコア加算の抽象化
   function addScore(diff: number) {
     currentScore.value += diff;
     console.debug(currentScore.value, diff);
+  }
+
+  // レベルの初期化
+  function setupNextLevel(nextLevel: JudgesCount) {
+    currentJudgesCount.value = nextLevel;
+    
+    nokoriJikanSeconds.value = standardJikanSeconds({
+      currentJudgesCount: nextLevel,
+    });
   }
 
   async function clockTick(timeElapsedSeconds: number) {
@@ -167,8 +169,7 @@ export function useDebadaGame({
         notifyGameEvent('question_complete_without_nodding')
       );
       await Promise.resolve(notifyGameEvent('level_up'));
-      currentJudgesCount.value = 3;
-      nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
+      setupNextLevel(3);
     } else if (
       currentQuestionIndex.value + 1 ===
       selectedEasyQuestions.length + selectedMiddleQuestions.length
@@ -177,22 +178,16 @@ export function useDebadaGame({
         notifyGameEvent('question_complete_without_nodding')
       );
       await Promise.resolve(notifyGameEvent('level_up'));
-      currentJudgesCount.value = 5;
-      nokoriJikanSeconds.value = standardInitialNokoriJikanSeconds.value;
+      setupNextLevel(5);
     } else {
       // ふつうに一問入力完了した場合
-      if (noddingEnabled) {
-        await Promise.resolve(
-          notifyGameEvent('question_complete_with_nodding')
-        );
-      } else {
-        await Promise.resolve(
-          notifyGameEvent('question_complete_without_nodding')
-        );
-      }
+      await Promise.resolve(
+        notifyGameEvent(noddingEnabled ? 'question_complete_with_nodding' : 'question_complete_without_nodding')
+      );
     }
 
     if (checkEnableBlockMode()) {
+      // 次の問題をセットする前にブロックモードの有効化を実行
       await enabaleBlockMode();
     }
 
@@ -227,6 +222,7 @@ export function useDebadaGame({
     }
 
     if (!currentEnabledState.value) {
+      // ゲームを実行中でない場合は何もしない
       return;
     }
 
