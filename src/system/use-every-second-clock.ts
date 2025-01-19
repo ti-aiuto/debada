@@ -2,7 +2,9 @@ import {onUnmounted} from 'vue';
 
 // 毎秒処理を実行する責務を切り出したもの
 export function useEverySecondClock(
-  clockTick: (timeElapsedSeconds: number) => void | Promise<void>
+  clockTick:
+    | ((timeElapsedSeconds: number) => void)
+    | ((timeElapsedSeconds: number) => Promise<void>)
 ) {
   let lastTime = Date.now();
   const timerId = setInterval(intervalClockCallback, 1000);

@@ -21,8 +21,8 @@ import { formatPerKeyWrongCount } from '../debada-game/format-per-key-wrong-coun
 import { GameEventName } from '../debada-game/game-event-name';
 import { useDebadaGame } from '../debada-game/use-debada-game';
 import { findQuestions } from '../questions/find-questions';
-import { useEverySecondClock } from '../debada-game/use-every-second-clock';
-import { useKeyDownListener } from '../debada-game/use-key-down-listener';
+import { useEverySecondClock } from '../system/use-every-second-clock';
+import { useKeyDownListener } from '../system/use-key-down-listener';
 import { asyncSleep } from '../system/async-sleep';
 
 const router = useRouter();
