@@ -46,7 +46,7 @@ export function useDebadaGame({
     currentQuestionIndex,
   } = useBaseTypingGame(questions.map(item => item.kana));
 
-  const gameState = ref<'to_do' | 'doing'>('to_do');
+  const gameStarted = ref(false);
   const currentScore = ref(0); // 現在のスコア合計
   const currentJudgesCount = ref<JudgesCount>(1); // 審判人数＝現在のレベル
   const currentEnabledState = ref(false); // ゲームの一時停止中はfalse
@@ -115,11 +115,11 @@ export function useDebadaGame({
 
   // ゲームの開始。一度だけ呼び出す
   async function startGame() {
-    if (gameState.value !== 'to_do') {
+    if (gameStarted.value) {
       return;
     }
     setupNextLevel(1);
-    gameState.value = 'doing';
+    gameStarted.value = true;
     await Promise.resolve(notifyGameEvent('game_start'));
     resumeGame();
   }
@@ -153,6 +153,53 @@ export function useDebadaGame({
     return Promise.resolve(notifyGameEvent('game_complete'));
   }
 
+  // 問題一問終わったとき
+  async function questionCompleted() {
+    // 一語全て入力し終わったとき
+    addScore(
+      calcCompleteWordScore({
+        currentJudgesCount: currentJudgesCount.value,
+        currentCommPoint: currentCommPoint.value,
+        koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length,
+      })
+    );
+
+    if (currentBlockModeEnabled.value) {
+      // ブロック成功
+      await disableBlockMode(true);
+
+      // 頷くと間が悪いので頷かない
+      await Promise.resolve(
+        notifyGameEvent('question_complete_without_nodding')
+      );
+    } else {
+      // ふつうに正解
+      await Promise.resolve(notifyGameEvent('question_complete_with_nodding'));
+    }
+
+    proceedToNextQuestionOrLevel();
+  }
+
+  // キーを打ち間違えたとき
+  async function wrongKeyTyped() {
+    const correctChar = nokoriRomaji.value[0];
+    perKeyWrongCount.value[correctChar] =
+      (perKeyWrongCount.value[correctChar] ?? 0) + 1;
+
+    if (currentBlockModeEnabled.value) {
+      disableBlockMode(false);
+
+      // 頷くと間が悪いので頷かない
+      await Promise.resolve(
+        notifyGameEvent('question_complete_without_nodding')
+      );
+
+      // ブロックモード中は一回でも間違えたら強制的に次に遷移
+      proceedToNextQuestionOrLevel();
+    }
+  }
+
+  // ブロックモード有効化
   async function enabaleBlockMode() {
     pauseGame();
     await Promise.resolve(notifyGameEvent('block_mode_start'));
@@ -160,6 +207,7 @@ export function useDebadaGame({
     resumeGame();
   }
 
+  // ブロックモード無効化
   async function disableBlockMode(success: boolean) {
     pauseGame();
     addScore(
@@ -175,7 +223,7 @@ export function useDebadaGame({
     resumeGame();
   }
 
-  async function nextLevelOrProceed() {
+  async function proceedToNextQuestionOrLevel() {
     if (
       questionIndexInCurrentDifficulty.value + 1 ===
       questionsTotalCountInCurrentDifficulty.value
@@ -209,51 +257,11 @@ export function useDebadaGame({
     if (!currentEnabledState.value) return;
 
     if (typeKey(key)) {
-      // キー入力を間違えていない場合
       if (hasCompletedWord.value) {
-        // 一語全て入力し終わったとき
-        addScore(
-          calcCompleteWordScore({
-            currentJudgesCount: currentJudgesCount.value,
-            currentCommPoint: currentCommPoint.value,
-            koremadeUttaRoamjiLength: koremadeUttaRoamji.value.length,
-          })
-        );
-
-        if (currentBlockModeEnabled.value) {
-          // ブロック成功
-          await disableBlockMode(true);
-
-          // 頷くと間が悪いので頷かない
-          await Promise.resolve(
-            notifyGameEvent('question_complete_without_nodding')
-          );
-        } else {
-          // ふつうに正解
-          await Promise.resolve(
-            notifyGameEvent('question_complete_with_nodding')
-          );
-        }
-
-        nextLevelOrProceed();
+        return questionCompleted();
       }
     } else {
-      // キーを間違えた場合
-      const correctChar = nokoriRomaji.value[0];
-      perKeyWrongCount.value[correctChar] =
-        (perKeyWrongCount.value[correctChar] ?? 0) + 1;
-
-      if (currentBlockModeEnabled.value) {
-        disableBlockMode(false);
-
-        // 頷くと間が悪いので頷かない
-        await Promise.resolve(
-          notifyGameEvent('question_complete_without_nodding')
-        );
-
-        // ブロックモード中は一回でも間違えたら強制的に次に遷移
-        nextLevelOrProceed();
-      }
+      wrongKeyTyped();
     }
   }
 
