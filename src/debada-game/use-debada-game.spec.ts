@@ -727,7 +727,7 @@ describe('useDebadaGame', () => {
       expect(fetchEventNamesSinceLastCall()).toEqual([
         'block_mode_succeeded',
         'question_complete',
-      ]);
+      ]); // ここは間を悪くしないため同時にイベントが発火する
       expect(nokoriJikanSeconds.value).toEqual(29);
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(29); // 時間経過しない
@@ -797,9 +797,7 @@ describe('useDebadaGame', () => {
       expect(nokoriJikanSeconds.value).toEqual(45);
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(45); // 時間経過しない
-      fetchResolversSinceLastCall()
-        .slice(0, 2)
-        .forEach(it => it.resolve());
+      fetchResolversSinceLastCall()[0].resolve();
       await promise;
       await waitForTick();
 
