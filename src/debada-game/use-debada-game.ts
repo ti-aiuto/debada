@@ -217,6 +217,7 @@ export function useDebadaGame({
       questionsTotalCountInCurrentDifficulty.value
     ) {
       // 現在のレベルの問題を全部終わったとき
+      pauseGame();
 
       // 残時間をスコアに加算
       addScore(
@@ -234,6 +235,8 @@ export function useDebadaGame({
         await Promise.resolve(notifyGameEvent('level_up'));
         setupNextLevel(nextJudgesCount.value);
       }
+
+      resumeGame();
     }
 
     // 次の問題をセットする前にブロックモードの有効化を実行
