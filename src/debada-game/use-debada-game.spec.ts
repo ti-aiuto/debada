@@ -704,7 +704,7 @@ describe('useDebadaGame', () => {
       // block_mode_startの処理中に時間経過を起こした場合
       promise = handleKeyDownEvent('u');
       fetchResolversSinceLastCall()[0].resolve();
-      await nextTick();
+      await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual([
         'question_complete',
         'block_mode_start',
