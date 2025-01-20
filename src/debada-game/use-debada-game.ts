@@ -85,7 +85,7 @@ export function useDebadaGame({
   // スコア加算の抽象化
   function addScore(diff: number) {
     currentScore.value += diff;
-    console.debug(currentScore.value, diff);
+    console.debug('addScore', currentScore.value, diff);
   }
 
   // レベルの初期化
