@@ -534,9 +534,75 @@ describe('useDebadaGame', () => {
     });
   });
 
+  describe('時間切れの挙動のテスト', () => {
+    it('通常の入力中に時間切れになったら時間切れのイベントが発生すること', async () => {
+      const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+        prepareMockEventFn();
+
+      const {startGame, currentQuestion, nokoriJikanSeconds, clockTick} = build(
+        {notifyGameEvent}
+      );
+      await startGame();
+
+      // ゲーム開始直後の状態の確認
+      expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+      expect(nokoriJikanSeconds.value).toEqual(30);
+      expect(currentQuestion.value.label).toEqual('か');
+
+      // 時間切れの再現
+      await clockTick(31);
+      expect(nokoriJikanSeconds.value).toEqual(0); // 負数にはならない
+      expect(fetchEventNamesSinceLastCall()).toEqual(['time_is_up']);
+    });
+
+    it('ブロックモード中に時間切れになったら時間切れのイベントが発生すること', async () => {
+      const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+        prepareMockEventFn();
+
+      const {
+        handleKeyDownEvent,
+        startGame,
+        currentQuestion,
+        clockTick,
+        nokoriJikanSeconds,
+      } = build({notifyGameEvent});
+
+      await startGame();
+
+      expect(currentQuestion.value.label).toEqual('か');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'game_start',
+        'question_complete',
+      ]);
+
+      // 2問目
+      expect(currentQuestion.value.label).toEqual('きき');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      // 3問目
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('u');
+
+      // ブロックモードへの遷移の確認
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      // 時間切れの再現
+      await clockTick(31);
+      expect(nokoriJikanSeconds.value).toEqual(0); // 負数にはならない
+      expect(fetchEventNamesSinceLastCall()).toEqual(['time_is_up']);
+    });
+  });
+
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
-  // 時間が経過した場合のテスト
-  // 時間切れのテスト
   // 時間が進行するべきでないときに進行しないことのテスト
   // エスケープはいつでもできることのテスト
   // （できれば適切にawaitしていることのテスト）
