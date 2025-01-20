@@ -138,14 +138,6 @@ export function useDebadaGame({
 
   // ゲーム完遂
   function completeGame() {
-    // 残時間をスコアに加算
-    addScore(
-      calcCompleteGameScore({
-        nokoriJikanSeconds: nokoriJikanSeconds.value,
-        currentJudgesCount: currentJudgesCount.value,
-      })
-    );
-
     pauseGame();
     return Promise.resolve(notifyGameEvent('game_complete'));
   }
@@ -225,6 +217,14 @@ export function useDebadaGame({
       questionsTotalCountInCurrentDifficulty.value
     ) {
       // 現在のレベルの問題を全部終わったとき
+
+      // 残時間をスコアに加算
+      addScore(
+        calcCompleteGameScore({
+          nokoriJikanSeconds: nokoriJikanSeconds.value,
+          currentJudgesCount: currentJudgesCount.value,
+        })
+      );
 
       if (!nextJudgesCount.value) {
         // 次がない＝全レベルコンプリート
