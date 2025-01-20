@@ -123,33 +123,39 @@ export function useDebadaGame({
 
   // 各種イベント監視やタイマーの一時停止
   function pauseGame() {
+    console.debug('pauseGame');
     currentEnabledState.value = false;
   }
 
   // 再開
   function resumeGame() {
+    console.debug('resumeGame');
     currentEnabledState.value = true;
   }
 
   // ゲーム中止
   function abortGame() {
+    console.debug('abortGame');
     return notifyGameEvent('abort_game');
   }
 
   // ゲーム完遂
   function completeGame() {
+    console.debug('completeGame');
     pauseGame();
     return Promise.resolve(notifyGameEvent('game_complete'));
   }
 
   // 時間切れ
   function timeIsUp() {
+    console.debug('timeIsUp');
     pauseGame();
     return Promise.resolve(notifyGameEvent('time_is_up'));
   }
 
   // 問題一問終わったとき
   async function questionCompleted() {
+    console.debug('questionCompleted');
     // 一語全て入力し終わったとき
     addScore(
       calcCompleteWordScore({
@@ -175,6 +181,7 @@ export function useDebadaGame({
 
   // キーを打ち間違えたとき
   async function wrongKeyTyped() {
+    console.debug('wrongKeyTyped');
     const correctChar = nokoriRomaji.value[0];
     perKeyWrongCount.value[correctChar] =
       (perKeyWrongCount.value[correctChar] ?? 0) + 1;
@@ -189,6 +196,7 @@ export function useDebadaGame({
 
   // ブロックモード有効化
   async function enabaleBlockMode() {
+    console.debug('enabaleBlockMode');
     pauseGame();
     await Promise.resolve(notifyGameEvent('block_mode_start'));
     currentBlockModeEnabled.value = true;
@@ -197,6 +205,7 @@ export function useDebadaGame({
 
   // ブロックモード無効化
   async function disableBlockMode(success: boolean) {
+    console.debug('disableBlockMode');
     pauseGame();
     addScore(
       calcBlockFailScore({
@@ -212,6 +221,7 @@ export function useDebadaGame({
   }
 
   async function proceedToNextQuestionOrLevel() {
+    console.debug('proceedToNextQuestionOrLevel');
     if (
       questionIndexInCurrentDifficulty.value + 1 ===
       questionsTotalCountInCurrentDifficulty.value
