@@ -191,7 +191,7 @@ export function useDebadaGame({
       await disableBlockMode(false);
 
       // ブロックモード中は一回でも間違えたら強制的に次に遷移
-      proceedToNextQuestionOrLevel();
+      return proceedToNextQuestionOrLevel();
     }
   }
 
@@ -257,7 +257,7 @@ export function useDebadaGame({
         return questionCompleted();
       }
     } else {
-      wrongKeyTyped();
+      return wrongKeyTyped();
     }
   }
 
