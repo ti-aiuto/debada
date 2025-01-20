@@ -7,11 +7,15 @@ describe('useDebadaGame', () => {
     await nextTick();
   }
 
-  function prepareMockEventFn(enableManualResolve = false) {
+  function prepareMockEventFn() {
     const notifyGameEvent = jest.fn();
     let notifyGameEventMockCursor = 0;
 
-    const resolvers: {resolve: Function; reject: Function, eventName: string}[] = [];      
+    const resolvers: {
+      resolve: Function;
+      reject: Function;
+      eventName: string;
+    }[] = [];
     let resolverCursor = 0;
 
     // 前回の呼び出し以後に発生したイベント名の配列を返す（ステートフルなので注意）
@@ -24,7 +28,7 @@ describe('useDebadaGame', () => {
     }
 
     // 手動でresolve()して使う場合
-    if (enableManualResolve) {
+    function enableManualResolve() {
       notifyGameEvent.mockImplementation((eventName: string) => {
         let resolve!: Function, reject!: Function;
         // いつかはPromise.withResolvers()でスッキリ書ける
@@ -34,13 +38,17 @@ describe('useDebadaGame', () => {
         });
         resolvers.push({resolve, reject, eventName});
         return promise;
-      });  
+      });
+    }
+
+    function disableManualResolve() {
+      return notifyGameEvent.mockImplementation(() => Promise.resolve(true));
     }
 
     // モックした関数に返させるPromiseを準備する
     // 戻り値の関数を呼び出すことで{ resolve, reject }の配列を取得できる
     function fetchResolversSinceLastCall() {
-      const result= resolvers.slice(resolverCursor, resolvers.length)
+      const result = resolvers.slice(resolverCursor, resolvers.length);
       resolverCursor = resolvers.length;
       return result;
     }
@@ -49,6 +57,8 @@ describe('useDebadaGame', () => {
       notifyGameEvent,
       fetchEventNamesSinceLastCall,
       fetchResolversSinceLastCall,
+      enableManualResolve,
+      disableManualResolve,
     };
   }
 
@@ -635,9 +645,16 @@ describe('useDebadaGame', () => {
   });
 
   describe('時間が進行するべきでないときの時間経過のテスト', () => {
-    it('時間が変わらない・時間切れにならないこと', async () => {
-      const {notifyGameEvent, fetchEventNamesSinceLastCall, fetchResolversSinceLastCall} =
-        prepareMockEventFn(true);
+    it('時間が変わらないこと・適切にawaitできていること', async () => {
+      const {
+        notifyGameEvent,
+        fetchEventNamesSinceLastCall,
+        fetchResolversSinceLastCall,
+        enableManualResolve,
+        disableManualResolve,
+      } = prepareMockEventFn();
+
+      enableManualResolve();
 
       const {
         handleKeyDownEvent,
@@ -649,8 +666,9 @@ describe('useDebadaGame', () => {
 
       // game_startの処理中に時間切れを起こした場合
       let promise = startGame();
+      await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
-      expect(nokoriJikanSeconds.value).toEqual(30);
+      expect(nokoriJikanSeconds.value).toEqual(30); // promise解決前
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(30); // 時間経過しない
       fetchResolversSinceLastCall()[0].resolve();
@@ -661,6 +679,7 @@ describe('useDebadaGame', () => {
       promise = handleKeyDownEvent('a');
       fetchResolversSinceLastCall()[0].resolve();
       await promise;
+      await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
 
       // // 2問目
@@ -671,6 +690,7 @@ describe('useDebadaGame', () => {
 
       // question_completeの処理中に時間経過を起こした場合
       promise = handleKeyDownEvent('i');
+      await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
       expect(nokoriJikanSeconds.value).toEqual(30);
       await clockTick(1);
@@ -684,13 +704,13 @@ describe('useDebadaGame', () => {
 
       // block_mode_startの処理中に時間経過を起こした場合
       promise = handleKeyDownEvent('u');
-      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
-
-      // question_completeが処理完了しないとblock_mode_startが発火しない
       fetchResolversSinceLastCall()[0].resolve();
-      await waitForTick();
-      expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_start']);
-      expect(nokoriJikanSeconds.value).toEqual(29);
+      await nextTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+      expect(nokoriJikanSeconds.value).toEqual(29); // promise解決前
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(29); // 時間経過しない
 
@@ -704,52 +724,151 @@ describe('useDebadaGame', () => {
 
       // block_mode_succeededの処理中に時間経過を起こした場合
       promise = handleKeyDownEvent('e');
-      expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_succeeded', 'question_complete']);
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
       expect(nokoriJikanSeconds.value).toEqual(29);
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(29); // 時間経過しない
-      fetchResolversSinceLastCall().slice(0, 2).forEach((it) => it.resolve());
+      fetchResolversSinceLastCall()
+        .slice(0, 2)
+        .forEach(it => it.resolve());
       await promise;
 
       // 5問目, 6問目
+      disableManualResolve();
       expect(currentQuestion.value.label).toEqual('こ');
       await handleKeyDownEvent('k');
-      promise = handleKeyDownEvent('o');
-      fetchResolversSinceLastCall()[0].resolve();
-      await promise;
-      
+      await handleKeyDownEvent('o');
+
       expect(currentQuestion.value.label).toEqual('さ');
       await handleKeyDownEvent('s');
-      promise = handleKeyDownEvent('a');
-      fetchResolversSinceLastCall()[0].resolve();
-      await promise;
-      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete', 'question_complete']);
+      await handleKeyDownEvent('a');
+
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'question_complete',
+      ]);
+      enableManualResolve();
 
       // 7問目
       // level_upの処理中に時間経過した場合
       expect(currentQuestion.value.label).toEqual('し');
       await handleKeyDownEvent('s');
       promise = handleKeyDownEvent('i');
+      await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
       fetchResolversSinceLastCall()[0].resolve();
       await waitForTick();
       expect(fetchEventNamesSinceLastCall()).toEqual(['level_up']);
-      
-      expect(nokoriJikanSeconds.value).toEqual(29);
+
+      expect(nokoriJikanSeconds.value).toEqual(29); // promise解決前
       await clockTick(100);
       expect(nokoriJikanSeconds.value).toEqual(29); // 時間経過しない
 
       fetchResolversSinceLastCall()[0].resolve();
       await promise;
+      await waitForTick();
 
       // 次レベルの一問目
       expect(currentQuestion.value.label).toEqual('た');
+      await handleKeyDownEvent('t');
+      promise = handleKeyDownEvent('a');
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // 次のレベルの2問目＝ブロックモード
+      expect(currentQuestion.value.label).toEqual('ち');
+      await handleKeyDownEvent('t');
+
+      // block_mode_failedの処理中に時間経過を起こした場合
+      promise = handleKeyDownEvent('o'); // タイプミス
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_failed']);
+      expect(nokoriJikanSeconds.value).toEqual(45);
+      await clockTick(100);
+      expect(nokoriJikanSeconds.value).toEqual(45); // 時間経過しない
+      fetchResolversSinceLastCall()
+        .slice(0, 2)
+        .forEach(it => it.resolve());
+      await promise;
+      await waitForTick();
+
+      // 残りの問題
+      disableManualResolve();
+
+      expect(currentQuestion.value.label).toEqual('つ');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('て');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('e');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'level_up',
+      ]);
+
+      // レベル3を順に実行していく
+      expect(currentQuestion.value.label).toEqual('な');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('に');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ぬ');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ね');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('e');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      enableManualResolve();
+      expect(currentQuestion.value.label).toEqual('の');
+      await handleKeyDownEvent('n');
+
+      // game_completeの途中に時間経過した場合
+      promise = handleKeyDownEvent('o');
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['game_complete']);
+
+      expect(nokoriJikanSeconds.value).toEqual(60);
+      await clockTick(100);
+      expect(nokoriJikanSeconds.value).toEqual(60); // 時間経過しない
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise; // promiseが時間内に解決できること
+      expect(fetchEventNamesSinceLastCall()).toEqual([]); // 余計なイベントが発火しないこと
     });
   });
 
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
   // エスケープはいつでもできることのテスト
-  // （できれば適切にawaitしていることのテスト）
 
   describe('質問の個数が足りない場合', () => {
     it('例外になること', () => {
