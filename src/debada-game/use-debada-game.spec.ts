@@ -307,8 +307,88 @@ describe('useDebadaGame', () => {
     });
   });
 
+  describe('ブロックモード中に間違えた場合', () => {
+    it('強制的に次の問題に遷移すること', async () => {
+      const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+        prepareMockEventFn();
+
+      const {
+        handleKeyDownEvent,
+        startGame,
+        currentQuestion,
+        correctCount,
+        wrongCount,
+        renzokuCorrectCount,
+        perKeyWrongCount,
+        currentScore,
+        currentEnabledState,
+        currentBlockModeEnabled,
+      } = build({notifyGameEvent});
+
+      await startGame();
+
+      expect(currentQuestion.value.label).toEqual('か');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'game_start',
+        'question_complete',
+      ]);
+
+      // 2問目
+      expect(currentQuestion.value.label).toEqual('きき');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      // 3問目
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('u');
+
+      // ブロックモードへの遷移の確認
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      expect(currentEnabledState.value).toBe(true);
+      expect(currentBlockModeEnabled.value).toBe(true);
+
+      // 4問目
+      expect(currentQuestion.value.label).toEqual('け');
+
+      await handleKeyDownEvent('k');
+
+      expect(correctCount.value).toEqual(9);
+      expect(renzokuCorrectCount.value).toEqual(9);
+      expect(currentScore.value).toEqual(400);
+      expect(wrongCount.value).toEqual(0);
+      expect(perKeyWrongCount.value).toEqual({});
+
+      // ここで間違える
+      await handleKeyDownEvent('o');
+
+      expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_failed']);
+
+      // ブロックモード終了の確認
+      expect(currentEnabledState.value).toBe(true);
+      expect(currentBlockModeEnabled.value).toBe(false);
+
+      // スコアが減ること
+      expect(correctCount.value).toEqual(9);
+      expect(renzokuCorrectCount.value).toEqual(0);
+      expect(currentScore.value).toEqual(349);
+      expect(wrongCount.value).toEqual(1);
+      expect(perKeyWrongCount.value).toEqual({e: 1});
+
+      // 5問目に遷移すること
+      expect(currentQuestion.value.label).toEqual('こ');
+    });
+  });
+
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
-  // ブロックモード中にタイピング失敗した場合のテスト
   // 時間が経過した場合のテスト
   // 時間切れのテスト
   // 時間が進行するべきでないときに進行しないことのテスト
