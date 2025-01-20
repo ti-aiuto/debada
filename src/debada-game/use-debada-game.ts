@@ -82,20 +82,6 @@ export function useDebadaGame({
     return questions[currentQuestionIndex.value];
   });
 
-  // スコア加算の抽象化
-  function addScore(diff: number) {
-    currentScore.value += diff;
-    console.debug('addScore', currentScore.value, diff);
-  }
-
-  // レベルの初期化
-  function setupNextLevel(nextLevel: JudgesCount) {
-    currentJudgesCount.value = nextLevel;
-    nokoriJikanSeconds.value = standardJikanSeconds({
-      currentJudgesCount: currentJudgesCount.value,
-    });
-  }
-
   // 時間が経過するごとに実行される処理
   async function clockTick(timeElapsedSeconds: number) {
     if (!currentEnabledState.value) return;
@@ -110,11 +96,40 @@ export function useDebadaGame({
     }
   }
 
+  async function handleKeyDownEvent(key: string) {
+    if (key === 'Escape') abortGame();
+    if (!currentEnabledState.value) return;
+
+    if (typeKey(key)) {
+      if (hasCompletedWord.value) {
+        return questionCompleted();
+      }
+    } else {
+      return wrongKeyTyped();
+    }
+  }
+
+  // スコア加算の抽象化
+  function addScore(diff: number) {
+    currentScore.value += diff;
+    console.debug('addScore', currentScore.value, diff);
+  }
+
+  // レベルの初期化
+  function setupNextLevel(nextLevel: JudgesCount) {
+    console.debug('setupNextLevel', nextLevel);
+    currentJudgesCount.value = nextLevel;
+    nokoriJikanSeconds.value = standardJikanSeconds({
+      currentJudgesCount: currentJudgesCount.value,
+    });
+  }
+
   // ゲームの開始。一度だけ呼び出す
   async function startGame() {
     if (gameStarted.value) {
       return;
     }
+    console.debug('startGame');
     setupNextLevel(1);
     gameStarted.value = true;
     await Promise.resolve(notifyGameEvent('game_start'));
@@ -259,19 +274,6 @@ export function useDebadaGame({
     }
 
     proceedToNextQuestion();
-  }
-
-  async function handleKeyDownEvent(key: string) {
-    if (key === 'Escape') abortGame();
-    if (!currentEnabledState.value) return;
-
-    if (typeKey(key)) {
-      if (hasCompletedWord.value) {
-        return questionCompleted();
-      }
-    } else {
-      return wrongKeyTyped();
-    }
   }
 
   return {
