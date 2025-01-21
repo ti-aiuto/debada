@@ -1214,6 +1214,223 @@ describe('useDebadaGame', () => {
         await waitForTick();
         expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
       });
+
+      it('block_mode_failedの途中にエスケープできること', async () => {
+        const {
+          notifyGameEvent,
+          fetchEventNamesSinceLastCall,
+          enableManualResolve,
+        } = prepareMockEventFn();
+
+        const {handleKeyDownEvent, startGame, currentQuestion} = build({
+          notifyGameEvent,
+        });
+
+        await startGame();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        expect(currentQuestion.value.label).toEqual('か');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('きき');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('く');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('u');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('け');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('e');
+
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'block_mode_succeeded',
+          'question_complete',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('こ');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('o');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('さ');
+        await handleKeyDownEvent('s');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('し');
+        await handleKeyDownEvent('s');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'level_up',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('た');
+        await handleKeyDownEvent('t');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        enableManualResolve();
+        expect(currentQuestion.value.label).toEqual('ち');
+        await handleKeyDownEvent('t');
+
+        handleKeyDownEvent('o'); // タイプミス
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_failed']);
+
+        handleKeyDownEvent('Escape');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+
+      it('game_completeの途中にエスケープできること', async () => {
+        const {
+          notifyGameEvent,
+          fetchEventNamesSinceLastCall,
+          enableManualResolve,
+          fetchResolversSinceLastCall,
+        } = prepareMockEventFn();
+
+        const {handleKeyDownEvent, startGame, currentQuestion} = build({
+          notifyGameEvent,
+        });
+
+        await startGame();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        expect(currentQuestion.value.label).toEqual('か');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('きき');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('く');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('u');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('け');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('e');
+
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'block_mode_succeeded',
+          'question_complete',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('こ');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('o');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('さ');
+        await handleKeyDownEvent('s');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('し');
+        await handleKeyDownEvent('s');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'level_up',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('た');
+        await handleKeyDownEvent('t');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('ち');
+        await handleKeyDownEvent('t');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'block_mode_succeeded',
+          'question_complete',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('つ');
+        await handleKeyDownEvent('t');
+        await handleKeyDownEvent('u');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('て');
+        await handleKeyDownEvent('t');
+        await handleKeyDownEvent('e');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'level_up',
+        ]);
+
+        // レベル3を順に実行していく
+        expect(currentQuestion.value.label).toEqual('な');
+        await handleKeyDownEvent('n');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('に');
+        await handleKeyDownEvent('n');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('ぬ');
+        await handleKeyDownEvent('n');
+        await handleKeyDownEvent('u');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'block_mode_succeeded',
+          'question_complete',
+        ]);
+
+        expect(currentQuestion.value.label).toEqual('ね');
+        await handleKeyDownEvent('n');
+        await handleKeyDownEvent('e');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        enableManualResolve();
+        expect(currentQuestion.value.label).toEqual('の');
+        await handleKeyDownEvent('n');
+
+        // game_completeの途中に時間経過した場合
+        handleKeyDownEvent('o');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+        fetchResolversSinceLastCall()[0].resolve();
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_complete']);
+
+        handleKeyDownEvent('Escape');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
     });
   });
 
