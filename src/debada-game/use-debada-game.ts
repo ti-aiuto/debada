@@ -97,7 +97,7 @@ export function useDebadaGame({
   }
 
   async function handleKeyDownEvent(key: string) {
-    if (key === 'Escape') abortGame();
+    if (key === 'Escape') return abortGame();
     if (!currentEnabledState.value) return;
 
     if (typeKey(key)) {
