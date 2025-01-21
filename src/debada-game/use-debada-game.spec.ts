@@ -1,5 +1,6 @@
 import {nextTick} from 'vue';
 import {useDebadaGame} from './use-debada-game';
+import {Question} from './question';
 
 describe('useDebadaGame', () => {
   async function waitForTick() {
@@ -7,6 +8,7 @@ describe('useDebadaGame', () => {
     await nextTick();
   }
 
+  // notifyGameEventのPromise周りのテストを書きやすくするためのヘルパー関数
   function prepareMockEventFn() {
     const notifyGameEvent = jest.fn();
     let notifyGameEventMockCursor = 0;
@@ -354,6 +356,62 @@ describe('useDebadaGame', () => {
       // ゲーム終了後の状態の確認（基本的には最終問題のまま）
       expect(currentQuestion.value.label).toEqual('の');
       expect(currentJudgesCount.value).toEqual(5);
+    });
+  });
+
+  describe('連続入力のスコア確認', () => {
+    let questionToTest: Question;
+
+    beforeEach(() => {
+      questionToTest = {
+        label: 'か',
+        kana: 'あかまきがみあおまきがみきまきがみ',
+      };
+    });
+
+    it('連続正解でゲージが増えること', async () => {
+      const {
+        handleKeyDownEvent,
+        startGame,
+        correctCount,
+        renzokuCorrectCount,
+        currentCommPoint,
+      } = build({
+        selectedEasyQuestions: [
+          questionToTest,
+          questionToTest,
+          questionToTest,
+          questionToTest,
+          questionToTest,
+          questionToTest,
+        ],
+      });
+
+      await startGame();
+
+      for (const char of 'akamakigamiaom'.split('')) {
+        await handleKeyDownEvent(char);
+      }
+
+      expect(correctCount.value).toEqual(14);
+      expect(renzokuCorrectCount.value).toEqual(14);
+
+      expect(currentCommPoint.value).toEqual(3);
+      await handleKeyDownEvent('a');
+      expect(correctCount.value).toEqual(15);
+      expect(currentCommPoint.value).toEqual(4);
+
+      for (const char of 'kigamikimakiga'.split('')) {
+        await handleKeyDownEvent(char);
+      }
+
+      expect(correctCount.value).toEqual(29);
+      expect(renzokuCorrectCount.value).toEqual(29);
+
+      expect(currentCommPoint.value).toEqual(4);
+      await handleKeyDownEvent('m');
+      expect(correctCount.value).toEqual(30);
+      expect(currentCommPoint.value).toEqual(5);
     });
   });
 
