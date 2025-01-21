@@ -456,55 +456,85 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('a');
 
-      expect(currentScore.value).toEqual(100);
-
-      // 2問目
       expect(currentQuestion.value.label).toEqual('きき');
-
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('i');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('i');
 
-      expect(currentScore.value).toEqual(300);
-
-      // 3問目
       expect(currentQuestion.value.label).toEqual('く');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('u');
 
-      expect(currentScore.value).toEqual(400);
-
-      // 4問目
       expect(currentQuestion.value.label).toEqual('け');
-
-      // 4問目入力完了
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('e');
 
-      // 正解してればスコア加算
-      expect(currentScore.value).toEqual(500);
-
-      // 5問目, 6問目
       expect(currentQuestion.value.label).toEqual('こ');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('o');
+
+      expect(currentScore.value).toEqual(600);
 
       expect(currentQuestion.value.label).toEqual('さ');
       await handleKeyDownEvent('s');
       await handleKeyDownEvent('a');
 
-      // 7問目=最終問題
+      // 最終問題
       expect(currentQuestion.value.label).toEqual('し');
+      expect(currentScore.value).toEqual(700);
       await handleKeyDownEvent('s');
+      expect(nokoriJikanSeconds.value).toEqual(30); // 時間消費なし
+      await handleKeyDownEvent('i');
+      expect(currentScore.value).toEqual(1335); // 残時間分の加算
 
-      // 時間消費なし
-      expect(nokoriJikanSeconds.value).toEqual(30);
+      // レベル2
+      expect(currentQuestion.value.label).toEqual('た');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('a');
 
+      expect(currentQuestion.value.label).toEqual('ち');
+      await handleKeyDownEvent('t');
       await handleKeyDownEvent('i');
 
-      // 残時間分の加算
-      expect(currentScore.value).toEqual(1335);
+      expect(currentScore.value).toEqual(1603);
+
+      expect(currentQuestion.value.label).toEqual('つ');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('u');
+
+      expect(currentQuestion.value.label).toEqual('て');
+      expect(currentScore.value).toEqual(1737);
+      await handleKeyDownEvent('t');
+      expect(nokoriJikanSeconds.value).toEqual(45); // 時間消費なし
+      await handleKeyDownEvent('e');
+      expect(currentScore.value).toEqual(3371); // 残時間分の加算
+
+      // レベル3
+      expect(currentQuestion.value.label).toEqual('な');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('a');
+
+      expect(currentQuestion.value.label).toEqual('に');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('i');
+
+      expect(currentQuestion.value.label).toEqual('ぬ');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('u');
+
+      expect(currentScore.value).toEqual(3734);
+
+      expect(currentQuestion.value.label).toEqual('ね');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('e');
+
+      expect(currentQuestion.value.label).toEqual('の');
+      expect(currentScore.value).toEqual(3873);
+      await handleKeyDownEvent('n');
+      expect(nokoriJikanSeconds.value).toEqual(60); // 時間消費なし
+      await handleKeyDownEvent('o');
+      expect(currentScore.value).toEqual(6512); // 残時間分の加算
     });
 
     it('時間を使った場合はその分スコア加算が減ること', async () => {
@@ -525,36 +555,21 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('a');
 
-      expect(currentScore.value).toEqual(100);
-
-      // 2問目
       expect(currentQuestion.value.label).toEqual('きき');
-
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('i');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('i');
 
-      expect(currentScore.value).toEqual(300);
-
-      // 3問目
       expect(currentQuestion.value.label).toEqual('く');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('u');
 
-      expect(currentScore.value).toEqual(400);
-
-      // 4問目
       expect(currentQuestion.value.label).toEqual('け');
-
-      // 4問目入力完了
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('e');
-
-      // 正解してればスコア加算
       expect(currentScore.value).toEqual(500);
 
-      // 5問目, 6問目
       expect(currentQuestion.value.label).toEqual('こ');
       await handleKeyDownEvent('k');
       await handleKeyDownEvent('o');
@@ -565,22 +580,76 @@ describe('useDebadaGame', () => {
 
       // 7問目=最終問題
       expect(currentQuestion.value.label).toEqual('し');
+      expect(currentScore.value).toEqual(700);
       await handleKeyDownEvent('s');
 
-      // 時間消費なし
-      expect(nokoriJikanSeconds.value).toEqual(30);
-
-      // 経過時間だけ減ること
+      // 時間を経過させておく
       await clockTick(1);
       expect(nokoriJikanSeconds.value).toEqual(29);
 
-      await clockTick(2);
-      expect(nokoriJikanSeconds.value).toEqual(27);
+      await clockTick(10);
+      expect(nokoriJikanSeconds.value).toEqual(19);
 
       await handleKeyDownEvent('i');
+      expect(currentScore.value).toEqual(1151); // 残時間分の加算が減ること
 
-      // 残時間分の加算
-      expect(currentScore.value).toEqual(1285);
+      // レベル2
+      expect(currentQuestion.value.label).toEqual('た');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('a');
+
+      expect(currentQuestion.value.label).toEqual('ち');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('i');
+
+      expect(currentQuestion.value.label).toEqual('つ');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('u');
+
+      expect(currentQuestion.value.label).toEqual('て');
+      expect(currentScore.value).toEqual(1553);
+      await handleKeyDownEvent('t');
+
+      // 時間を経過させておく
+      await clockTick(1);
+      expect(nokoriJikanSeconds.value).toEqual(44);
+
+      await clockTick(20);
+      expect(nokoriJikanSeconds.value).toEqual(24);
+
+      await handleKeyDownEvent('e');
+      expect(currentScore.value).toEqual(2487); // 残時間分の加算が減ること
+
+      // レベル3
+      expect(currentQuestion.value.label).toEqual('な');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('a');
+
+      expect(currentQuestion.value.label).toEqual('に');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('i');
+
+      expect(currentQuestion.value.label).toEqual('ぬ');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('u');
+
+      expect(currentQuestion.value.label).toEqual('ね');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('e');
+
+      expect(currentQuestion.value.label).toEqual('の');
+      expect(currentScore.value).toEqual(2989);
+      await handleKeyDownEvent('n');
+
+      // 時間を経過させておく
+      await clockTick(1);
+      expect(nokoriJikanSeconds.value).toEqual(59);
+
+      await clockTick(30);
+      expect(nokoriJikanSeconds.value).toEqual(29);
+
+      await handleKeyDownEvent('o');
+      expect(currentScore.value).toEqual(4337); // 残時間分の加算が減ること
     });
   });
 
