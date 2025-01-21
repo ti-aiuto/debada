@@ -887,7 +887,7 @@ describe('useDebadaGame', () => {
       expect(fetchEventNamesSinceLastCall()).toEqual([]); // 余計なイベントが発火しないこと
     });
   });
-  
+
   describe('時間切れの挙動のテスト', () => {
     it('通常の入力中に時間切れになったら時間切れのイベントが発生すること', async () => {
       const {notifyGameEvent, fetchEventNamesSinceLastCall} =
