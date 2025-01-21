@@ -721,6 +721,241 @@ describe('useDebadaGame', () => {
     });
   });
 
+  describe('ユーザ入力が許可されているとき・されていないときのテスト', () => {
+    it('入力状態が適切に遷移すること', async () => {
+      const {
+        notifyGameEvent,
+        fetchEventNamesSinceLastCall,
+        fetchResolversSinceLastCall,
+        enableManualResolve,
+        disableManualResolve,
+      } = prepareMockEventFn();
+
+      enableManualResolve();
+
+      const {handleKeyDownEvent, startGame, currentQuestion, wrongCount} =
+        build({notifyGameEvent});
+
+      // game_startの処理中
+      let promise = startGame();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+      fetchResolversSinceLastCall()[0].resolve();
+
+      // 間違ったキー入力の確認
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(0);
+
+      await promise;
+      await waitForTick();
+
+      // question_completeの処理中
+      expect(currentQuestion.value.label).toEqual('か');
+      await handleKeyDownEvent('k');
+      promise = handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      // 間違ったキー入力の確認
+      expect(wrongCount.value).toEqual(0);
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(1); // ここは入力を受け付ける
+
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // // 2問目はふつうに入力
+      disableManualResolve();
+      expect(currentQuestion.value.label).toEqual('きき');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+      enableManualResolve();
+
+      // 3問目
+      expect(currentQuestion.value.label).toEqual('く');
+      await handleKeyDownEvent('k');
+
+      // block_mode_startの処理中
+      promise = handleKeyDownEvent('u');
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      // 間違ったキー入力の確認
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(1);
+
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // 4問目
+      expect(currentQuestion.value.label).toEqual('け');
+      await handleKeyDownEvent('k');
+
+      // block_mode_succeededの処理中
+      promise = handleKeyDownEvent('e');
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]); // ここは間を悪くしないため同時にイベントが発火する
+
+      // 間違ったキー入力の確認
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(1);
+
+      fetchResolversSinceLastCall()
+        .slice(0, 2)
+        .forEach(it => it.resolve());
+      await promise;
+      await waitForTick();
+
+      // 5問目, 6問目
+      disableManualResolve();
+      expect(currentQuestion.value.label).toEqual('こ');
+      await handleKeyDownEvent('k');
+      await handleKeyDownEvent('o');
+
+      expect(currentQuestion.value.label).toEqual('さ');
+      await handleKeyDownEvent('s');
+      await handleKeyDownEvent('a');
+
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'question_complete',
+      ]);
+      enableManualResolve();
+
+      // 7問目
+      // level_upの処理中
+      expect(currentQuestion.value.label).toEqual('し');
+      await handleKeyDownEvent('s');
+      promise = handleKeyDownEvent('i');
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['level_up']);
+
+      // 間違ったキー入力の確認
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(1);
+
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // 次レベルの一問目
+      expect(currentQuestion.value.label).toEqual('た');
+      await handleKeyDownEvent('t');
+      promise = handleKeyDownEvent('a');
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // 次のレベルの2問目＝ブロックモード
+      expect(currentQuestion.value.label).toEqual('ち');
+      await handleKeyDownEvent('t');
+
+      // block_mode_failedの処理中
+      promise = handleKeyDownEvent('o'); // タイプミス
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['block_mode_failed']);
+
+      // 間違ったキー入力の確認
+      expect(wrongCount.value).toEqual(2);
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(2);
+
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise;
+      await waitForTick();
+
+      // 残りの問題
+      disableManualResolve();
+
+      expect(currentQuestion.value.label).toEqual('つ');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('て');
+      await handleKeyDownEvent('t');
+      await handleKeyDownEvent('e');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'level_up',
+      ]);
+
+      // レベル3を順に実行していく
+      expect(currentQuestion.value.label).toEqual('な');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('a');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      expect(currentQuestion.value.label).toEqual('に');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('i');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'question_complete',
+        'block_mode_start',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ぬ');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('u');
+      expect(fetchEventNamesSinceLastCall()).toEqual([
+        'block_mode_succeeded',
+        'question_complete',
+      ]);
+
+      expect(currentQuestion.value.label).toEqual('ね');
+      await handleKeyDownEvent('n');
+      await handleKeyDownEvent('e');
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+      enableManualResolve();
+      expect(currentQuestion.value.label).toEqual('の');
+      await handleKeyDownEvent('n');
+
+      // game_completeの途中
+      promise = handleKeyDownEvent('o');
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+      fetchResolversSinceLastCall()[0].resolve();
+      await waitForTick();
+      expect(fetchEventNamesSinceLastCall()).toEqual(['game_complete']);
+
+      // 間違ったキー入力の確認
+      handleKeyDownEvent('p');
+      await waitForTick();
+      expect(wrongCount.value).toEqual(2); // 増えない
+
+      fetchResolversSinceLastCall()[0].resolve();
+      await promise; // promiseが時間内に解決できること
+      expect(fetchEventNamesSinceLastCall()).toEqual([]); // 余計なイベントが発火しないこと
+    });
+  });
+
   describe('時間が進行するべきでないときの時間経過のテスト', () => {
     it('時間が変わらないこと・適切にawaitできていること', async () => {
       const {
@@ -1434,7 +1669,6 @@ describe('useDebadaGame', () => {
     });
   });
 
-  // ユーザ入力が許可されているタイミングとされていないタイミングのテスト
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
 
   describe('質問の個数が足りない場合', () => {
