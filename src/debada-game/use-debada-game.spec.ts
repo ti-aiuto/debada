@@ -1,6 +1,5 @@
 import {nextTick} from 'vue';
 import {useDebadaGame} from './use-debada-game';
-import {Question} from './question';
 
 describe('useDebadaGame', () => {
   async function waitForTick() {
@@ -360,14 +359,20 @@ describe('useDebadaGame', () => {
   });
 
   describe('連続入力のスコア確認', () => {
-    let questionToTest: Question;
-
-    beforeEach(() => {
-      questionToTest = {
-        label: 'か',
+    function questionsToTest() {
+      const questionToTest = {
+        label: 'あかまきがみあおまきがみきまきがみ',
         kana: 'あかまきがみあおまきがみきまきがみ',
       };
-    });
+      return [
+        questionToTest,
+        questionToTest,
+        questionToTest,
+        questionToTest,
+        questionToTest,
+        questionToTest,
+      ];
+    }
 
     it('連続正解でゲージが増えること・間違えたらリセットされること', async () => {
       const {
@@ -376,14 +381,7 @@ describe('useDebadaGame', () => {
         renzokuCorrectCount,
         currentCommPoint,
       } = build({
-        selectedEasyQuestions: [
-          questionToTest,
-          questionToTest,
-          questionToTest,
-          questionToTest,
-          questionToTest,
-          questionToTest,
-        ],
+        selectedEasyQuestions: questionsToTest(),
       });
 
       await startGame();
@@ -413,6 +411,97 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('p');
       expect(currentCommPoint.value).toEqual(3);
       expect(renzokuCorrectCount.value).toEqual(0);
+    });
+
+    describe('ゲージにより点数が変わることのテスト', () => {
+      it('3点の場合', async () => {
+        const {
+          handleKeyDownEvent,
+          startGame,
+          currentCommPoint,
+          nokoriRomaji,
+          currentScore,
+        } = build({selectedEasyQuestions: questionsToTest()});
+
+        await startGame();
+
+        for (const char of 'akamakigamiaomakigamikimakigam'.split('')) {
+          await handleKeyDownEvent(char);
+        }
+
+        // ここで間違える
+        expect(nokoriRomaji.value).toEqual('i');
+        await handleKeyDownEvent('p');
+
+        expect(currentCommPoint.value).toEqual(3);
+        expect(currentScore.value).toEqual(0);
+
+        // 3点の場合のスコア加算
+        await handleKeyDownEvent('i');
+        expect(currentScore.value).toEqual(1550);
+      });
+
+      it('4点の場合', async () => {
+        const {
+          handleKeyDownEvent,
+          startGame,
+          currentCommPoint,
+          nokoriRomaji,
+          currentScore,
+        } = build({
+          selectedEasyQuestions: questionsToTest(),
+        });
+
+        await startGame();
+
+        for (const char of 'akamakigamiaoma'.split('')) {
+          await handleKeyDownEvent(char);
+        }
+
+        // ここで間違える
+        expect(nokoriRomaji.value).toEqual('kigamikimakigami');
+        await handleKeyDownEvent('p');
+
+        for (const char of 'kigamikimakigam'.split('')) {
+          await handleKeyDownEvent(char);
+        }
+
+        expect(currentCommPoint.value).toEqual(4);
+        expect(currentScore.value).toEqual(0);
+
+        // 4点の場合のスコア加算
+        expect(nokoriRomaji.value).toEqual('i');
+        await handleKeyDownEvent('i');
+
+        expect(currentScore.value).toEqual(2067);
+      });
+
+      it('5点の場合', async () => {
+        const {
+          handleKeyDownEvent,
+          startGame,
+          currentCommPoint,
+          nokoriRomaji,
+          currentScore,
+        } = build({
+          selectedEasyQuestions: questionsToTest(),
+        });
+
+        await startGame();
+
+        for (const char of 'akamakigamiaomakigamikimakigam'.split('')) {
+          await handleKeyDownEvent(char);
+        }
+
+        expect(currentCommPoint.value).toEqual(5);
+        expect(currentScore.value).toEqual(0);
+
+        // 5点の場合のスコア加算
+        expect(nokoriRomaji.value).toEqual('i');
+        await handleKeyDownEvent('i');
+
+        expect(currentScore.value).toEqual(2584);
+      });
     });
   });
 
