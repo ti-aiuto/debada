@@ -1000,8 +1000,104 @@ describe('useDebadaGame', () => {
         expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
       });
     });
+
+    describe('ユーザ入力を受け付けないタイミングでのエスケープ', () => {
+      it('game_startの途中にエスケープできること', async () => {
+        const {
+          notifyGameEvent,
+          fetchEventNamesSinceLastCall,
+          enableManualResolve,
+        } = prepareMockEventFn();
+
+        enableManualResolve();
+
+        const {handleKeyDownEvent, startGame} = build({notifyGameEvent});
+
+        startGame();
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        handleKeyDownEvent('Escape');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+
+      it('question_completeの途中にエスケープできること', async () => {
+        const {
+          notifyGameEvent,
+          fetchEventNamesSinceLastCall,
+          enableManualResolve,
+        } = prepareMockEventFn();
+
+        const {handleKeyDownEvent, startGame, currentQuestion} = build({
+          notifyGameEvent,
+        });
+
+        await startGame();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        enableManualResolve();
+
+        expect(currentQuestion.value.label).toEqual('か');
+        await handleKeyDownEvent('k');
+        handleKeyDownEvent('a');
+
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        handleKeyDownEvent('Escape');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+
+      it('block_mode_startの途中にエスケープできること', async () => {
+        const {
+          notifyGameEvent,
+          fetchEventNamesSinceLastCall,
+          enableManualResolve,
+          fetchResolversSinceLastCall,
+        } = prepareMockEventFn();
+
+        const {handleKeyDownEvent, startGame, currentQuestion} = build({
+          notifyGameEvent,
+        });
+
+        await startGame();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        expect(currentQuestion.value.label).toEqual('か');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        expect(currentQuestion.value.label).toEqual('きき');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        enableManualResolve();
+
+        expect(currentQuestion.value.label).toEqual('く');
+        await handleKeyDownEvent('k');
+
+        handleKeyDownEvent('u');
+        fetchResolversSinceLastCall()[0].resolve();
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        handleKeyDownEvent('Escape');
+        await waitForTick();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+    });
   });
 
+  // ユーザ入力が許可されているタイミングとされていないタイミングのテスト
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
 
   describe('質問の個数が足りない場合', () => {
