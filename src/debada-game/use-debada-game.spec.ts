@@ -942,8 +942,67 @@ describe('useDebadaGame', () => {
     });
   });
 
+  describe('エスケープのテスト', () => {
+    describe('タイピング受付中の場合', () => {
+      it('通常のタイピング中にエスケープできること', async () => {
+        const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+          prepareMockEventFn();
+
+        const {handleKeyDownEvent, startGame} = build({notifyGameEvent});
+
+        await startGame();
+        expect(fetchEventNamesSinceLastCall()).toEqual(['game_start']);
+
+        await handleKeyDownEvent('Escape');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+
+      it('ブロックモード中にエスケープできること', async () => {
+        const {notifyGameEvent, fetchEventNamesSinceLastCall} =
+          prepareMockEventFn();
+
+        const {
+          handleKeyDownEvent,
+          startGame,
+          currentBlockModeEnabled,
+          currentQuestion,
+        } = build({notifyGameEvent});
+
+        await startGame();
+
+        expect(currentQuestion.value.label).toEqual('か');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('a');
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'game_start',
+          'question_complete',
+        ]);
+
+        // 2問目
+        expect(currentQuestion.value.label).toEqual('きき');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('i');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['question_complete']);
+
+        // 3問目
+        await handleKeyDownEvent('k');
+        await handleKeyDownEvent('u');
+
+        expect(fetchEventNamesSinceLastCall()).toEqual([
+          'question_complete',
+          'block_mode_start',
+        ]);
+
+        expect(currentBlockModeEnabled.value).toBe(true);
+        await handleKeyDownEvent('Escape');
+        expect(fetchEventNamesSinceLastCall()).toEqual(['abort_game']);
+      });
+    });
+  });
+
   // 途中で打ち間違えたときのテスト・コミュ点ゲージのテスト
-  // エスケープはいつでもできることのテスト
 
   describe('質問の個数が足りない場合', () => {
     it('例外になること', () => {
