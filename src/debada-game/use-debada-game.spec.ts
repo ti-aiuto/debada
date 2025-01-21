@@ -369,11 +369,10 @@ describe('useDebadaGame', () => {
       };
     });
 
-    it('連続正解でゲージが増えること', async () => {
+    it('連続正解でゲージが増えること・間違えたらリセットされること', async () => {
       const {
         handleKeyDownEvent,
         startGame,
-        correctCount,
         renzokuCorrectCount,
         currentCommPoint,
       } = build({
@@ -393,25 +392,27 @@ describe('useDebadaGame', () => {
         await handleKeyDownEvent(char);
       }
 
-      expect(correctCount.value).toEqual(14);
       expect(renzokuCorrectCount.value).toEqual(14);
 
       expect(currentCommPoint.value).toEqual(3);
       await handleKeyDownEvent('a');
-      expect(correctCount.value).toEqual(15);
       expect(currentCommPoint.value).toEqual(4);
 
       for (const char of 'kigamikimakiga'.split('')) {
         await handleKeyDownEvent(char);
       }
 
-      expect(correctCount.value).toEqual(29);
       expect(renzokuCorrectCount.value).toEqual(29);
 
       expect(currentCommPoint.value).toEqual(4);
       await handleKeyDownEvent('m');
-      expect(correctCount.value).toEqual(30);
       expect(currentCommPoint.value).toEqual(5);
+      expect(renzokuCorrectCount.value).toEqual(30);
+
+      // ここで間違える
+      await handleKeyDownEvent('p');
+      expect(currentCommPoint.value).toEqual(3);
+      expect(renzokuCorrectCount.value).toEqual(0);
     });
   });
 
