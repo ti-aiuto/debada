@@ -30,11 +30,19 @@ describe('useDebadaGame', () => {
     // 手動でresolve()して使う場合
     function enableManualResolve() {
       notifyGameEvent.mockImplementation((eventName: string) => {
+        console.debug('[notifyGameEvent] Promise Call', eventName);
+
         let resolve!: Function, reject!: Function;
         // いつかはPromise.withResolvers()でスッキリ書ける
         const promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
+          resolve = () => {
+            console.debug('[notifyGameEvent] Promise Resolve', eventName);
+            res(null);
+          };
+          reject = () => {
+            console.debug('[notifyGameEvent] Promise Reject', eventName);
+            rej();
+          };
         });
         resolvers.push({resolve, reject, eventName});
         return promise;
