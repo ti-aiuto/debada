@@ -146,6 +146,7 @@ export function useDebadaGame({
 
   // ゲーム中止
   function abortGame() {
+    pauseGame();
     return notifyGameEvent('abort_game');
   }
 
