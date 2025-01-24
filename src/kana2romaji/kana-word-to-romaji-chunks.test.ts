@@ -110,7 +110,7 @@ describe('kanaWordToRomajiChunks', () => {
         },
         {
           chunk: 'っ',
-          candidates: ['xtu', 'ltu'],
+          candidates: ['xtu', 'ltu', 'xtsu', 'ltsu'],
         },
       ]);
     });
@@ -123,7 +123,7 @@ describe('kanaWordToRomajiChunks', () => {
         },
         {
           chunk: 'っと',
-          candidates: ['tto', 'xtuto', 'ltuto'],
+          candidates: ['tto', 'xtuto', 'ltuto', 'xtsuto', 'ltsuto'],
         },
       ]);
     });

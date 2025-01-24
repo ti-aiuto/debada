@@ -56,7 +56,7 @@ export const kanaRomajiTable: {[key: string]: string[]} = {
   を: ['wo'],
   ん: ['nn'],
 
-  っ: ['xtu', 'ltu'],
+  っ: ['xtu', 'ltu', 'xtsu', 'ltsu'],
 
   ー: ['-'],
 
