@@ -260,7 +260,7 @@ describe('useDebadaGame', () => {
       ]);
       expect(correctCount.value).toEqual(16);
       expect(renzokuCorrectCount.value).toEqual(16);
-      expect(currentScore.value).toEqual(1335);
+      expect(currentScore.value).toEqual(1835);
 
       // レベル2を順に実行していく
       expect(currentQuestion.value.label).toEqual('た');
@@ -291,7 +291,7 @@ describe('useDebadaGame', () => {
       expect(currentJudgesCount.value).toEqual(3);
       expect(correctCount.value).toEqual(23);
       expect(renzokuCorrectCount.value).toEqual(23);
-      expect(currentScore.value).toEqual(1737);
+      expect(currentScore.value).toEqual(2237);
       expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await handleKeyDownEvent('e');
@@ -302,7 +302,7 @@ describe('useDebadaGame', () => {
         'question_complete',
         'level_up',
       ]);
-      expect(currentScore.value).toEqual(3371);
+      expect(currentScore.value).toEqual(5371);
 
       // レベル3を順に実行していく
       expect(currentQuestion.value.label).toEqual('な');
@@ -338,7 +338,7 @@ describe('useDebadaGame', () => {
       expect(currentEnabledState.value).toEqual(true);
       expect(correctCount.value).toEqual(33);
       expect(renzokuCorrectCount.value).toEqual(33);
-      expect(currentScore.value).toEqual(3873);
+      expect(currentScore.value).toEqual(5873);
       expect(fetchEventNamesSinceLastCall()).toEqual([]);
 
       await handleKeyDownEvent('o');
@@ -348,7 +348,7 @@ describe('useDebadaGame', () => {
         'question_complete',
         'game_complete',
       ]);
-      expect(currentScore.value).toEqual(6512);
+      expect(currentScore.value).toEqual(11012);
       expect(currentEnabledState.value).toEqual(false);
       expect(perKeyWrongCount.value).toEqual({});
 
@@ -634,7 +634,7 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('s');
       expect(nokoriJikanSeconds.value).toEqual(30); // 時間消費なし
       await handleKeyDownEvent('i');
-      expect(currentScore.value).toEqual(1335); // 残時間分の加算
+      expect(currentScore.value).toEqual(1835); // 残時間分の加算
 
       // レベル2
       expect(currentQuestion.value.label).toEqual('た');
@@ -645,18 +645,18 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('t');
       await handleKeyDownEvent('i');
 
-      expect(currentScore.value).toEqual(1603);
+      expect(currentScore.value).toEqual(2103);
 
       expect(currentQuestion.value.label).toEqual('つ');
       await handleKeyDownEvent('t');
       await handleKeyDownEvent('u');
 
       expect(currentQuestion.value.label).toEqual('て');
-      expect(currentScore.value).toEqual(1737);
+      expect(currentScore.value).toEqual(2237);
       await handleKeyDownEvent('t');
       expect(nokoriJikanSeconds.value).toEqual(45); // 時間消費なし
       await handleKeyDownEvent('e');
-      expect(currentScore.value).toEqual(3371); // 残時間分の加算
+      expect(currentScore.value).toEqual(5371); // 残時間分の加算
 
       // レベル3
       expect(currentQuestion.value.label).toEqual('な');
@@ -671,18 +671,18 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('n');
       await handleKeyDownEvent('u');
 
-      expect(currentScore.value).toEqual(3734);
+      expect(currentScore.value).toEqual(5734);
 
       expect(currentQuestion.value.label).toEqual('ね');
       await handleKeyDownEvent('n');
       await handleKeyDownEvent('e');
 
       expect(currentQuestion.value.label).toEqual('の');
-      expect(currentScore.value).toEqual(3873);
+      expect(currentScore.value).toEqual(5873);
       await handleKeyDownEvent('n');
       expect(nokoriJikanSeconds.value).toEqual(60); // 時間消費なし
       await handleKeyDownEvent('o');
-      expect(currentScore.value).toEqual(6512); // 残時間分の加算
+      expect(currentScore.value).toEqual(11012); // 残時間分の加算
     });
 
     it('時間を使った場合はその分スコア加算が減ること', async () => {
@@ -739,7 +739,7 @@ describe('useDebadaGame', () => {
       expect(nokoriJikanSeconds.value).toEqual(19);
 
       await handleKeyDownEvent('i');
-      expect(currentScore.value).toEqual(1151); // 残時間分の加算が減ること
+      expect(currentScore.value).toEqual(1468); // 残時間分の加算が減ること
 
       // レベル2
       expect(currentQuestion.value.label).toEqual('た');
@@ -755,7 +755,7 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('u');
 
       expect(currentQuestion.value.label).toEqual('て');
-      expect(currentScore.value).toEqual(1553);
+      expect(currentScore.value).toEqual(1870);
       await handleKeyDownEvent('t');
 
       // 時間を経過させておく
@@ -766,7 +766,7 @@ describe('useDebadaGame', () => {
       expect(nokoriJikanSeconds.value).toEqual(24);
 
       await handleKeyDownEvent('e');
-      expect(currentScore.value).toEqual(2487); // 残時間分の加算が減ること
+      expect(currentScore.value).toEqual(3604); // 残時間分の加算が減ること
 
       // レベル3
       expect(currentQuestion.value.label).toEqual('な');
@@ -786,7 +786,7 @@ describe('useDebadaGame', () => {
       await handleKeyDownEvent('e');
 
       expect(currentQuestion.value.label).toEqual('の');
-      expect(currentScore.value).toEqual(2989);
+      expect(currentScore.value).toEqual(4106);
       await handleKeyDownEvent('n');
 
       // 時間を経過させておく
@@ -797,7 +797,7 @@ describe('useDebadaGame', () => {
       expect(nokoriJikanSeconds.value).toEqual(29);
 
       await handleKeyDownEvent('o');
-      expect(currentScore.value).toEqual(4337); // 残時間分の加算が減ること
+      expect(currentScore.value).toEqual(6662); // 残時間分の加算が減ること
     });
   });
 
