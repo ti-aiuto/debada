@@ -143,14 +143,14 @@ describe('calcCompleteGameScore', () => {
 
     expect(
       calcCompleteGameScore({currentJudgesCount: 1, nokoriJikanSeconds: 10})
-    ).toEqual(167);
-
-    expect(
-      calcCompleteGameScore({currentJudgesCount: 3, nokoriJikanSeconds: 10})
     ).toEqual(334);
 
     expect(
+      calcCompleteGameScore({currentJudgesCount: 3, nokoriJikanSeconds: 10})
+    ).toEqual(667);
+
+    expect(
       calcCompleteGameScore({currentJudgesCount: 5, nokoriJikanSeconds: 10})
-    ).toEqual(417);
+    ).toEqual(834);
   });
 });

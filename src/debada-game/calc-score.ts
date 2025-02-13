@@ -101,7 +101,6 @@ export function calcCompleteGameScore({
 }): number {
   return Math.ceil(
     nokoriJikanSeconds *
-      0.5 *
       standardKeyTypeCountPerSeconds({
         currentJudgesCount,
       }) *
