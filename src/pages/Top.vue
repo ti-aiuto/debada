@@ -10,7 +10,7 @@
         <img :src="ruleButton" class="image-button">
       </RouterLink>
 
-      <div class="m-plus-rounded-1c-regular version">v2.2.0</div>
+      <div class="m-plus-rounded-1c-regular version">v2.3.0</div>
 
       <img class="logo" :src="logoUrl">
     </div>
